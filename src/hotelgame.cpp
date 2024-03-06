@@ -352,6 +352,241 @@ void AustriaHotel::at_major_round_start(){
 void AustriaHotel::at_major_round_end(){
     major_round++;
     mini_round = 0;
+    // calculate royal task
+    if(major_round == 3){
+        for(int player = 0; player < num_player; player++){
+            curr_player = player;
+            royal_point[player] -= 3;
+            royal_point[player] = (royal_point[player] < 0) ? 0 : royal_point[player];
+            if(royal_point[player] > 2){
+                // award
+                std::cout << "第一次皇室任务完成，获得奖励" << std::endl;
+                switch(royal_task_id[0]){
+                    case 0: 
+                        std::cout << "奖励3块钱" << std::endl;
+                        money_point[player] += 3;
+                        break; // get 3 money point
+                    case 1: 
+                        std::cout << "奖励2份任意种类食物" << std::endl;
+                        for(int i=0; i<2; i++){
+                            int food_id;
+                            std::cout << "输入第" << i+1 << "份想要的食物种类" << std::endl;
+                            std::cin >> food_id;
+                            at_food_take(1, food_id);
+                        }
+                        break; // get 2 food all kind
+                    case 2: 
+                        std::cout << "奖励抽取3张员工并减3费打出其中1张" << std::endl;
+                        at_server_draw3_hire1(3, false);
+                        break; // draw 3 server, hire a server with discount of 3, and dispose the rest
+                    case 3: 
+                        std::cout << "奖励免费准备一个房间" << std::endl;
+                        at_room_open(1, 0, true);
+                        break; // prepare a room without cost
+                    default: break;
+                }
+                at_major_task_check();
+            } else if(royal_point[player] == 0){
+                // punish
+                std::cout << "第一次皇室任务失败，获得惩罚" << std::endl;
+                switch(royal_task_id[0]){
+                    case 0: 
+                        int choice_id;
+                        std::cout << "失去3块钱或者5游戏点数" << std::endl;
+                        std::cout << "输入0失去钱，输入1失去游戏点数" << std::endl;
+                        std::cin >> choice_id;
+                        if(choice_id) {
+                            game_point[player] -= 5;
+                            if(game_point[player] < 0) game_point[player] = 0;
+                        } else {
+                            money_point[player] -= 3;
+                            if(money_point[player] < 0) money_point[player] = 0;
+                        }
+                        break; // lose 3 money point or 5 game point
+                    case 1: 
+                        std::cout << "失去厨房里的所有食物" << std::endl;
+                        at_kitchen_clear();
+                        break; // lose all food in kitchen
+                    case 2: 
+                        int choice_id;
+                        std::cout << "失去手中的2张员工牌，或者失去5游戏点数" << std::endl;
+                        std::cout << "输入0失去员工，输入1失去游戏点数" << std::endl;
+                        std::cin >> choice_id;
+                        if(choice_id) {
+                            game_point[player] -= 5;
+                            if(game_point[player] < 0) game_point[player] = 0;
+                        } else {
+                            at_server_lose(2);
+                        }
+                        break; // lose 2 server from hand or 5 game point
+                    case 3: 
+                        int choice_id;
+                        std::cout << "失去最高层的一个准备好的房间，或者失去5游戏点数" << std::endl;
+                        std::cout << "输入0失去准备好的房间，输入1失去游戏点数" << std::endl;
+                        std::cin >> choice_id;
+                        if(choice_id) {
+                            game_point[player] -= 5;
+                            if(game_point[player] < 0) game_point[player] = 0;
+                        } else {
+                            at_room_remove(true, false, true);
+                        }
+                        break; // lose a prepared room from the highest floor or 5 game point
+                    default: break;
+                }
+            } else {
+                std::cout << "第一次皇室任务无奖励或惩罚" << std::endl;
+            }
+        }
+    } else if(major_round == 5){
+        for(int player = 0; player < num_player; player++){
+            curr_player = player;
+            royal_point[player] -= 5;
+            royal_point[player] = (royal_point[player] < 0) ? 0 : royal_point[player];
+            if(royal_point[player] > 2){
+                // award
+                std::cout << "第二次皇室任务完成，获得奖励" << std::endl;
+                switch(royal_task_id[1]){
+                    case 0: 
+                        std::cout << "奖励各种食物各一份" << std::endl;
+                        at_food_take(1, FOOD_COOKIE);
+                        at_food_take(1, FOOD_CAKE);
+                        at_food_take(1, FOOD_WINE);
+                        at_food_take(1, FOOD_COFFEE);
+                        break; // get 1 food of all 4 kind
+                    case 1: 
+                        std::cout << "奖励5块钱" << std::endl;
+                        money_point[player] += 5;
+                        break; // get 5 money point
+                    case 2: 
+                        std::cout << "奖励抽取3张员工并免费打出其中1张" << std::endl;
+                        at_server_draw3_hire1(0, true);
+                        break; // draw 3 server, hire a server for free, and dispose the rest
+                    case 3: 
+                        std::cout << "奖励免费准备并入住一个一楼或二楼房间" << std::endl;
+                        at_room_open_occupy(true);
+                        break; // prepare and occupy a room on the first or the second floor for free
+                    default: break;
+                }
+                at_major_task_check();
+            } else if(royal_point[player] == 0){
+                // punish
+                std::cout << "第二次皇室任务失败，获得惩罚" << std::endl;
+                switch(royal_task_id[1]){
+                    case 0: 
+                        std::cout << "失去厨房里和客人桌上的所有食物" << std::endl;
+                        at_kitchen_clear();
+                        at_customer_clear();
+                        break; // lose all food in kitchen and guest table
+                    case 1: 
+                        int choice_id;
+                        std::cout << "失去5块钱或者7游戏点数" << std::endl;
+                        std::cout << "输入0失去钱，输入1失去游戏点数" << std::endl;
+                        std::cin >> choice_id;
+                        if(choice_id) {
+                            game_point[player] -= 7;
+                            if(game_point[player] < 0) game_point[player] = 0;
+                        } else {
+                            money_point[player] -= 5;
+                            if(money_point[player] < 0) money_point[player] = 0;
+                        }
+                        break; // lose 5 money point or 7 game point
+                    case 2: 
+                        int choice_id;
+                        std::cout << "失去手中的3张员工牌，或者失去7游戏点数" << std::endl;
+                        std::cout << "输入0失去员工，输入1失去游戏点数" << std::endl;
+                        std::cin >> choice_id;
+                        if(choice_id) {
+                            game_point[player] -= 7;
+                            if(game_point[player] < 0) game_point[player] = 0;
+                        } else {
+                            at_server_lose(3);
+                        }
+                        break; // lose 3 server from hand or 7 game point
+                    case 3: 
+                        int choice_id;
+                        std::cout << "失去最高层的两个已入住的房间，或者失去7游戏点数" << std::endl;
+                        std::cout << "输入0失去已入住的房间，输入1失去游戏点数" << std::endl;
+                        std::cin >> choice_id;
+                        if(choice_id) {
+                            game_point[player] -= 7;
+                            if(game_point[player] < 0) game_point[player] = 0;
+                        } else {
+                            at_room_remove(true, true, false);
+                            at_room_remove(true, true, false);
+                        }
+                        break; // lose 2 occupied room from the highest floor or 7 game point
+                    default: break;
+                }
+            } else {
+                std::cout << "第二次皇室任务无奖励或惩罚" << std::endl;
+            }
+        }
+    } else if(major_round == 7){
+        for(int player = 0; player < num_player; player++){
+            curr_player = player;
+            royal_point[player] -= 7;
+            royal_point[player] = (royal_point[player] < 0) ? 0 : royal_point[player];
+            if(royal_point[player] > 2){
+                // award
+                std::cout << "第三次皇室任务完成，获得奖励" << std::endl;
+                switch(royal_task_id[2]){
+                    case 0: 
+                        std::cout << "奖励8游戏点数" << std::endl;
+                        game_point[player] += 8;
+                        break; // get 8 game point
+                    case 1: 
+                        std::cout << "奖励免费准备并入住一个一楼或二楼房间" << std::endl;
+                        at_room_open_occupy(false);
+                        break; // prepare and occupy a room for free
+                    case 2: 
+                        std::cout << "奖励每个雇佣的员工加2游戏点数" << std::endl;
+                        game_point[player] += 2*num_server_hired[player];
+                        break; // get 2 game point from every hired server
+                    case 3: 
+                        std::cout << "奖励免费雇佣1个员工" << std::endl;
+                        at_server_hire(1, true);
+                        break; // hire a server for free
+                    default: break;
+                }
+                at_major_task_check();
+            } else if(royal_point[player] == 0){
+                // punish
+                std::cout << "第三次皇室任务失败，获得惩罚" << std::endl;
+                switch(royal_task_id[2]){
+                    case 0: 
+                        std::cout << "失去8游戏点数" << std::endl;
+                        game_point[player] -= 8;
+                        if(game_point[player] < 0) game_point[player] = 0;
+                        break; // lose 8 game point
+                    case 1: 
+                        std::cout << "失去最高层的两个已入住的房间" << std::endl;
+                        at_room_remove(true, true, false);
+                        at_room_remove(true, true, false);
+                        break; // lose 2 occupied room from the highest floor
+                    case 2: 
+                        std::cout << "每有一位已打出的员工失去2游戏点数" << std::endl;
+                        game_point[player] -= 2*num_server_hired[player];
+                        if(game_point[player] < 0)  game_point[player] = 0;
+                        break; // lose 2 game point from every hired server
+                    case 3: 
+                        int choice_id;
+                        std::cout << "失去一位有终局结算效果的员工或者失去10游戏点数" << std::endl;
+                        std::cout << "输入0失去员工，输入1失去游戏点数" << std::endl;
+                        std::cin >> choice_id;
+                        if(choice_id) {
+                            game_point[player] -= 10;
+                            if(game_point[player] < 0) game_point[player] = 0;
+                        } else {
+                            at_server_remove(true);
+                        }
+                        break; // lose a server with game-end effect or lose 10 game point
+                    default: break;
+                }
+            } else {
+                std::cout << "第三次皇室任务无奖励或惩罚" << std::endl;
+            }
+        }
+    }
 }
 
 bool AustriaHotel::at_dice_pick(bool special_round){
@@ -696,7 +931,7 @@ void AustriaHotel::at_food_take(int strength, int food_id){
     }
 }
 
-void AustriaHotel::at_room_open(int strength, int discount, bool free_open){
+void AustriaHotel::at_room_open(int strength, int discount, bool free_flag){
     bool blue_free_flag = (bonus_flag[curr_player] >> 15) & 0x1;
     bool red_free_flag = (bonus_flag[curr_player] >> 16) & 0x1;
     bool yellow_free_flag = (bonus_flag[curr_player] >> 17) & 0x1;
@@ -746,7 +981,7 @@ void AustriaHotel::at_room_open(int strength, int discount, bool free_open){
         }
         // not enough money to open this room
         if((money_point[curr_player] < (open_room_floor - discount)) &&
-           !free_open &&
+           !free_flag &&
            !((blue_free_flag && room_status[curr_player][open_room_floor][open_room_column][1]==ROOM_BLUE) ||
              (red_free_flag && room_status[curr_player][open_room_floor][open_room_column][1]==ROOM_RED) ||
              (yellow_free_flag && room_status[curr_player][open_room_floor][open_room_column][1]==ROOM_YELLOW))){
@@ -754,7 +989,7 @@ void AustriaHotel::at_room_open(int strength, int discount, bool free_open){
             continue;
         }
         // room open success
-        if((open_room_floor > discount) && !free_open)
+        if((open_room_floor > discount) && !free_flag)
             money_point[curr_player] -= (open_room_floor - discount);
         room_status[curr_player][open_room_floor][open_room_column][0] = 0;
         num_room_opened[curr_player]++;
@@ -811,7 +1046,8 @@ void AustriaHotel::at_server_hire(int strength, bool free_hire){
         } else if((server_detail >> 5) & 0x1){
             royal_point[curr_player] += 3;
         } else if((server_detail >> 6) & 0x1){
-            at_room_close(2);
+            at_room_occupy(0, true);
+            at_room_occupy(0, true);
         } else if((server_detail >> 7) & 0x1){
             std::cout << "选择一位桌上的宾客ID 0到" << num_customer_on_table[curr_player]-1 << "满足其所有需求" << std::endl;
             int customer_id;
@@ -835,6 +1071,68 @@ void AustriaHotel::at_server_hire(int strength, bool free_hire){
     }
     num_server_on_hand[curr_player]--;
     server_on_hand[curr_player].erase(server_on_hand[curr_player].begin() + server_id);
+}
+
+void AustriaHotel::at_server_draw3_hire1(int discount, bool free_hire){
+    //TODO
+    // draw 3 server from deck, hire 1 with discount or free, and return the rest to the bottom of deck
+    std::cout << "抽取到如下三张员工牌" << std::endl;
+    // draw 3
+    for(int i=0; i<3; i++){
+        server_tmp.push_back(server_deck.back());
+        std::cout << "i: ";
+        print_server(server_tmp[i]);
+        server_deck.pop_back();
+    }
+    // pick a server to hire
+    while(true){
+        int server_id;
+        std::cout << "输入员工的编号来打出" << std::endl;
+        std::cin >> server_id;
+        if( (server_tmp[server_id].get_cost() - 3) > money_point[curr_player]){
+            std::cout << "资金不足无法雇用该员工" << std::endl;
+            continue;
+        }
+    }
+    
+    // return 2
+    for(int i=0; i<2; i++){
+        server_deck.insert(server_deck.begin(), server_tmp.back());
+        server_tmp.pop_back();
+    }
+}
+
+void at_kitchen_clear(){
+    //TODO
+    // remove all food resources from kitchen
+    // only happens in royal task punish
+    ;
+}
+
+void at_customer_clear(){
+    //TODO
+    // remove all food resources from customer tables
+    // only happens in royal task punish
+    ;
+}
+
+void at_room_open_occupy(bool floor_limit_flag){
+    //TODO
+    // free open and occypy a room
+    // only happens in royal task award
+    ;
+}
+
+void at_server_remove(bool end_game_flag){
+    //TODO
+    // remove a hired server, probably with end game effect
+    // only happens in royal task award
+    ;
+}
+
+void at_major_task_check(){
+    //TODO
+    // check whether any of the major tasks is completed
 }
 
 void AustriaHotel::at_food_delivery(){
@@ -956,8 +1254,53 @@ void AustriaHotel::at_use_per_turn_server(){
 }
 
 void AustriaHotel::at_customer_checkout(bool free_close){
+    // check which customer is satisfied
+    int  num_customer_satisfied = 0;
+    bool customer_satisfied_flag[3] = {false, false, false};
+    for(int i=0; i<num_customer_on_table[curr_player]; i++){
+        if(customer_on_table[curr_player][i].get_num_food_requirement() == 0){
+            num_customer_satisfied++;
+            customer_satisfied_flag[i] = true;
+        }
+    }
+    if(num_customer_satisfied == 0){
+        std::cout << "没有可以结算的顾客" << std::endl;
+        return;
+    }
+
+    // list satisfied customers to choose
+    std::cout << "可以结算的顾客ID和其效果分别为：" << std::endl;
+    for(int i=0; i<num_customer_satisfied; i++){
+        std::cout << i << " " << customer_on_table[curr_player][i].get_name() << "：";
+        std::cout << "客人颜色 " << customer_on_table[curr_player][i].get_color_string() << "，";
+        std::cout << "游戏点数奖励 " << customer_on_table[curr_player][i].get_bonus_game_point() << std::endl;
+        std::cout << "完成奖励：" << customer_on_table[curr_player][i].get_description() << std::endl;
+    }
+    int checkout_id;
+    std::cout << "输入顾客ID进行结算，或输入3放弃结算客人" << std::endl;
+#if DEBUG
+    checkout_id = rand() % 4;
+#else
+    std::cin >> checkout_id;
+#endif
+    while(checkout_id < 0 || checkout_id > 3 || !customer_satisfied_flag[checkout_id]){
+        if(checkout_id < 0 || checkout_id > 3) std::cout << "请选择已被满足的顾客ID，或选择3中止结算" << std::endl;
+        else if(checkout_id >= num_customer_on_table[curr_player]) std::cout << "无该客人" << std::endl;
+        else if(!customer_satisfied_flag[checkout_id]) std::cout << "该客人未满足" << std::endl;
+        std::cin >> checkout_id;
+    }
     // TODO
-    ;
+    // choose a room to occupy
+    // calculate customer bonus
+    // check server bonus on completing a customer
+    // check whether a major task is completed
+}
+
+void AustriaHotel::at_room_occupy(int color_id, bool free_flag){
+    // TODO
+    // choose a room to close
+    // check whether an area is complete
+    // get area bonus
 }
 
 int AustriaHotel::update_customer_waitlist(int picked_id, bool invite_free){
@@ -986,6 +1329,16 @@ int AustriaHotel::update_customer_waitlist(int picked_id, bool invite_free){
     customer_deck.pop_back();
 
     return 0;
+}
+
+void AustriaHotel::print_server(Server server) {
+    // print the detail of a server
+    std::cout << server.get_name() << "：费用" << server.get_cost() << " 种类：" << server.get_type_string();
+    std::cout << " 效果：" << server.get_description() << std::endl;
+}
+
+void AustriaHotel::print_customer(Customer customer) {
+    //TODO
 }
 
 void AustriaHotel::print_hotel(int player) {
@@ -1084,9 +1437,7 @@ void AustriaHotel::print_status(bool first_pick) {
     std::cout << std::endl;
     std::cout << "手中员工牌：" << std::endl;
     for(int i=0; i<num_server_on_hand[curr_player]; i++){
-        std::cout << i << "： " << "费用 " << server_on_hand[curr_player][i].get_cost() << " " << server_on_hand[curr_player][i].get_name();
-        std::cout << " " << server_on_hand[curr_player][i].get_type_string() << " " <<server_on_hand[curr_player][i].get_description();
-        std::cout << std::endl;
+        print_server(server_on_hand[curr_player][i]);
     }
 }
 

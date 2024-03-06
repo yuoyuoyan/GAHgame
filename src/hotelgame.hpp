@@ -95,12 +95,22 @@ public:
     void at_dice5(int strength, bool special_round);
     void at_dice6(int strength, bool special_round);
     void at_food_take(int strength, int food_id);
-    void at_room_open(int strength, int discount, bool free_open);
-    void at_room_close(int strength);
-    void at_server_hire(int strength, bool free_hire);
+    void at_room_open(int strength, int discount, bool free_flag);
+    void at_room_occupy(int color_id, bool free_flag);
+    void at_server_hire(int strength, bool free_flag);
+    void at_server_lose(int strength);
+    void at_server_draw3_hire1(int discount, bool free_flag);
+    void at_kitchen_clear();
+    void at_customer_clear();
+    void at_room_remove(bool highest_floor, bool occupied_flag, bool prepared_flag);
+    void at_room_open_occupy(bool floor_limit_flag);
+    void at_server_remove(bool end_game_flag);
+    void at_major_task_check();
 
     int  update_customer_waitlist(int picked_id, bool invite_free);
     void print_hotel(int player);
+    void print_server(Server server);
+    void print_customer(Customer customer);
     void print_status(bool first_pick);
 
 private:
@@ -136,6 +146,7 @@ private:
     int num_server_on_hand[4]; // number of servers not hired yet
     std::vector<Server> server_deck;
     std::vector<Server> server_on_hand[4]; // player's servers on hand
+    std::vector<Server> server_tmp; // temporary server for the draw 3 hire 1 operation only
     std::vector<Server> server_hired[4]; // servers already hired by players
     int num_server_hired[4]; // number of servers already hired
     int bonus_per_turn[4]; // record whether per-turn server has been used this turn
