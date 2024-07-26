@@ -1,7 +1,6 @@
 // Hotel class definition
-export class Hotel extends Player{
+class Hotel{
     constructor(hotelID) {
-        super();
         this.hotelID = hotelID;
         this.roomColor = roomColorByID[hotelID];
         this.roomStatus = [[-1,-1,-1,-1,-1], [-1,-1,-1,-1,-1], [-1,-1,-1,-1,-1], [-1,-1,-1,-1,-1]];

@@ -1,5 +1,5 @@
 // Guest class definition
-export class Guest {
+class Guest {
     constructor(guestID, tableID){
         this.guestName = guestNameByID[guestID];
         this.guestDescription = guestDescriptionByID[guestID];

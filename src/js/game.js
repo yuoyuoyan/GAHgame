@@ -1,6 +1,9 @@
 const guestCanvas  = document.getElementById("guestboard");
 const guestContext  = guestCanvas .getContext("2d");
+const actionCanvas = document.getElementById("actionboard");
+const actionContext = actionCanvas.getContext("2d");
 
+const actionBoardImg = document.getElementById("actionBoardImg");
 const guestBoardImg = document.getElementById("guestBoardImg");
 const majorTaskA0Img = document.getElementById("majorTaskA0Img");
 const majorTaskA1Img = document.getElementById("majorTaskA1Img");
@@ -114,6 +117,7 @@ class Game{
         this.mainRound = 0;
         console.log("main round: " + this.mainRound);
         this.miniRound = 0;
+        this.actionPoint = [0, 0, 0, 0, 0, 0];
 
         // init guest deck and server deck
         this.guestDeck = Array.from({length: 58}, (_, i) => i);
@@ -133,15 +137,18 @@ class Game{
         // draw everything on guest board
         this.updateGuestCanvas(guestContext);
 
+        // draw everything on action board
+        this.updateActionCanvas(actionContext);
+
         // init player info
-        // this.players = [];
-        // for(let i=0; i<playerNumber; i++) {
-        //     if(standardHotel){
-        //         players.push(new Player(i, playerName[i], 0));
-        //     } else {
-        //         players.push(new Player(i, playerName[i], Math.random() % 4));
-        //     }
-        // }
+        this.players = [];
+        for(let i=0; i<playerNumber; i++) {
+            if(standardHotel){
+                this.players.push(new Player(i, playerName[i], 0));
+            } else {
+                this.players.push(new Player(i, playerName[i], Math.random() % 4));
+            }
+        }
 
         // place the first player to start
         this.currPlayer = 0;
@@ -265,6 +272,24 @@ class Game{
         }
     }
 
+    updateActionCanvas(context){
+        context.drawImage(actionBoardImg, 0, 0);
+        // draw the action dice number
+        var   numberXoffset = 75;
+        var   numberYoffset = 25;
+        context.font="20px verdana";
+        for(let i=0; i<6; i++){
+            context.shadowColor="white";
+            context.shadowBlur=5;
+            context.lineWidth=2;
+            context.strokeText(this.actionPoint[i].toString(), numberXoffset, numberYoffset);
+            context.shadowBlur=0;
+            context.fillStyle="black";
+            context.fillText(this.actionPoint[i].toString(), numberXoffset, numberYoffset);
+            numberXoffset+=159;
+        }
+    }
+
     shuffleDeck(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -292,7 +317,7 @@ class Game{
         ;
     }
 
-    drawServer() {
+    drawServer(playerID) {
         ;
     }
 }

@@ -18,10 +18,32 @@ body{
     border: 3px solid #73AD21;
 }
 
-#playerboard{
+#player0board{
     position: absolute;
     top: 800px;
     left: 0px;
+    background-color:#b89e86;
+    border: 3px solid #73AD21;
+}
+#player1board{
+    position: absolute;
+    top: 850px;
+    left: 0px;
+    background-color:#d6cfc9;
+    border: 3px solid #73AD21;
+}
+#player2board{
+    position: absolute;
+    top: 900px;
+    left: 0px;
+    background-color:#b89e86;
+    border: 3px solid #73AD21;
+}
+#player3board{
+    position: absolute;
+    top: 950px;
+    left: 0px;
+    background-color:#d6cfc9;
     border: 3px solid #73AD21;
 }
 
