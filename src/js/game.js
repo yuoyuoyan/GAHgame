@@ -149,6 +149,42 @@ class Game{
                 this.players.push(new Player(i, playerName[i], Math.floor(Math.random() * 4) + 1 ));
             }
         }
+        switch(playerNumber){ // assign mini rounds
+            case 2: 
+            this.players[0].miniTurn = [1, 4];
+            this.players[1].miniTurn = [2, 3];
+            this.players[0].updatePlayerCanvas(this.players[0].context);
+            this.players[1].updatePlayerCanvas(this.players[1].context);
+            break;
+            case 3: 
+            this.players[0].miniTurn = [1, 6];
+            this.players[1].miniTurn = [2, 5];
+            this.players[2].miniTurn = [3, 4];
+            this.players[0].updatePlayerCanvas(this.players[0].context);
+            this.players[1].updatePlayerCanvas(this.players[1].context);
+            this.players[2].updatePlayerCanvas(this.players[2].context);
+            break;
+            case 4: 
+            this.players[0].miniTurn = [1, 8];
+            this.players[1].miniTurn = [2, 7];
+            this.players[2].miniTurn = [3, 6];
+            this.players[3].miniTurn = [4, 5];
+            this.players[0].updatePlayerCanvas(this.players[0].context);
+            this.players[1].updatePlayerCanvas(this.players[1].context);
+            this.players[2].updatePlayerCanvas(this.players[2].context);
+            this.players[3].updatePlayerCanvas(this.players[3].context);
+            break;
+        }
+        for(let k=0; k<6; k++) { // draw first 6 servers
+            for(let i=0; i<playerNumber; i++) {
+                this.players[i].addServerToHand(this.serverDeck[this.serverDeck.length-1]);
+                console.log("player " + playerName[i] + " draw a server ID: " + this.serverDeck[this.serverDeck.length-1]);
+                this.serverDeck.pop();
+            }
+        }
+        for(let i=0; i<playerNumber; i++) {
+            this.players[i].updateServerCanvas(serverContext);
+        }
 
         // place the first player to start
         this.currPlayer = 0;

@@ -22,7 +22,7 @@ class Hotel{
         this.hotelID = hotelID;
         this.roomColor = roomColorByID[hotelID];
         // -1 as idle, 0 as prepared, 1 as occupied
-        this.roomStatus = [[0,1,-1,-1,-1], [-1,1,-1,-1,-1], [-1,0,-1,-1,-1], [-1,-1,-1,-1,-1]];
+        this.roomStatus = [[-1,-1,-1,-1,-1], [-1,-1,-1,-1,-1], [-1,-1,-1,-1,-1], [-1,-1,-1,-1,-1]];
         this.roomArea = roomAreaByID[hotelID];
         this.roomAreaRoom = roomAreaRoomByID[hotelID];
         this.roomClosedNum = 0;
