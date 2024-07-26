@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>五子棋游戏</title>
+    <style>
+        /* 游戏样式 */
+        .board {
+            display: grid;
+            grid-template-columns: repeat(15, 40px);
+            grid-template-rows: repeat(15, 40px);
+            gap: 1px;
+            background-color: #f0d9b5;
+        }
+
+        .cell {
+            width: 40px;
+            height: 40px;
+            background-color: #fff;
+            border: 1px solid #000;
+            cursor: pointer;
+        }
+
+        .cell:hover {
+            background-color: #ccc;
+        }
+
+        /* 按钮样式 */
+        #reset-button {
+            display: block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        /* 添加样式以表示玩家的棋子 */
+        .player-one {
+            background-color: #000;
+            border-radius: 50%;
+        }
+
+        .player-two {
+            background-color: #fff;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="board" id="board">
+        <!-- 游戏棋盘 -->
+    </div>
+    <button id="reset-button">重新开始</button>
+    <script src="gomoku0.js"></script>
+</body>
+
+</html>
