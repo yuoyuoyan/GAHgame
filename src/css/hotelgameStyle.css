@@ -60,5 +60,15 @@ body{
     position: absolute;
     top: 800px;
     left: 960px;
+    background-color:#8f7a66;
+    border: 3px solid #73AD21;
+}
+
+#alertboard{
+    display: none;
+    position: absolute;
+    top: 480px;
+    left: 560px;
+    background-color:#8f7a66;
     border: 3px solid #73AD21;
 }

@@ -6,6 +6,8 @@ const player0Context = player0Canvas.getContext("2d");
 const player1Context = player1Canvas.getContext("2d");
 const player2Context = player2Canvas.getContext("2d");
 const player3Context = player3Canvas.getContext("2d");
+const serverCanvas = document.getElementById("serverboard");
+const serverContext = serverCanvas.getContext("2d");
 
 const gamePointTokenImg = document.getElementById("gamePointTokenImg");
 const royalTokenImg = document.getElementById("royalTokenImg");
@@ -19,6 +21,56 @@ const dice3Img = document.getElementById("dice3Img");
 const dice4Img = document.getElementById("dice4Img");
 const dice5Img = document.getElementById("dice5Img");
 const dice6Img = document.getElementById("dice6Img");
+
+var serverImg = [];
+serverImg.push(document.getElementById("server0Img"));
+serverImg.push(document.getElementById("server1Img"));
+serverImg.push(document.getElementById("server2Img"));
+serverImg.push(document.getElementById("server3Img"));
+serverImg.push(document.getElementById("server4Img"));
+serverImg.push(document.getElementById("server5Img"));
+serverImg.push(document.getElementById("server6Img"));
+serverImg.push(document.getElementById("server7Img"));
+serverImg.push(document.getElementById("server8Img"));
+serverImg.push(document.getElementById("server9Img"));
+serverImg.push(document.getElementById("server10Img"));
+serverImg.push(document.getElementById("server11Img"));
+serverImg.push(document.getElementById("server12Img"));
+serverImg.push(document.getElementById("server13Img"));
+serverImg.push(document.getElementById("server14Img"));
+serverImg.push(document.getElementById("server15Img"));
+serverImg.push(document.getElementById("server16Img"));
+serverImg.push(document.getElementById("server17Img"));
+serverImg.push(document.getElementById("server18Img"));
+serverImg.push(document.getElementById("server19Img"));
+serverImg.push(document.getElementById("server20Img"));
+serverImg.push(document.getElementById("server21Img"));
+serverImg.push(document.getElementById("server22Img"));
+serverImg.push(document.getElementById("server23Img"));
+serverImg.push(document.getElementById("server24Img"));
+serverImg.push(document.getElementById("server25Img"));
+serverImg.push(document.getElementById("server26Img"));
+serverImg.push(document.getElementById("server27Img"));
+serverImg.push(document.getElementById("server28Img"));
+serverImg.push(document.getElementById("server29Img"));
+serverImg.push(document.getElementById("server30Img"));
+serverImg.push(document.getElementById("server31Img"));
+serverImg.push(document.getElementById("server32Img"));
+serverImg.push(document.getElementById("server33Img"));
+serverImg.push(document.getElementById("server34Img"));
+serverImg.push(document.getElementById("server35Img"));
+serverImg.push(document.getElementById("server36Img"));
+serverImg.push(document.getElementById("server37Img"));
+serverImg.push(document.getElementById("server38Img"));
+serverImg.push(document.getElementById("server39Img"));
+serverImg.push(document.getElementById("server40Img"));
+serverImg.push(document.getElementById("server41Img"));
+serverImg.push(document.getElementById("server42Img"));
+serverImg.push(document.getElementById("server43Img"));
+serverImg.push(document.getElementById("server44Img"));
+serverImg.push(document.getElementById("server45Img"));
+serverImg.push(document.getElementById("server46Img"));
+serverImg.push(document.getElementById("server47Img"));
 
 // Player class definition
 class Player{
@@ -50,12 +102,111 @@ class Player{
         this.numServerOnHand = 0;
         this.numServerHired = 0;
         this.serverOnHand = []; // empty hand at first, waiting for top to give servers
+        this.serverOnHandCanvasIdx = 0;
         this.serverHired = [];
+        this.serverHiredCanvasIdx = 0;
         this.numGuestOnTable = 0;
         this.guestOnTable = [];
         this.hotel = new Hotel(hotelID); // prepare hotel
         // draw the player board
         this.updatePlayerCanvas(this.context);
+        // draw the server board
+        this.updateServerCanvas(serverContext);
+    }
+
+    updateServerCanvas(context) {
+        // Server on hands
+        context.font="20px verdana";
+        context.shadowColor="white";
+        context.shadowBlur=2;
+        context.lineWidth=2;
+        context.strokeText("员工手牌", 25, 25);
+        context.shadowBlur=0;
+        context.fillStyle="black";
+        context.fillText("员工手牌", 25, 25);
+
+        // draw the remaining of prev card if any
+        var   serverXoffset = -105;
+        var   serverYoffset = 35;
+        const serverWidth = 160;
+        const serverHeight = 240;
+        if(this.serverOnHandCanvasIdx>0 && this.numServerOnHand>0) { 
+            context.drawImage(serverImg[this.serverOnHand[this.serverOnHandCanvasIdx-1].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+            // draw the left triangle to indicate
+            context.beginPath();
+            context.moveTo(0, 105);
+            context.lineTo(25,130);
+            context.lineTo(25,80);
+            context.fillStyle='black';
+            context.fill();
+        }
+        
+        // draw 3 server cards if any
+        for(let i=0; i<3; i++){
+            if(this.serverOnHandCanvasIdx + i < this.numServerOnHand){
+                serverXoffset+=170;
+                context.drawImage(serverImg[this.serverOnHand[this.serverOnHandCanvasIdx+i].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+            }
+        }
+
+        // draw the remaining of next card if any
+        if(this.serverOnHandCanvasIdx + 3 < this.numServerOnHand) {
+            serverXoffset+=170;
+            context.drawImage(serverImg[this.serverOnHand[this.serverOnHandCanvasIdx+3].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+            // draw the right triangle to indicate
+            context.beginPath();
+            context.moveTo(640,105);
+            context.lineTo(615,130);
+            context.lineTo(615,80);
+            context.fillStyle='black';
+            context.fill();
+        }
+
+        // Server hired
+        context.font="20px verdana";
+        context.shadowColor="white";
+        context.shadowBlur=2;
+        context.lineWidth=2;
+        context.strokeText("已雇佣员工", 25, 300);
+        context.shadowBlur=0;
+        context.fillStyle="black";
+        context.fillText("已雇佣员工", 25, 300);
+
+        // draw the remaining of prev card if any
+        serverXoffset = -105;
+        serverYoffset += 275;
+        console.log("num server hired: " + this.numServerHired);
+        if(this.serverHiredCanvasIdx>0 && this.numServerHired>0) { 
+            context.drawImage(serverImg[this.serverHired[this.serverHiredCanvasIdx-1].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+            // draw the left triangle to indicate
+            context.beginPath();
+            context.moveTo(0, 105+275);
+            context.lineTo(25,130+275);
+            context.lineTo(25,80+275);
+            context.fillStyle='black';
+            context.fill();
+        }
+        
+        // draw 3 server cards if any
+        for(let i=0; i<3; i++){
+            if(this.serverHiredCanvasIdx + i < this.numServerHired){
+                serverXoffset+=170;
+                context.drawImage(serverImg[this.serverHired[this.serverHiredCanvasIdx+i].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+            }
+        }
+
+        // draw the remaining of next card if any
+        if(this.serverHiredCanvasIdx + 3 < this.numServerHired) {
+            serverXoffset+=170;
+            context.drawImage(serverImg[this.serverHired[this.serverHiredCanvasIdx+3].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+            // draw the right triangle to indicate
+            context.beginPath();
+            context.moveTo(640,105+275);
+            context.lineTo(615,130+275);
+            context.lineTo(615,80+275);
+            context.fillStyle='black';
+            context.fill();
+        }
     }
 
     updatePlayerCanvas(context) {
@@ -419,7 +570,7 @@ class Player{
 
     addServerToHand(serverID) {
         this.numServerOnHand++;
-        this.serverOnHand.push(serverID);
+        this.serverOnHand.push(new Server(serverID));
     }
 
     removeServerFromHand() {
