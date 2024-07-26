@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>HotelGame</title>
+    <link rel="stylesheet" type="text/css" href="css/hotelgamestyle.css">
+</head>
+<body>
+    <canvas id="guestboard" width="960" height="640"></canvas>
+    <canvas id="actionboard" width="960" height="160"></canvas>
+    <canvas id="playerboard" width="960" height="240"></canvas>
+    <canvas id="detailboard" width="320" height="1040"></canvas>
+    <img id="guestBoardImg" src="image/guestboard.png" style="display:none;"/>
+    <img id="actionBoardImg" src="image/actionboard.png" style="display:none;"/>
+    <img id="majorTaskA0Img" src="image/major_task_A0.png" style="display:none;"/>
+    <img id="majorTaskA1Img" src="image/major_task_A1.png" style="display:none;"/>
+    <img id="majorTaskA2Img" src="image/major_task_A2.png" style="display:none;"/>
+    <img id="majorTaskA3Img" src="image/major_task_A3.png" style="display:none;"/>
+    <img id="majorTaskB0Img" src="image/major_task_B0.png" style="display:none;"/>
+    <img id="majorTaskB1Img" src="image/major_task_B1.png" style="display:none;"/>
+    <img id="majorTaskB2Img" src="image/major_task_B2.png" style="display:none;"/>
+    <img id="majorTaskB3Img" src="image/major_task_B3.png" style="display:none;"/>
+    <img id="majorTaskC0Img" src="image/major_task_C0.png" style="display:none;"/>
+    <img id="majorTaskC1Img" src="image/major_task_C1.png" style="display:none;"/>
+    <img id="majorTaskC2Img" src="image/major_task_C2.png" style="display:none;"/>
+    <img id="majorTaskC3Img" src="image/major_task_C3.png" style="display:none;"/>
+    <img id="royalTaskA0Img" src="image/royal_task_A0.png" style="display:none;"/>
+    <img id="royalTaskA1Img" src="image/royal_task_A1.png" style="display:none;"/>
+    <img id="royalTaskA2Img" src="image/royal_task_A2.png" style="display:none;"/>
+    <img id="royalTaskA3Img" src="image/royal_task_A3.png" style="display:none;"/>
+    <img id="royalTaskB0Img" src="image/royal_task_B0.png" style="display:none;"/>
+    <img id="royalTaskB1Img" src="image/royal_task_B1.png" style="display:none;"/>
+    <img id="royalTaskB2Img" src="image/royal_task_B2.png" style="display:none;"/>
+    <img id="royalTaskB3Img" src="image/royal_task_B3.png" style="display:none;"/>
+    <img id="royalTaskC0Img" src="image/royal_task_C0.png" style="display:none;"/>
+    <img id="royalTaskC1Img" src="image/royal_task_C1.png" style="display:none;"/>
+    <img id="royalTaskC2Img" src="image/royal_task_C2.png" style="display:none;"/>
+    <img id="royalTaskC3Img" src="image/royal_task_C3.png" style="display:none;"/>
+    <img id="guest0Img" src="image/guest_0.png" style="display:none;"/>
+    <img id="guest1Img" src="image/guest_1.png" style="display:none;"/>
+    <img id="guest2Img" src="image/guest_2.png" style="display:none;"/>
+    <img id="guest3Img" src="image/guest_3.png" style="display:none;"/>
+    <img id="guest4Img" src="image/guest_4.png" style="display:none;"/>
+    <img id="guest5Img" src="image/guest_5.png" style="display:none;"/>
+    <img id="guest6Img" src="image/guest_6.png" style="display:none;"/>
+    <img id="guest7Img" src="image/guest_7.png" style="display:none;"/>
+    <img id="guest8Img" src="image/guest_8.png" style="display:none;"/>
+    <img id="guest9Img" src="image/guest_9.png" style="display:none;"/>
+    <img id="guest10Img" src="image/guest_10.png" style="display:none;"/>
+    <img id="guest11Img" src="image/guest_11.png" style="display:none;"/>
+    <img id="guest12Img" src="image/guest_12.png" style="display:none;"/>
+    <img id="guest13Img" src="image/guest_13.png" style="display:none;"/>
+    <img id="guest14Img" src="image/guest_14.png" style="display:none;"/>
+    <img id="guest15Img" src="image/guest_15.png" style="display:none;"/>
+    <img id="guest16Img" src="image/guest_16.png" style="display:none;"/>
+    <img id="guest17Img" src="image/guest_17.png" style="display:none;"/>
+    <img id="guest18Img" src="image/guest_18.png" style="display:none;"/>
+    <img id="guest19Img" src="image/guest_19.png" style="display:none;"/>
+    <img id="guest20Img" src="image/guest_20.png" style="display:none;"/>
+    <img id="guest21Img" src="image/guest_21.png" style="display:none;"/>
+    <img id="guest22Img" src="image/guest_22.png" style="display:none;"/>
+    <img id="guest23Img" src="image/guest_23.png" style="display:none;"/>
+    <img id="guest24Img" src="image/guest_24.png" style="display:none;"/>
+    <img id="guest25Img" src="image/guest_25.png" style="display:none;"/>
+    <img id="guest26Img" src="image/guest_26.png" style="display:none;"/>
+    <img id="guest27Img" src="image/guest_27.png" style="display:none;"/>
+    <img id="guest28Img" src="image/guest_28.png" style="display:none;"/>
+    <img id="guest29Img" src="image/guest_29.png" style="display:none;"/>
+    <img id="guest30Img" src="image/guest_30.png" style="display:none;"/>
+    <img id="guest31Img" src="image/guest_31.png" style="display:none;"/>
+    <img id="guest32Img" src="image/guest_32.png" style="display:none;"/>
+    <img id="guest33Img" src="image/guest_33.png" style="display:none;"/>
+    <img id="guest34Img" src="image/guest_34.png" style="display:none;"/>
+    <img id="guest35Img" src="image/guest_35.png" style="display:none;"/>
+    <img id="guest36Img" src="image/guest_36.png" style="display:none;"/>
+    <img id="guest37Img" src="image/guest_37.png" style="display:none;"/>
+    <img id="guest38Img" src="image/guest_38.png" style="display:none;"/>
+    <img id="guest39Img" src="image/guest_39.png" style="display:none;"/>
+    <img id="guest40Img" src="image/guest_40.png" style="display:none;"/>
+    <img id="guest41Img" src="image/guest_41.png" style="display:none;"/>
+    <img id="guest42Img" src="image/guest_42.png" style="display:none;"/>
+    <img id="guest43Img" src="image/guest_43.png" style="display:none;"/>
+    <img id="guest44Img" src="image/guest_44.png" style="display:none;"/>
+    <img id="guest45Img" src="image/guest_45.png" style="display:none;"/>
+    <img id="guest46Img" src="image/guest_46.png" style="display:none;"/>
+    <img id="guest47Img" src="image/guest_47.png" style="display:none;"/>
+    <img id="guest48Img" src="image/guest_48.png" style="display:none;"/>
+    <img id="guest49Img" src="image/guest_49.png" style="display:none;"/>
+    <img id="guest50Img" src="image/guest_50.png" style="display:none;"/>
+    <img id="guest51Img" src="image/guest_51.png" style="display:none;"/>
+    <img id="guest52Img" src="image/guest_52.png" style="display:none;"/>
+    <img id="guest53Img" src="image/guest_53.png" style="display:none;"/>
+    <img id="guest54Img" src="image/guest_54.png" style="display:none;"/>
+    <img id="guest55Img" src="image/guest_55.png" style="display:none;"/>
+    <img id="guest56Img" src="image/guest_56.png" style="display:none;"/>
+    <img id="guest57Img" src="image/guest_57.png" style="display:none;"/>
+    
+    <script src="js/data.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/hotelgame.js"></script>
+</body>
+</html>
