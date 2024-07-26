@@ -9,7 +9,7 @@ function gameInit() {
     console.log("number of players from cookie: " + playerNames.length);
     // player0Context.font = "20px Arial";
     // player0Context.fillText("player number: " + playerNames.length, 0, 0);
-    const game = new Game(playerNames.length, playerNames, 1);
+    const game = new Game(playerNames.length, playerNames, 0);
     game.updateGuestCanvas(guestContext);
 }
 

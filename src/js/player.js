@@ -6,8 +6,6 @@ const player0Context = player0Canvas.getContext("2d");
 const player1Context = player1Canvas.getContext("2d");
 const player2Context = player2Canvas.getContext("2d");
 const player3Context = player3Canvas.getContext("2d");
-const detailCanvas = document.getElementById("detailboard");
-const detailContext = detailCanvas.getContext("2d");
 
 const gamePointTokenImg = document.getElementById("gamePointTokenImg");
 const royalTokenImg = document.getElementById("royalTokenImg");
@@ -56,51 +54,51 @@ class Player{
         this.numGuestOnTable = 0;
         this.guestOnTable = [];
         this.hotel = new Hotel(hotelID); // prepare hotel
-        // draw the detail board
-        this.updatePlayerCanvas();
+        // draw the player board
+        this.updatePlayerCanvas(this.context);
     }
 
-    updatePlayerCanvas() {
+    updatePlayerCanvas(context) {
         // markers first
         const markerXoffset = 25;
         const markerYoffset = 25;
         const markerRadius = 10;
-        this.context.fillStyle = this.markerColor;
-        this.context.beginPath();
-        this.context.arc(markerXoffset, markerYoffset, markerRadius, 0, 2 * Math.PI);
-        this.context.fill();
+        context.fillStyle = this.markerColor;
+        context.beginPath();
+        context.arc(markerXoffset, markerYoffset, markerRadius, 0, 2 * Math.PI);
+        context.fill();
         // draw the check mark if it's this player's turn
-        if(this.turnFlag){
-            this.context.lineWidth = 5;
-            this.context.beginPath();
-            this.context.moveTo(15, 20);
-            this.context.lineTo(25, 30);
-            this.context.lineTo(35, 10);
-            this.context.strokeStyle = 'black';
-            this.context.stroke();
+        if(this.blackturnFlag){
+            context.lineWidth = 5;
+            context.beginPath();
+            context.moveTo(15, 20);
+            context.lineTo(25, 30);
+            context.lineTo(35, 10);
+            context.strokeStyle = 'black';
+            context.stroke();
         }
 
         // player name
         const nameXoffset = 50;
         const nameYoffset = 30;
-        this.context.font="20px verdana";
-        this.context.shadowColor="white";
-        this.context.shadowBlur=2;
-        this.context.lineWidth=2;
-        this.context.strokeText(this.playerName.substring(0, 16), nameXoffset, nameYoffset);
-        this.context.shadowBlur=0;
-        this.context.fillStyle="black";
-        this.context.fillText(this.playerName.substring(0, 16), nameXoffset, nameYoffset);
+        context.font="20px verdana";
+        context.shadowColor="white";
+        context.shadowBlur=2;
+        context.lineWidth=2;
+        context.strokeText(this.playerName.substring(0, 16), nameXoffset, nameYoffset);
+        context.shadowBlur=0;
+        context.fillStyle="black";
+        context.fillText(this.playerName.substring(0, 16), nameXoffset, nameYoffset);
 
         // mini round status
         var   miniRoundXoffset = nameXoffset+150;
         var   miniRoundYoffset = 5;
         var   miniRoundWidth = 80;
         var   miniRoundHeight = 40;
-        this.context.fillStyle = '#446516';
-        this.context.strokeStyle = 'black';
-        this.context.strokeRect(miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
-        this.context.fillRect(miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
+        context.fillStyle = '#446516';
+        context.strokeStyle = 'black';
+        context.strokeRect(miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
+        context.fillRect(miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
         
         var   miniRoundXoffset = nameXoffset+152;
         var   miniRoundYoffset = 8;
@@ -116,20 +114,20 @@ class Player{
                 case 5: diceImg = dice5Img; break;
                 case 6: diceImg = dice6Img; break;
             }
-            this.context.drawImage(diceImg, miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
+            context.drawImage(diceImg, miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
         } else { // draw the mini turn number
-            this.context.fillStyle = '#446516';
-            this.context.strokeStyle = 'black';
-            this.context.strokeRect(miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
-            this.context.fillRect(miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
+            context.fillStyle = '#446516';
+            context.strokeStyle = 'black';
+            context.strokeRect(miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
+            context.fillRect(miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
 
-            this.context.shadowColor="black";
-            this.context.shadowBlur=4;
-            this.context.lineWidth=4;
-            this.context.strokeText(this.miniTurn[0], miniRoundXoffset+13, miniRoundYoffset+22);
-            this.context.shadowBlur=0;
-            this.context.fillStyle="white";
-            this.context.fillText(this.miniTurn[0], miniRoundXoffset+13, miniRoundYoffset+22);
+            context.shadowColor="black";
+            context.shadowBlur=4;
+            context.lineWidth=4;
+            context.strokeText(this.miniTurn[0], miniRoundXoffset+13, miniRoundYoffset+22);
+            context.shadowBlur=0;
+            context.fillStyle="white";
+            context.fillText(this.miniTurn[0], miniRoundXoffset+13, miniRoundYoffset+22);
         }
 
         var   miniRoundXoffset = nameXoffset+192;
@@ -146,20 +144,20 @@ class Player{
                 case 5: diceImg = dice5Img; break;
                 case 6: diceImg = dice6Img; break;
             }
-            this.context.drawImage(diceImg, miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
+            context.drawImage(diceImg, miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
         } else { // draw the mini turn number
-            this.context.fillStyle = '#446516';
-            this.context.strokeStyle = 'black';
-            this.context.strokeRect(miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
-            this.context.fillRect(miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
+            context.fillStyle = '#446516';
+            context.strokeStyle = 'black';
+            context.strokeRect(miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
+            context.fillRect(miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
 
-            this.context.shadowColor="black";
-            this.context.shadowBlur=4;
-            this.context.lineWidth=4;
-            this.context.strokeText(this.miniTurn[1], miniRoundXoffset+13, miniRoundYoffset+22);
-            this.context.shadowBlur=0;
-            this.context.fillStyle="white";
-            this.context.fillText(this.miniTurn[1], miniRoundXoffset+13, miniRoundYoffset+22);
+            context.shadowColor="black";
+            context.shadowBlur=4;
+            context.lineWidth=4;
+            context.strokeText(this.miniTurn[1], miniRoundXoffset+13, miniRoundYoffset+22);
+            context.shadowBlur=0;
+            context.fillStyle="white";
+            context.fillText(this.miniTurn[1], miniRoundXoffset+13, miniRoundYoffset+22);
         }
 
         // game point
@@ -167,32 +165,32 @@ class Player{
         var   gamePointYoffset = 5;
         const gamePointWidth = 30;
         const gamePointHeigh = 40;
-        this.context.drawImage(gamePointTokenImg, gamePointXoffset, gamePointYoffset, gamePointWidth, gamePointHeigh);
+        context.drawImage(gamePointTokenImg, gamePointXoffset, gamePointYoffset, gamePointWidth, gamePointHeigh);
         gamePointXoffset += 40;
         gamePointYoffset = 30;
-        this.context.shadowColor="white";
-        this.context.shadowBlur=2;
-        this.context.lineWidth=2;
-        this.context.strokeText(this.gamePoint, gamePointXoffset, gamePointYoffset);
-        this.context.shadowBlur=0;
-        this.context.fillStyle="black";
-        this.context.fillText(this.gamePoint, gamePointXoffset, gamePointYoffset);
+        context.shadowColor="white";
+        context.shadowBlur=2;
+        context.lineWidth=2;
+        context.strokeText(this.gamePoint, gamePointXoffset, gamePointYoffset);
+        context.shadowBlur=0;
+        context.fillStyle="black";
+        context.fillText(this.gamePoint, gamePointXoffset, gamePointYoffset);
 
         // royal point
         var   royalPointXoffset = gamePointXoffset+20;
         var   royalPointYoffset = 5;
         const royalPointWidth = 30;
         const royalPointHeigh = 40;
-        this.context.drawImage(royalTokenImg, royalPointXoffset, royalPointYoffset, royalPointWidth, royalPointHeigh);
+        context.drawImage(royalTokenImg, royalPointXoffset, royalPointYoffset, royalPointWidth, royalPointHeigh);
         royalPointXoffset += 40;
         royalPointYoffset = 30;
-        this.context.shadowColor="white";
-        this.context.shadowBlur=2;
-        this.context.lineWidth=2;
-        this.context.strokeText(this.gamePoint, royalPointXoffset, royalPointYoffset);
-        this.context.shadowBlur=0;
-        this.context.fillStyle="black";
-        this.context.fillText(this.gamePoint, royalPointXoffset, royalPointYoffset);
+        context.shadowColor="white";
+        context.shadowBlur=2;
+        context.lineWidth=2;
+        context.strokeText(this.royalPoint, royalPointXoffset, royalPointYoffset);
+        context.shadowBlur=0;
+        context.fillStyle="black";
+        context.fillText(this.royalPoint, royalPointXoffset, royalPointYoffset);
 
         // kichen status
         // brown
@@ -200,58 +198,58 @@ class Player{
         var   foodYoffset = 5;
         const foodWidth = 30;
         const foodHeigh = 30;
-        this.context.drawImage(brownImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
+        context.drawImage(brownImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
         foodXoffset += 40;
         foodYoffset = 30;
-        this.context.shadowColor="white";
-        this.context.shadowBlur=2;
-        this.context.lineWidth=2;
-        this.context.strokeText(this.brown, foodXoffset, foodYoffset);
-        this.context.shadowBlur=0;
-        this.context.fillStyle="black";
-        this.context.fillText(this.brown, foodXoffset, foodYoffset);
+        context.shadowColor="white";
+        context.shadowBlur=2;
+        context.lineWidth=2;
+        context.strokeText(this.brown, foodXoffset, foodYoffset);
+        context.shadowBlur=0;
+        context.fillStyle="black";
+        context.fillText(this.brown, foodXoffset, foodYoffset);
 
         // white
         foodXoffset += 30;
         foodYoffset = 5;
-        this.context.drawImage(whiteImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
+        context.drawImage(whiteImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
         foodXoffset += 40;
         foodYoffset = 30;
-        this.context.shadowColor="white";
-        this.context.shadowBlur=2;
-        this.context.lineWidth=2;
-        this.context.strokeText(this.white, foodXoffset, foodYoffset);
-        this.context.shadowBlur=0;
-        this.context.fillStyle="black";
-        this.context.fillText(this.white, foodXoffset, foodYoffset);
+        context.shadowColor="white";
+        context.shadowBlur=2;
+        context.lineWidth=2;
+        context.strokeText(this.white, foodXoffset, foodYoffset);
+        context.shadowBlur=0;
+        context.fillStyle="black";
+        context.fillText(this.white, foodXoffset, foodYoffset);
 
         // red
         foodXoffset += 30;
         foodYoffset = 5;
-        this.context.drawImage(redImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
+        context.drawImage(redImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
         foodXoffset += 40;
         foodYoffset = 30;
-        this.context.shadowColor="white";
-        this.context.shadowBlur=2;
-        this.context.lineWidth=2;
-        this.context.strokeText(this.red, foodXoffset, foodYoffset);
-        this.context.shadowBlur=0;
-        this.context.fillStyle="black";
-        this.context.fillText(this.red, foodXoffset, foodYoffset);
+        context.shadowColor="white";
+        context.shadowBlur=2;
+        context.lineWidth=2;
+        context.strokeText(this.red, foodXoffset, foodYoffset);
+        context.shadowBlur=0;
+        context.fillStyle="black";
+        context.fillText(this.red, foodXoffset, foodYoffset);
 
         // black
         foodXoffset += 30;
         foodYoffset = 5;
-        this.context.drawImage(blackImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
+        context.drawImage(blackImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
         foodXoffset += 40;
         foodYoffset = 30;
-        this.context.shadowColor="white";
-        this.context.shadowBlur=2;
-        this.context.lineWidth=2;
-        this.context.strokeText(this.black, foodXoffset, foodYoffset);
-        this.context.shadowBlur=0;
-        this.context.fillStyle="black";
-        this.context.fillText(this.black, foodXoffset, foodYoffset);
+        context.shadowColor="white";
+        context.shadowBlur=2;
+        context.lineWidth=2;
+        context.strokeText(this.black, foodXoffset, foodYoffset);
+        context.shadowBlur=0;
+        context.fillStyle="black";
+        context.fillText(this.black, foodXoffset, foodYoffset);
 
         // operation if it's this player's turn, including invite, action, serve, and checkout
         var   opXoffset = foodXoffset+30;
@@ -260,55 +258,55 @@ class Player{
         const opHeigh = 20;
         if(this.turnFlag){
             if(this.opInvite){
-                this.context.fillStyle = 'white';
+                context.fillStyle = 'white';
             } else {
-                this.context.fillStyle = 'grey';
+                context.fillStyle = 'grey';
             }
-            this.context.strokeStyle = 'black';
-            this.context.strokeRect(opXoffset, opYoffset, opWidth, opHeigh);
-            this.context.fillRect(opXoffset, opYoffset, opWidth, opHeigh);
-            this.context.font="15px Arial";
-            this.context.fillStyle="black";
-            this.context.fillText("邀请", opXoffset+6, opYoffset+15);
+            context.strokeStyle = 'black';
+            context.strokeRect(opXoffset, opYoffset, opWidth, opHeigh);
+            context.fillRect(opXoffset, opYoffset, opWidth, opHeigh);
+            context.font="15px Arial";
+            context.fillStyle="black";
+            context.fillText("邀请", opXoffset+6, opYoffset+15);
 
             opXoffset += 45;
             if(this.opAction){
-                this.context.fillStyle = 'white';
+                context.fillStyle = 'white';
             } else {
-                this.context.fillStyle = 'grey';
+                context.fillStyle = 'grey';
             }
-            this.context.strokeStyle = 'black';
-            this.context.strokeRect(opXoffset, opYoffset, opWidth, opHeigh);
-            this.context.fillRect(opXoffset, opYoffset, opWidth, opHeigh);
-            this.context.font="15px Arial";
-            this.context.fillStyle="black";
-            this.context.fillText("取骰", opXoffset+6, opYoffset+15);
+            context.strokeStyle = 'black';
+            context.strokeRect(opXoffset, opYoffset, opWidth, opHeigh);
+            context.fillRect(opXoffset, opYoffset, opWidth, opHeigh);
+            context.font="15px Arial";
+            context.fillStyle="black";
+            context.fillText("取骰", opXoffset+6, opYoffset+15);
 
             opXoffset += 45;
             if(this.opServe){
-                this.context.fillStyle = 'white';
+                context.fillStyle = 'white';
             } else {
-                this.context.fillStyle = 'grey';
+                context.fillStyle = 'grey';
             }
-            this.context.strokeStyle = 'black';
-            this.context.strokeRect(opXoffset, opYoffset, opWidth, opHeigh);
-            this.context.fillRect(opXoffset, opYoffset, opWidth, opHeigh);
-            this.context.font="15px Arial";
-            this.context.fillStyle="black";
-            this.context.fillText("上菜", opXoffset+6, opYoffset+15);
+            context.strokeStyle = 'black';
+            context.strokeRect(opXoffset, opYoffset, opWidth, opHeigh);
+            context.fillRect(opXoffset, opYoffset, opWidth, opHeigh);
+            context.font="15px Arial";
+            context.fillStyle="black";
+            context.fillText("上菜", opXoffset+6, opYoffset+15);
 
             opXoffset += 45;
             if(this.opCheckout){
-                this.context.fillStyle = 'white';
+                context.fillStyle = 'white';
             } else {
-                this.context.fillStyle = 'grey';
+                context.fillStyle = 'grey';
             }
-            this.context.strokeStyle = 'black';
-            this.context.strokeRect(opXoffset, opYoffset, opWidth, opHeigh);
-            this.context.fillRect(opXoffset, opYoffset, opWidth, opHeigh);
-            this.context.font="15px Arial";
-            this.context.fillStyle="black";
-            this.context.fillText("结算", opXoffset+6, opYoffset+15);
+            context.strokeStyle = 'black';
+            context.strokeRect(opXoffset, opYoffset, opWidth, opHeigh);
+            context.fillRect(opXoffset, opYoffset, opWidth, opHeigh);
+            context.font="15px Arial";
+            context.fillStyle="black";
+            context.fillText("结算", opXoffset+6, opYoffset+15);
         }
     }
 

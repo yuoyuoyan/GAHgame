@@ -146,7 +146,7 @@ class Game{
             if(standardHotel){
                 this.players.push(new Player(i, playerName[i], 0));
             } else {
-                this.players.push(new Player(i, playerName[i], Math.random() % 4));
+                this.players.push(new Player(i, playerName[i], Math.floor(Math.random() * 4) + 1 ));
             }
         }
 
