@@ -1,6 +1,7 @@
 // Guest class definition
 class Guest {
     constructor(guestID, tableID){
+        this.guestID = guestID;
         this.guestName = guestNameByID[guestID];
         this.guestDescription = guestDescriptionByID[guestID];
         this.guestRequirementNum = guestRequirementNumByID[guestID];
@@ -8,7 +9,7 @@ class Guest {
         this.guestBonusType = guestBonusTypeByID[guestID];
         this.guestBonusGamePoint = guestBonusGamePointByID[guestID];
         this.guestColor = guestColorByID[guestID];
-        this.guestSatisfied = 0;
+        this.guestSatisfied = false;
         this.guestFoodServed = [];
         this.guestFoodServedNum = 0;
         this.guestTableID = tableID;

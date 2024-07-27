@@ -18,7 +18,7 @@ const tableImg = document.getElementById("tableImg");
 // Hotel class definition
 class Hotel{
     constructor(hotelID) {
-        console.log("hotel ID is " + hotelID);
+        // console.log("hotel ID is " + hotelID);
         this.hotelID = hotelID;
         this.roomColor = roomColorByID[hotelID];
         // -1 as idle, 0 as prepared, 1 as occupied
@@ -32,6 +32,8 @@ class Hotel{
         this.roomAreaClosedNum = 0;
         this.roomHighLightFlag = false;
         this.roomHighLight = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]];
+        this.numGuestOnTable = 0;
+        this.guestOnTable = [null, null, null];
         // draw the hotel board
         this.updateHotelCanvas(hotelContext);
     }
@@ -94,6 +96,22 @@ class Hotel{
         context.drawImage(tableImg, guestTableXoffset, guestTableYoffset, guestTableWidth, guestTableHeight);
 
         // hotel room highlight
+        // guest table
+        var   guestXoffset = 36;
+        var   guestYoffset = guestTableYoffset+10;
+        const guestWidth   = 160;
+        const guestHeight  = 240;
+        for(let i=0; i<3; i++){
+            if(this.guestOnTable[i] == null) {
+                guestXoffset += 182;
+            } else {
+                context.drawImage(guestImg[this.guestOnTable[i].guestID], guestXoffset, guestYoffset, guestWidth, guestHeight);
+            }
+            guestXoffset += 182;
+        }
+        for(let i=0; i<this.guestOnTable.length; i++){
+            ;
+        }
     }
 
     roomPrepare(floor, col) {
@@ -106,5 +124,24 @@ class Hotel{
 
     roomClose(colorID) {
         ;
+    }
+
+    addGuestToTable(guestID){
+        if(this.numGuestOnTable >= 3){
+            console.log("no available table for new guests");
+        }
+        // find a table
+        var availableTable = -1;
+        for(let i=0; i<3; i++){
+            if(this.guestOnTable[i]==null){
+                availableTable = i;
+                break;
+            }
+        }
+
+        // add guest inside
+        this.guestOnTable[availableTable] = new Guest(guestID, availableTable);
+        this.numGuestOnTable++;
+        console.log("Add guest " + this.guestOnTable[availableTable].guestName + " to table " + availableTable);
     }
 }

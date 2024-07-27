@@ -1,3 +1,69 @@
+// global const and variables
+const guestCanvas  = document.getElementById("guestboard");
+const guestContext  = guestCanvas .getContext("2d");
+const actionCanvas = document.getElementById("actionboard");
+const actionContext = actionCanvas.getContext("2d");
+
+var guestImg = [];
+guestImg.push(document.getElementById("guest0Img"));
+guestImg.push(document.getElementById("guest1Img"));
+guestImg.push(document.getElementById("guest2Img"));
+guestImg.push(document.getElementById("guest3Img"));
+guestImg.push(document.getElementById("guest4Img"));
+guestImg.push(document.getElementById("guest5Img"));
+guestImg.push(document.getElementById("guest6Img"));
+guestImg.push(document.getElementById("guest7Img"));
+guestImg.push(document.getElementById("guest8Img"));
+guestImg.push(document.getElementById("guest9Img"));
+guestImg.push(document.getElementById("guest10Img"));
+guestImg.push(document.getElementById("guest11Img"));
+guestImg.push(document.getElementById("guest12Img"));
+guestImg.push(document.getElementById("guest13Img"));
+guestImg.push(document.getElementById("guest14Img"));
+guestImg.push(document.getElementById("guest15Img"));
+guestImg.push(document.getElementById("guest16Img"));
+guestImg.push(document.getElementById("guest17Img"));
+guestImg.push(document.getElementById("guest18Img"));
+guestImg.push(document.getElementById("guest19Img"));
+guestImg.push(document.getElementById("guest20Img"));
+guestImg.push(document.getElementById("guest21Img"));
+guestImg.push(document.getElementById("guest22Img"));
+guestImg.push(document.getElementById("guest23Img"));
+guestImg.push(document.getElementById("guest24Img"));
+guestImg.push(document.getElementById("guest25Img"));
+guestImg.push(document.getElementById("guest26Img"));
+guestImg.push(document.getElementById("guest27Img"));
+guestImg.push(document.getElementById("guest28Img"));
+guestImg.push(document.getElementById("guest29Img"));
+guestImg.push(document.getElementById("guest30Img"));
+guestImg.push(document.getElementById("guest31Img"));
+guestImg.push(document.getElementById("guest32Img"));
+guestImg.push(document.getElementById("guest33Img"));
+guestImg.push(document.getElementById("guest34Img"));
+guestImg.push(document.getElementById("guest35Img"));
+guestImg.push(document.getElementById("guest36Img"));
+guestImg.push(document.getElementById("guest37Img"));
+guestImg.push(document.getElementById("guest38Img"));
+guestImg.push(document.getElementById("guest39Img"));
+guestImg.push(document.getElementById("guest40Img"));
+guestImg.push(document.getElementById("guest41Img"));
+guestImg.push(document.getElementById("guest42Img"));
+guestImg.push(document.getElementById("guest43Img"));
+guestImg.push(document.getElementById("guest44Img"));
+guestImg.push(document.getElementById("guest45Img"));
+guestImg.push(document.getElementById("guest46Img"));
+guestImg.push(document.getElementById("guest47Img"));
+guestImg.push(document.getElementById("guest48Img"));
+guestImg.push(document.getElementById("guest49Img"));
+guestImg.push(document.getElementById("guest50Img"));
+guestImg.push(document.getElementById("guest51Img"));
+guestImg.push(document.getElementById("guest52Img"));
+guestImg.push(document.getElementById("guest53Img"));
+guestImg.push(document.getElementById("guest54Img"));
+guestImg.push(document.getElementById("guest55Img"));
+guestImg.push(document.getElementById("guest56Img"));
+guestImg.push(document.getElementById("guest57Img"));
+
 // major task data
 const majorTaskDescription = [
     ["积累20块钱", 
@@ -227,7 +293,7 @@ const guestDescriptionByID = [
     "免费打出1张员工"
 ];
 
-const guestRequirementNum = [
+const guestRequirementNumByID = [
     2, 1, 1, 1, 2,
     2, 2, 3, 3, 3,
     4, 4, 4, 4, 4,

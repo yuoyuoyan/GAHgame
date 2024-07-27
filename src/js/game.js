@@ -1,8 +1,3 @@
-const guestCanvas  = document.getElementById("guestboard");
-const guestContext  = guestCanvas .getContext("2d");
-const actionCanvas = document.getElementById("actionboard");
-const actionContext = actionCanvas.getContext("2d");
-
 const actionBoardImg = document.getElementById("actionBoardImg");
 const guestBoardImg = document.getElementById("guestBoardImg");
 const majorTaskA0Img = document.getElementById("majorTaskA0Img");
@@ -29,65 +24,7 @@ const royalTaskC0Img = document.getElementById("royalTaskC0Img");
 const royalTaskC1Img = document.getElementById("royalTaskC1Img");
 const royalTaskC2Img = document.getElementById("royalTaskC2Img");
 const royalTaskC3Img = document.getElementById("royalTaskC3Img");
-var guestImg = [];
-guestImg.push(document.getElementById("guest0Img"));
-guestImg.push(document.getElementById("guest1Img"));
-guestImg.push(document.getElementById("guest2Img"));
-guestImg.push(document.getElementById("guest3Img"));
-guestImg.push(document.getElementById("guest4Img"));
-guestImg.push(document.getElementById("guest5Img"));
-guestImg.push(document.getElementById("guest6Img"));
-guestImg.push(document.getElementById("guest7Img"));
-guestImg.push(document.getElementById("guest8Img"));
-guestImg.push(document.getElementById("guest9Img"));
-guestImg.push(document.getElementById("guest10Img"));
-guestImg.push(document.getElementById("guest11Img"));
-guestImg.push(document.getElementById("guest12Img"));
-guestImg.push(document.getElementById("guest13Img"));
-guestImg.push(document.getElementById("guest14Img"));
-guestImg.push(document.getElementById("guest15Img"));
-guestImg.push(document.getElementById("guest16Img"));
-guestImg.push(document.getElementById("guest17Img"));
-guestImg.push(document.getElementById("guest18Img"));
-guestImg.push(document.getElementById("guest19Img"));
-guestImg.push(document.getElementById("guest20Img"));
-guestImg.push(document.getElementById("guest21Img"));
-guestImg.push(document.getElementById("guest22Img"));
-guestImg.push(document.getElementById("guest23Img"));
-guestImg.push(document.getElementById("guest24Img"));
-guestImg.push(document.getElementById("guest25Img"));
-guestImg.push(document.getElementById("guest26Img"));
-guestImg.push(document.getElementById("guest27Img"));
-guestImg.push(document.getElementById("guest28Img"));
-guestImg.push(document.getElementById("guest29Img"));
-guestImg.push(document.getElementById("guest30Img"));
-guestImg.push(document.getElementById("guest31Img"));
-guestImg.push(document.getElementById("guest32Img"));
-guestImg.push(document.getElementById("guest33Img"));
-guestImg.push(document.getElementById("guest34Img"));
-guestImg.push(document.getElementById("guest35Img"));
-guestImg.push(document.getElementById("guest36Img"));
-guestImg.push(document.getElementById("guest37Img"));
-guestImg.push(document.getElementById("guest38Img"));
-guestImg.push(document.getElementById("guest39Img"));
-guestImg.push(document.getElementById("guest40Img"));
-guestImg.push(document.getElementById("guest41Img"));
-guestImg.push(document.getElementById("guest42Img"));
-guestImg.push(document.getElementById("guest43Img"));
-guestImg.push(document.getElementById("guest44Img"));
-guestImg.push(document.getElementById("guest45Img"));
-guestImg.push(document.getElementById("guest46Img"));
-guestImg.push(document.getElementById("guest47Img"));
-guestImg.push(document.getElementById("guest48Img"));
-guestImg.push(document.getElementById("guest49Img"));
-guestImg.push(document.getElementById("guest50Img"));
-guestImg.push(document.getElementById("guest51Img"));
-guestImg.push(document.getElementById("guest52Img"));
-guestImg.push(document.getElementById("guest53Img"));
-guestImg.push(document.getElementById("guest54Img"));
-guestImg.push(document.getElementById("guest55Img"));
-guestImg.push(document.getElementById("guest56Img"));
-guestImg.push(document.getElementById("guest57Img"));
+
 
 
 // Main game class definition
@@ -96,28 +33,30 @@ class Game{
         // init top info
         console.log("new game!!")
         this.playerNumber = playerNumber;
-        console.log("number of player: " + this.playerNumber);
+        // console.log("number of player: " + this.playerNumber);
         this.diceNumber = playerNumber * 2 + 6;
-        console.log("number of dice: " + this.diceNumber);
+        // console.log("number of dice: " + this.diceNumber);
         this.majorTask0 = Math.floor(Math.random() * 4);
-        console.log("major task 1: " + majorTaskDescription[0][this.majorTask0]);
+        // console.log("major task 1: " + majorTaskDescription[0][this.majorTask0]);
         this.majorTask1 = Math.floor(Math.random() * 4);
-        console.log("major task 2: " + majorTaskDescription[1][this.majorTask1]);
+        // console.log("major task 2: " + majorTaskDescription[1][this.majorTask1]);
         this.majorTask2 = Math.floor(Math.random() * 4);
-        console.log("major task 3: " + majorTaskDescription[2][this.majorTask2]);
+        // console.log("major task 3: " + majorTaskDescription[2][this.majorTask2]);
         this.majorTask0Comp = [-1, -1, -1];
         this.majorTask1Comp = [-1, -1, -1];
         this.majorTask2Comp = [-1, -1, -1];
         this.royalTask0 = Math.floor(Math.random() * 4);
-        console.log("royal task 1: " + royalTaskDescription[0][this.royalTask0]);
+        // console.log("royal task 1: " + royalTaskDescription[0][this.royalTask0]);
         this.royalTask1 = Math.floor(Math.random() * 4);
-        console.log("royal task 2: " + royalTaskDescription[1][this.royalTask1]);
+        // console.log("royal task 2: " + royalTaskDescription[1][this.royalTask1]);
         this.royalTask2 = Math.floor(Math.random() * 4);
-        console.log("royal task 3: " + royalTaskDescription[2][this.royalTask2]);
+        // console.log("royal task 3: " + royalTaskDescription[2][this.royalTask2]);
         this.mainRound = 0;
-        console.log("main round: " + this.mainRound);
+        // console.log("main round: " + this.mainRound);
         this.miniRound = 0;
         this.actionPoint = [0, 0, 0, 0, 0, 0];
+        this.guestHightLightFlag = false;
+        this.guestHightLight = [0, 0, 0, 0, 0];
 
         // init guest deck and server deck
         this.guestDeck = Array.from({length: 58}, (_, i) => i);
@@ -129,8 +68,8 @@ class Game{
         this.guestInQueue = [];
         for(let i=0; i<5; i++){
             this.guestInQueue.push(this.guestDeck[this.guestDeck.length-1]);
-            console.log("guest " + i + " in queue: " + guestNameByID[this.guestInQueue[i]]);
-            console.log("bonus: " + guestDescriptionByID[this.guestInQueue[i]]);
+            // console.log("guest " + i + " in queue: " + guestNameByID[this.guestInQueue[i]]);
+            // console.log("bonus: " + guestDescriptionByID[this.guestInQueue[i]]);
             this.guestDeck.pop();
         }
 
@@ -178,7 +117,7 @@ class Game{
         for(let k=0; k<6; k++) { // draw first 6 servers
             for(let i=0; i<playerNumber; i++) {
                 this.players[i].addServerToHand(this.serverDeck[this.serverDeck.length-1]);
-                console.log("player " + playerName[i] + " draw a server ID: " + this.serverDeck[this.serverDeck.length-1]);
+                // console.log("player " + playerName[i] + " draw a server ID: " + this.serverDeck[this.serverDeck.length-1]);
                 this.serverDeck.pop();
             }
         }
@@ -186,8 +125,22 @@ class Game{
             this.players[i].updateServerCanvas(serverContext);
         }
 
+        // listen to canvas click
+        guestCanvas.addEventListener("click", this.handleGuestClick);
+        actionCanvas.addEventListener("click", this.handleActionClick);
+        hotelCanvas.addEventListener("click", this.handleHotelClick);
+        serverCanvas.addEventListener("click", this.handleServerClick);
+        for(let i=0; i<this.playerNumber; i++){
+            console.log("player " + i + " ID is " + this.players[i].playerID);
+        }
+        player0Canvas.addEventListener("click", this.handlePlayer0Click);
+        player1Canvas.addEventListener("click", this.handlePlayer1Click);
+        player2Canvas.addEventListener("click", this.handlePlayer2Click);
+        player3Canvas.addEventListener("click", this.handlePlayer3Click);
+
         // place the first player to start
         this.currPlayer = 0;
+        this.players[0].turnFlag = true;
         console.log("current player: " + playerName[this.currPlayer]);
     }
 
@@ -306,6 +259,18 @@ class Game{
             context.drawImage(guestImg[this.guestInQueue[i]], guestXoffset, guestYoffset, guestWidth, guestHeight);
             guestXoffset += 182;
         }
+        // hightlight marked guests
+        guestXoffset = 36;
+        if(this.guestHightLightFlag){
+            for(let i=0; i<5; i++){
+                if(this.guestHightLight[i]) {
+                    context.strokeStyle = "red";
+                    context.lineWidth = 5;
+                    context.strokeRect(guestXoffset, guestYoffset, guestWidth, guestHeight);
+                }
+                guestXoffset += 182;
+            }
+        }
     }
 
     updateActionCanvas(context){
@@ -333,6 +298,118 @@ class Game{
         }
     }
 
+    checkGuestInvite(money) {
+        this.guestHightLight[4] = true;
+        this.guestHightLight[3] = true;
+        this.guestHightLight[2] = money >= 1;
+        this.guestHightLight[1] = money >= 2;
+        this.guestHightLight[0] = money >= 3;
+    }
+
+    handlePlayer0Click(event) {
+        // check if this players turn first
+        if(!game.players[0].turnFlag){
+            console.log("Not player 0 turn");
+            return;
+        }
+        // turn to player class
+        console.log("player 0 canvas clicked");
+        var statusPlayer0 = game.players[0].handlePlayerClick(event);
+        switch(statusPlayer0) {
+            case 0: return; //nothing
+            case 1: // invite
+            game.guestHightLightFlag = true;
+            if(game.players[0].firstGuestTurn){
+                game.checkGuestInvite(10); // make sure all guest available at the first guest
+            } else {
+                game.checkGuestInvite(game.players[0].money);
+            }
+            game.updateGuestCanvas(guestContext);
+            case 2: // action
+            case 3: // serve
+            case 4: // checkout
+            case 5: // end turn
+        }
+    }
+
+    handlePlayer1Click(event) {
+        // check if this players turn first
+        if(!game.players[1].turnFlag){
+            console.log("Not player 1 turn");
+            return;
+        }
+        // turn to player class
+        console.log("player 1 canvas clicked");
+        game.players[1].handlePlayerClick(event);
+    }
+
+    handlePlayer2Click(event) {
+        // check if this players exist and its turn
+        if(game.playerNumber < 3 || !game.players[2].turnFlag){
+            console.log("Not player 2 turn");
+            return;
+        }
+        // turn to player class
+        console.log("player 2 canvas clicked");
+        game.players[2].handlePlayerClick(event);
+    }
+
+    handlePlayer3Click(event) {
+        // check if this players turn first
+        if(game.playerNumber < 4 || !game.players[3].turnFlag){
+            console.log("Not player 3 turn");
+            return;
+        }
+        // turn to player class
+        console.log("player 3 canvas clicked");
+        game.players[3].handlePlayerClick(event);
+    }
+
+    handleGuestClick(event) {
+        console.log("guest canvas clicked");
+        if(!game.players[game.currPlayer].atInvite){
+            console.log("current player is not inviting");
+        } else {
+            var guestSelected = -1;
+            if(event.offsetX >= 36 && event.offsetX <= 196 && event.offsetY >= 350 && event.offsetY <= 590){
+                console.log("guest 5 is selected");
+                guestSelected = 0;
+            } else if(event.offsetX >= 218 && event.offsetX <= 378 && event.offsetY >= 350 && event.offsetY <= 590) {
+                console.log("guest 4 is selected");
+                guestSelected = 1;
+            } else if(event.offsetX >= 400 && event.offsetX <= 560 && event.offsetY >= 350 && event.offsetY <= 590) {
+                console.log("guest 3 is selected");
+                guestSelected = 2;
+            } else if(event.offsetX >= 582 && event.offsetX <= 742 && event.offsetY >= 350 && event.offsetY <= 590) {
+                console.log("guest 2 is selected");
+                guestSelected = 3;
+            } else if(event.offsetX >= 764 && event.offsetX <= 924 && event.offsetY >= 350 && event.offsetY <= 590) {
+                console.log("guest 1 is selected");
+                guestSelected = 4;
+            }
+            // selected a guest to invite
+            if(guestSelected >= 0){
+                game.guestHightLightFlag = false;
+                game.players[game.currPlayer].hotel.addGuestToTable(game.guestInQueue[guestSelected]);
+                game.takeOneGuestFromQueue(guestSelected);
+                game.updateGuestCanvas(guestContext);
+                game.players[game.currPlayer].hotel.updateHotelCanvas(hotelContext);
+            }
+        }
+    }
+
+    handleActionClick(event) {
+        console.log("action canvas clicked");
+    }
+
+    handleHotelClick(event) {
+        console.log("hotel canvas clicked");
+    }
+
+    handleServerClick(event) {
+        console.log("server canvas clicked");
+    }
+
     nextMiniRound() {
         ;
     }
@@ -349,8 +426,12 @@ class Game{
         ;
     }
 
-    takeGuest() {
-        ;
+    takeOneGuestFromQueue(guestSelected) {
+        console.log("remove guest " + guestNameByID[this.guestInQueue[guestSelected]] + " from queue");
+        this.guestInQueue.splice(guestSelected, 1); // remove this guest from queue
+        this.guestInQueue.unshift(this.guestDeck[this.guestDeck.length-1]);
+        this.guestDeck.pop();
+        console.log("add guest " + guestNameByID[this.guestInQueue[0]] + " to queue");
     }
 
     drawServer(playerID) {
