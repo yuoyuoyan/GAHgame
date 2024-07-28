@@ -130,9 +130,6 @@ class Game{
         actionCanvas.addEventListener("click", this.handleActionClick);
         hotelCanvas.addEventListener("click", this.handleHotelClick);
         serverCanvas.addEventListener("click", this.handleServerClick);
-        for(let i=0; i<this.playerNumber; i++){
-            console.log("player " + i + " ID is " + this.players[i].playerID);
-        }
         player0Canvas.addEventListener("click", this.handlePlayer0Click);
         player1Canvas.addEventListener("click", this.handlePlayer1Click);
         player2Canvas.addEventListener("click", this.handlePlayer2Click);
@@ -314,22 +311,8 @@ class Game{
         }
         // turn to player class
         console.log("player 0 canvas clicked");
-        var statusPlayer0 = game.players[0].handlePlayerClick(event);
-        switch(statusPlayer0) {
-            case 0: return; //nothing
-            case 1: // invite
-            game.guestHightLightFlag = true;
-            if(game.players[0].firstGuestTurn){
-                game.checkGuestInvite(10); // make sure all guest available at the first guest
-            } else {
-                game.checkGuestInvite(game.players[0].money);
-            }
-            game.updateGuestCanvas(guestContext);
-            case 2: // action
-            case 3: // serve
-            case 4: // checkout
-            case 5: // end turn
-        }
+        var statusPlayer = game.players[0].handlePlayerClick(event);
+        game.handlePlayerClick(statusPlayer);
     }
 
     handlePlayer1Click(event) {
@@ -340,7 +323,8 @@ class Game{
         }
         // turn to player class
         console.log("player 1 canvas clicked");
-        game.players[1].handlePlayerClick(event);
+        var statusPlayer = game.players[1].handlePlayerClick(event);
+        game.handlePlayerClick(statusPlayer);
     }
 
     handlePlayer2Click(event) {
@@ -351,7 +335,8 @@ class Game{
         }
         // turn to player class
         console.log("player 2 canvas clicked");
-        game.players[2].handlePlayerClick(event);
+        var statusPlayer = game.players[2].handlePlayerClick(event);
+        game.handlePlayerClick(statusPlayer);
     }
 
     handlePlayer3Click(event) {
@@ -362,7 +347,32 @@ class Game{
         }
         // turn to player class
         console.log("player 3 canvas clicked");
-        game.players[3].handlePlayerClick(event);
+        var statusPlayer = game.players[3].handlePlayerClick(event);
+        game.handlePlayerClick(statusPlayer);
+    }
+
+    handlePlayerClick(statusPlayer){
+        switch(statusPlayer) {
+            case 0: return; //nothing
+            case 1: // invite
+            game.guestHightLightFlag = true;
+            if(game.players[0].firstGuestTurn){
+                game.checkGuestInvite(10); // make sure all guest available at the first guest
+            } else {
+                game.checkGuestInvite(game.players[0].money);
+            }
+            game.updateGuestCanvas(guestContext);
+            break;
+            case 2: // action
+            break;
+            case 3: // serve
+            break;
+            case 4: // checkout
+            break;
+            case 5: // end turn
+            game.nextMiniRound();
+            break;
+        }
     }
 
     handleGuestClick(event) {
@@ -394,6 +404,9 @@ class Game{
                 game.takeOneGuestFromQueue(guestSelected);
                 game.updateGuestCanvas(guestContext);
                 game.players[game.currPlayer].hotel.updateHotelCanvas(hotelContext);
+                game.players[game.currPlayer].inviteFlag = true;
+                game.players[game.currPlayer].checkOpStatus();
+                game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
             }
         }
     }
@@ -404,6 +417,27 @@ class Game{
 
     handleHotelClick(event) {
         console.log("hotel canvas clicked");
+        // first guest invite stage, prepare 3 rooms
+        for(let floor=0; floor<4; floor++){
+            for(let col=0; col<5; col++){
+                if(event.offsetX >= (60+115*col) && event.offsetX < (60+115*col+115) && event.offsetY >= (120+120*(3-floor)) && event.offsetY < (120+120*(3-floor)+120)) {
+                    console.log("hotel room at floor " + floor + " col " + col + " is clicked");
+                    if(game.players[game.currPlayer].hotel.firstThreeRoom && game.players[game.currPlayer].hotel.roomHighLight[floor][col]){
+                        // prepare selected room, no need to worry about money
+                        game.players[game.currPlayer].hotel.roomPrepare(floor, col);
+                        game.players[game.currPlayer].loseMoney(floor);
+                        if(game.players[game.currPlayer].hotel.roomPreparedNum == 3){ // finished all three rooms
+                            game.players[game.currPlayer].hotel.roomHighLightFlag = false;
+                            game.players[game.currPlayer].hotel.firstThreeRoom = false;
+                        }
+                        game.players[game.currPlayer].hotel.highlightRoomToPrepare();
+                        game.players[game.currPlayer].hotel.updateHotelCanvas(hotelContext);
+                        game.players[game.currPlayer].checkOpStatus();
+                        game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
+                    }
+                }
+            }
+        }
     }
 
     handleServerClick(event) {
@@ -411,7 +445,21 @@ class Game{
     }
 
     nextMiniRound() {
-        ;
+        // First guest invitation is special
+        if(this.players[this.currPlayer].firstGuestTurn){
+            this.players[this.currPlayer].firstGuestTurn = false;
+            this.players[this.currPlayer].turnFlag = false;
+            this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
+            if(this.currPlayer == this.playerNumber-1){
+                this.currPlayer = 0;
+            } else {
+                this.currPlayer++;
+            }
+            this.players[this.currPlayer].turnFlag = true;
+            this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
+            this.players[this.currPlayer].updateServerCanvas(serverContext);
+            this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
+        }
     }
 
     nextMainRound() {

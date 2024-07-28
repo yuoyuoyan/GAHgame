@@ -30,15 +30,21 @@ class Hotel{
         this.roomColumnClosedNum = 0;
         this.roomRowClosedNum = 0;
         this.roomAreaClosedNum = 0;
-        this.roomHighLightFlag = false;
+        this.roomHighLightFlag = true;
         this.roomHighLight = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]];
         this.numGuestOnTable = 0;
         this.guestOnTable = [null, null, null];
+        this.firstThreeRoom = true;
+        // highlight the room to be prepared at first stage
+        this.highlightRoomToPrepare();
         // draw the hotel board
         this.updateHotelCanvas(hotelContext);
     }
 
     updateHotelCanvas(context) {
+        // clear canvas
+        context.clearRect(0, 0, 640, 840);
+
         // room bonus
         var   bonusRoomXoffset = 0;
         var   bonusRoomYoffset = 0;
@@ -85,6 +91,12 @@ class Hotel{
                     }
                     context.drawImage(hotelRoomImg, hotelRoomXoffset + 115 * col, hotelRoomYoffset + 120 * (3-floor), hotelRoomWidth, hotelRoomHeight);
                 }
+                // hightlight the marked room
+                if(this.roomHighLightFlag && this.roomHighLight[floor][col]) {
+                    context.strokeStyle = "red";
+                    context.lineWidth = 5;
+                    context.strokeRect(hotelRoomXoffset + 115 * col, hotelRoomYoffset + 120 * (3-floor), hotelRoomWidth, hotelRoomHeight);
+                }
             }
         }
 
@@ -109,8 +121,51 @@ class Hotel{
             }
             guestXoffset += 182;
         }
-        for(let i=0; i<this.guestOnTable.length; i++){
-            ;
+        // highlight the food requirement on guest tables
+        var   foodXoffset = 40;
+        var   foodYoffset = guestYoffset + 8;
+        const foodWidth   = 30;
+        const foodHeight  = 28;
+        for(let i=0; i<3; i++){
+            if(this.guestOnTable[i] != null) {
+                for(let j=0; j<this.guestOnTable[i].guestRequirement.length; j++){
+                    if(!this.guestOnTable[i].guestFoodServed[j]){ // draw red circle if not served
+                        context.strokeStyle = "red";
+                        context.lineWidth = 3;
+                        context.strokeRect(foodXoffset, foodYoffset, foodWidth, foodHeight);
+                    } else { // draw green circle and a mark if not served
+                        context.strokeStyle = "green";
+                        context.lineWidth = 3;
+                        context.strokeRect(foodXoffset, foodYoffset, foodWidth, foodHeight);
+                        context.lineWidth = 3;
+                        context.beginPath();
+                        context.moveTo(foodXoffset, foodYoffset+14);
+                        context.lineTo(foodXoffset+15, foodYoffset+28);
+                        context.lineTo(foodXoffset+30, foodYoffset);
+                        context.strokeStyle = 'green';
+                        context.stroke();
+                    }
+                    foodYoffset += 28;
+                }
+            }
+        }
+    }
+
+    highlightRoomToPrepare() {
+        for(let floor=0; floor<4; floor++){
+            for(let col=0; col<5; col++){
+                if((this.roomStatus[floor][col] == -1) && // not prepared
+                    ((floor>0 && this.roomStatus[floor-1][col]>=0) || // room under is prepared
+                     (floor<3 && this.roomStatus[floor+1][col]>=0) || // room above is prepared
+                     (col>0 && this.roomStatus[floor][col-1]>=0) || // room left is prepared
+                     (col<4 && this.roomStatus[floor][col+1]>=0) || // room right is prepared
+                     (floor==0 && col==0 && this.roomStatus[floor][col]==-1)) // room at left bottom corner must be the first to prepare
+                    ) {
+                        this.roomHighLight[floor][col] = 1;
+                } else {
+                    this.roomHighLight[floor][col] = 0;
+                }
+            }
         }
     }
 

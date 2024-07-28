@@ -10,7 +10,10 @@ class Guest {
         this.guestBonusGamePoint = guestBonusGamePointByID[guestID];
         this.guestColor = guestColorByID[guestID];
         this.guestSatisfied = false;
-        this.guestFoodServed = [];
+        this.guestFoodServed = guestRequirementByID[guestID];
+        for(let i=0; i<this.guestFoodServed.length; i++){
+            this.guestFoodServed[i] = 0;
+        }
         this.guestFoodServedNum = 0;
         this.guestTableID = tableID;
     }

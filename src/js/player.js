@@ -95,7 +95,7 @@ class Player{
         this.opAction = false;
         this.opServe = false;
         this.opCheckout = false;
-        this.opEnd = true;
+        this.opEnd = false;
         this.atInvite = false;
         this.atAction = false;
         this.atServe = false;
@@ -118,6 +118,8 @@ class Player{
         this.serverHired = [];
         this.serverHiredCanvasIdx = 0;
         this.hotel = new Hotel(hotelID); // prepare hotel
+        // line canvas clicking
+        // this.canvas.addEventListener("click", this.handlePlayerClick);
         // draw the player board
         this.updatePlayerCanvas(this.context);
         // draw the server board
@@ -158,6 +160,9 @@ class Player{
         // check if this event is end
         if(event.offsetX >= 892 && event.offsetX <= 932 && event.offsetY >= 10 && event.offsetY <= 30){
             console.log("End button pressed");
+            if(this.opEnd){
+                this.endFlag = true;
+            }
             return 5;
         }
 
@@ -179,7 +184,8 @@ class Player{
                 }
             }
         }
-        this.opEnd = this.firstGuestTurn ? this.inviteFlag : this.actionFlag;
+        // first guest round, need to invite a guest and prepare 3 rooms
+        this.opEnd = this.firstGuestTurn ? (this.inviteFlag && (this.hotel.roomPreparedNum == 3)) : this.actionFlag;
     }
 
     disableAllOp() {
@@ -317,6 +323,9 @@ class Player{
     }
 
     updatePlayerCanvas(context) {
+        // clear canvas first
+        context.clearRect(0, 0, 960, 50);
+
         // markers first
         const markerXoffset = 25;
         const markerYoffset = 25;
@@ -326,14 +335,17 @@ class Player{
         context.arc(markerXoffset, markerYoffset, markerRadius, 0, 2 * Math.PI);
         context.fill();
         // draw the check mark if it's this player's turn
-        if(this.blackturnFlag){
+        if(this.turnFlag){
             context.lineWidth = 5;
             context.beginPath();
             context.moveTo(15, 20);
             context.lineTo(25, 30);
             context.lineTo(35, 10);
-            context.strokeStyle = 'black';
+            context.strokeStyle = 'green';
             context.stroke();
+            context.strokeStyle = "green";
+            context.lineWidth = 5;
+            context.strokeRect(0, 0, 960, 50);
         }
 
         // player name
@@ -597,10 +609,6 @@ class Player{
             context.fillStyle="black";
             context.fillText("结束", opXoffset+6, opYoffset+15);
         }
-    }
-
-    isTurn() {
-        return this.turnFlag;
     }
 
     setMiniTurn(turn0, turn1) {

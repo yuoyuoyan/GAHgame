@@ -2,7 +2,7 @@ var playerNames = JSON.parse(decodeURIComponent(document.cookie));
 
 // init game info and draw background
 window.onload = gameOn;
-const game = new Game(playerNames.length, playerNames, 0);
+const game = new Game(playerNames.length, playerNames, 1);
 
 function gameOn() {
     game.updateGuestCanvas(guestContext);
