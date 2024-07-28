@@ -12,4 +12,6 @@ function gameOn() {
     }
     game.players[0].hotel.updateHotelCanvas(hotelContext);
     game.players[0].updateServerCanvas(serverContext);
+    // debug
+    // game.players[0].updateAlertCanvas(alertContext, 4);
 }

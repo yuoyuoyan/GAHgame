@@ -1,20 +1,3 @@
-const hotelCanvas = document.getElementById("hotelboard");
-const hotelContext = hotelCanvas.getContext("2d");
-
-const bonusRoomImg = document.getElementById("bonusRoomImg");
-const hotel0Img = document.getElementById("hotel0Img");
-const hotel1Img = document.getElementById("hotel1Img");
-const hotel2Img = document.getElementById("hotel2Img");
-const hotel3Img = document.getElementById("hotel3Img");
-const hotel4Img = document.getElementById("hotel4Img");
-const roomRedPreparedImg = document.getElementById("roomRedPreparedImg");
-const roomRedClosedImg = document.getElementById("roomRedClosedImg");
-const roomBluePreparedImg = document.getElementById("roomBluePreparedImg");
-const roomBlueClosedImg = document.getElementById("roomBlueClosedImg");
-const roomYellowPreparedImg = document.getElementById("roomYellowPreparedImg");
-const roomYellowClosedImg = document.getElementById("roomYellowClosedImg");
-const tableImg = document.getElementById("tableImg");
-
 // Hotel class definition
 class Hotel{
     constructor(hotelID) {
@@ -35,8 +18,9 @@ class Hotel{
         this.numGuestOnTable = 0;
         this.guestOnTable = [null, null, null];
         this.firstThreeRoom = true;
+        this.roomToPrepare = 0;
         // highlight the room to be prepared at first stage
-        this.highlightRoomToPrepare();
+        this.highlightRoomToPrepare(10);
         // draw the hotel board
         this.updateHotelCanvas(hotelContext);
     }
@@ -148,10 +132,12 @@ class Hotel{
                     foodYoffset += 28;
                 }
             }
+            foodXoffset += 182;
+            foodYoffset = guestYoffset + 8;
         }
     }
 
-    highlightRoomToPrepare() {
+    highlightRoomToPrepare(value) {
         for(let floor=0; floor<4; floor++){
             for(let col=0; col<5; col++){
                 if((this.roomStatus[floor][col] == -1) && // not prepared
@@ -161,7 +147,7 @@ class Hotel{
                      (col<4 && this.roomStatus[floor][col+1]>=0) || // room right is prepared
                      (floor==0 && col==0 && this.roomStatus[floor][col]==-1)) // room at left bottom corner must be the first to prepare
                     ) {
-                        this.roomHighLight[floor][col] = 1;
+                        this.roomHighLight[floor][col] = (value >= floor) ? 1 : 0;
                 } else {
                     this.roomHighLight[floor][col] = 0;
                 }
