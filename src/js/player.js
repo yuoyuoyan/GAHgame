@@ -41,6 +41,7 @@ class Player{
         this.atHireServerdiscount = 0;
         this.atMirrorDice = 1;
         this.atActionBoost = false;
+        this.freeInviteFlag = false;
         this.inviteFlag = false; // whether already invited this turn
         this.actionFlag = false; // whether already took dice this turn
         this.hireFlag = false;
@@ -101,7 +102,9 @@ class Player{
             console.log("Serve button pressed");
             if(this.opServe){
                 // no need to disable other options
-                this.money--;
+                if(!this.hasHiredServer(23)){ // exception to pay serve fee
+                    this.money--;
+                }
                 this.atServe = true;
                 this.serveFoodNum = 3;
                 this.checkOpStatus();
@@ -894,41 +897,41 @@ class Player{
         }
 
         if(this.hasHiredServer(26)){ // 最终结算时每个入住的红房间获得5游戏点数
-            this.gamePoint += this.hotel.roomRedClosedNum * 5;
+            this.gainGamePoint(this.hotel.roomRedClosedNum * 5);
         }
         if(this.hasHiredServer(27)){ //最终结算时每个入住的蓝房间获得5游戏点数
-            this.gamePoint += this.hotel.roomBlueClosedNum * 5;
+            this.gainGamePoint(this.hotel.roomBlueClosedNum * 5);
         }
         if(this.hasHiredServer(29)){ //最终结算时每个入住的黄房间获得5游戏点数
-            this.gamePoint += this.hotel.roomYellowClosedNum * 5;
+            this.gainGamePoint(this.hotel.roomYellowClosedNum * 5);
         }
         if(this.hasHiredServer(30)){ //最终结算时每个入住的房间获得1游戏点数
-            this.gamePoint += this.hotel.roomClosedNum;
+            this.gainGamePoint(this.hotel.roomClosedNum);
         }
         if(this.hasHiredServer(31)){ //最终结算时每个雇佣的员工获得2游戏点数
-            this.gamePoint += orgHiredServerNum * 2;
+            this.gainGamePoint(orgHiredServerNum * 2);
         }
         if(this.hasHiredServer(33)){ //最终结算时每个准备好或者入住的房间获得1游戏点数
-            this.gamePoint += this.hotel.roomClosedNum + this.hotel.roomPreparedNum;
+            this.gainGamePoint(this.hotel.roomClosedNum + this.hotel.roomPreparedNum);
         }
         if(this.hasHiredServer(36)){ //最终结算时每个全部入住的区域获得2游戏点数
-            this.gamePoint += this.hotel.roomAreaClosedNum * 2;
+            this.gainGamePoint(this.hotel.roomAreaClosedNum * 2);
         }
         if(this.hasHiredServer(39)){ //最终结算时每个完成的全局任务获得5游戏点数
             // TODO
             ;
         }
         if(this.hasHiredServer(40)){ //最终结算时每个剩余的皇室点数获得2游戏点数
-            this.gamePoint += this.royalPoint * 2;
+            this.gainGamePoint(this.royalPoint * 2);
         }
         if(this.hasHiredServer(45)){ //最终结算时每个全部入住的层获得5游戏点数
-            this.gamePoint += this.hotel.roomRowClosedNum * 5;
+            this.gainGamePoint(this.hotel.roomRowClosedNum * 5);
         }
         if(this.hasHiredServer(46)){ //最终结算时每个全部入住的列获得5游戏点数
-            this.gamePoint += this.hotel.roomColumnClosedNum * 5;
+            this.gainGamePoint(this.hotel.roomColumnClosedNum * 5);
         }
         if(this.hasHiredServer(47)){ //最终结算时每个入住的红黄蓝房间组合获得4游戏点数
-            this.gamePoint += Math.min(this.hotel.roomRedClosedNum, this.hotel.roomBlueClosedNum, this.hotel.roomYellowClosedNum) * 4;
+            this.gainGamePoint(Math.min(this.hotel.roomRedClosedNum, this.hotel.roomBlueClosedNum, this.hotel.roomYellowClosedNum) * 4);
         }
     }
 }

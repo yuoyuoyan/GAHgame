@@ -29,27 +29,28 @@ function gameOn() {
         }
         game.currPlayer = 0;
         if(debugState) {
-            game.players[game.currPlayer].hotel.roomPrepare(0,3);
-            game.players[game.currPlayer].hotel.roomPrepare(0,4);
-            game.players[game.currPlayer].hotel.roomPrepare(1,4);
-            game.players[game.currPlayer].hotel.roomPrepare(2,4);
-            game.players[game.currPlayer].hotel.roomPrepare(3,4);
-            game.players[game.currPlayer].hotel.roomClose(0,0);
-            game.players[game.currPlayer].hotel.roomClose(0,1);
-            game.players[game.currPlayer].hotel.roomClose(0,2);
-            game.players[game.currPlayer].hotel.roomClose(0,3);
-            game.players[game.currPlayer].hotel.roomClose(0,4);
-            game.players[game.currPlayer].hotel.roomClose(1,4);
-            game.players[game.currPlayer].hotel.roomClose(2,4);
-            game.players[game.currPlayer].hotel.roomClose(3,4);
-            game.players[game.currPlayer].hotel.roomPrepare(1,3);
-            game.players[game.currPlayer].hotel.roomPrepare(2,3);
-            game.players[game.currPlayer].hotel.roomPrepare(3,3);
+            // game.players[game.currPlayer].hotel.roomPrepare(0,3);
+            // game.players[game.currPlayer].hotel.roomPrepare(0,4);
+            // game.players[game.currPlayer].hotel.roomPrepare(1,4);
+            // game.players[game.currPlayer].hotel.roomPrepare(2,4);
+            // game.players[game.currPlayer].hotel.roomPrepare(3,4);
+            // game.players[game.currPlayer].hotel.roomClose(0,0);
+            // game.players[game.currPlayer].hotel.roomClose(0,1);
+            // game.players[game.currPlayer].hotel.roomClose(0,2);
+            // game.players[game.currPlayer].hotel.roomClose(0,3);
+            // game.players[game.currPlayer].hotel.roomClose(0,4);
+            // game.players[game.currPlayer].hotel.roomClose(1,4);
+            // game.players[game.currPlayer].hotel.roomClose(2,4);
+            // game.players[game.currPlayer].hotel.roomClose(3,4);
+            // game.players[game.currPlayer].hotel.roomPrepare(1,3);
+            // game.players[game.currPlayer].hotel.roomPrepare(2,3);
+            // game.players[game.currPlayer].hotel.roomPrepare(3,3);
             // const finalServerID = [26, 27, 28, 29, 30, 31, 33, 36, 39, 40, 45, 46, 47];
-            game.players[1].serverHired.push(new Server(45));
-            game.players[2].serverHired.push(new Server(46));
-            game.players[game.currPlayer].serverHired.push(new Server(28));
-            game.players[game.currPlayer].calculateFinalGamePoint();
+            // game.players[1].serverHired.push(new Server(45));
+            // game.players[2].serverHired.push(new Server(46));
+            game.players[game.currPlayer].serverHired.push(new Server(23));
+            game.players[game.currPlayer].numServerHired = 1;
+            // game.players[game.currPlayer].calculateFinalGamePoint();
         }
     }
     
