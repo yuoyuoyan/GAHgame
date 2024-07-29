@@ -715,12 +715,13 @@ class Game{
                         game.players[game.currPlayer].atHireServerdiscount++;
                         game.players[game.currPlayer].atActionBoost = true;
                     }
-                    game.players[game.currPlayer].updateAlertCanvas(alertContext, 3);
+                    game.players[game.currPlayer].updateAlertCanvas(alertContext, 4);
                     game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
                 }
             } else if(event.offsetX>=200 && event.offsetX<=300 && event.offsetY>=170 && event.offsetY<=210){ // confirm
                 alertCanvas.style.display = 'none';
                 game.players[game.currPlayer].atHireServer = false;
+                game.players[game.currPlayer].serverOnHandHighLightFlag = true;
                 game.players[game.currPlayer].hireFlag = true;
                 game.players[game.currPlayer].highlightServerToHire(game.players[game.currPlayer].atHireServerdiscount);
                 game.players[game.currPlayer].updateServerCanvas(serverContext);
@@ -772,7 +773,7 @@ class Game{
             game.players[game.currPlayer].serverOnHandCanvasIdx--;
             game.players[game.currPlayer].updateServerCanvas(serverContext);
         } // right roll
-        else if(event.offsetX>=0 && event.offsetX<=25 && event.offsetY>=80 && event.offsetY<=130 && game.players[game.currPlayer].serverOnHandCanvasIdx<game.players[game.currPlayer].numServerOnHand-1) {
+        else if(event.offsetX>=615 && event.offsetX<=640 && event.offsetY>=80 && event.offsetY<=130 && game.players[game.currPlayer].serverOnHandCanvasIdx<(game.players[game.currPlayer].numServerOnHand-3)) {
             console.log("sever on hand right roll clicked");
             game.players[game.currPlayer].serverOnHandCanvasIdx++;
             game.players[game.currPlayer].updateServerCanvas(serverContext);
@@ -781,10 +782,13 @@ class Game{
             for(let i=0; i<3; i++){
                 if(game.players[game.currPlayer].serverOnHandCanvasIdx + i < game.players[game.currPlayer].numServerOnHand){
                     const serverIdx = game.players[game.currPlayer].serverOnHandCanvasIdx + i;
-                    if(event.offsetX>=(65+170*i) && event.offsetX<=(225+170*i) && event.offsetY>=35 && event.offsetY<=275 && game.players[game.currPlayer].serverOnHandHighLight[serverIdx]){
+                    if(event.offsetX>=(65+170*i) && event.offsetX<=(225+170*i) && event.offsetY>=35 && event.offsetY<=275 && 
+                        game.players[game.currPlayer].hireFlag && game.players[game.currPlayer].serverOnHandHighLight[serverIdx]){
                         console.log("hire server " + serverIdx);
                         game.players[game.currPlayer].money -= (game.players[game.currPlayer].serverOnHand[serverIdx].serverCost - game.players[game.currPlayer].atHireServerdiscount);
+                        game.players[game.currPlayer].hireFlag = false;
                         game.players[game.currPlayer].hireServer(serverIdx);
+                        game.players[game.currPlayer].serverOnHandHighLightFlag = false;
                         game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
                         game.players[game.currPlayer].updateServerCanvas(serverContext);
                     }

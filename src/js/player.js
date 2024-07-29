@@ -161,7 +161,7 @@ class Player{
     actionTakeRedBlack(value) {
         alertCanvas.style.display = 'block';
         this.atTakeRedBlack = true;
-        // default maximum white
+        // default maximum black
         this.atTakeBlack = Math.floor(value/2);
         this.atTakeRed = value - this.atTakeBlack;
         this.updateAlertCanvas(alertContext, 1);
@@ -170,7 +170,7 @@ class Player{
     actionPrepareRoom(value) {
         alertCanvas.style.display = 'block';
         this.atPrepareRoom = true;
-        // default maximum white
+        // default maximum rooms
         this.atRoomToPrepare = value;
         this.updateAlertCanvas(alertContext, 2);
     }
@@ -178,7 +178,7 @@ class Player{
     actionTakeRoyalMoney(value) {
         alertCanvas.style.display = 'block';
         this.atRoyalMoney = true;
-        // default maximum white
+        // default maximum royal
         this.atRoyal = value;
         this.atMoney = 0;
         this.updateAlertCanvas(alertContext, 3);
@@ -187,7 +187,8 @@ class Player{
     actionHireServer(value) {
         alertCanvas.style.display = 'block';
         this.atHireServer = true;
-        // default maximum white
+        this.serverOnHandHighLightFlag = true;
+        // default maximum discount
         this.atHireServerdiscount = value;
         this.updateAlertCanvas(alertContext, 4);
     }
@@ -195,7 +196,7 @@ class Player{
     actionTakeMirror(value) {
         alertCanvas.style.display = 'block';
         this.atTakeMirror = true;
-        // default maximum white
+        // default dice 1
         this.atMirrorStrength = value;
         this.atMirrorDice = 1;
         this.updateAlertCanvas(alertContext, 5);
@@ -380,15 +381,11 @@ class Player{
             context.drawImage(serverImg[this.serverOnHand[this.serverOnHandCanvasIdx-1].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
             // draw the left triangle to indicate
             this.triangleCanvas(context, 0, 105, 25, 130, 25, 80);
-            // debug block
-            context.strokeStyle = "red";
-            context.lineWidth = 5;
-            context.strokeRect(0, 80, 25, 50);
         }
         
         // draw 3 server cards if any
         for(let i=0; i<3; i++){
-            if(this.serverOnHandCanvasIdx + i < this.numServerOnHand){
+            if((this.serverOnHandCanvasIdx + i) < this.numServerOnHand){
                 serverXoffset+=170;
                 context.drawImage(serverImg[this.serverOnHand[this.serverOnHandCanvasIdx+i].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
                 // hightlight block if needed
@@ -406,10 +403,6 @@ class Player{
             context.drawImage(serverImg[this.serverOnHand[this.serverOnHandCanvasIdx+3].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
             // draw the right triangle to indicate
             this.triangleCanvas(context, 640, 105, 615, 130, 615, 80);
-            // debug block
-            context.strokeStyle = "red";
-            context.lineWidth = 5;
-            context.strokeRect(615, 80, 25, 50);
         }
 
         // Server hired
@@ -783,13 +776,7 @@ class Player{
     addServerToHand(serverID) {
         this.numServerOnHand++;
         this.serverOnHand.push(new Server(serverID));
-        this.serverOnHandHighLight.push(0);
-    }
-
-    checkServerAffordable(discount) {
-        for(let i=0; i<this.serverOnHand.length; i++){
-            this.serverOnHandHighLight[i] = (this.serverOnHandHighLight[i].serverCost <= (this.money+discount) ) ? 1 : 0;
-        }
+        this.serverOnHandHighLight.push(1);
     }
 
     hireServer(serverIndex) {
