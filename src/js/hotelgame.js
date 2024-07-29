@@ -48,7 +48,7 @@ function gameOn() {
             // const finalServerID = [26, 27, 28, 29, 30, 31, 33, 36, 39, 40, 45, 46, 47];
             // game.players[1].serverHired.push(new Server(45));
             // game.players[2].serverHired.push(new Server(46));
-            game.players[game.currPlayer].serverHired.push(new Server(23));
+            game.players[game.currPlayer].serverHired.push(new Server(32));
             game.players[game.currPlayer].numServerHired = 1;
             // game.players[game.currPlayer].calculateFinalGamePoint();
         }

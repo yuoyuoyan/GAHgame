@@ -200,7 +200,11 @@ class Player{
         this.atRoyalMoney = true;
         // default maximum royal
         this.atRoyal = value;
-        this.atMoney = 0;
+        if(this.hasHiredServer(14)){
+            this.atMoney = value;
+        } else {
+            this.atMoney = 0;
+        }
         this.updateAlertCanvas(alertContext, 3);
     }
 

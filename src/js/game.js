@@ -475,9 +475,9 @@ class Game{
                         console.log("prepare room at floor " + floor + " col " + col);
                         // prepare selected room, check money
                         game.players[game.currPlayer].hotel.roomPrepare(floor, col);
-                        if(!((game.players[game.currPlayer].hasHiredServer(9) && game.players[game.currPlayer].hotel.roomColor[floor][col]==2) ||   //免费准备蓝色房间
-                            (game.players[game.currPlayer].hasHiredServer(10) && game.players[game.currPlayer].hotel.roomColor[floor][col]==0) ||  //免费准备红色房间
-                            (game.players[game.currPlayer].hasHiredServer(11) && game.players[game.currPlayer].hotel.roomColor[floor][col]==2))     //免费准备黄色房间
+                        if(!((game.players[game.currPlayer].hasHiredServer(8) && game.players[game.currPlayer].hotel.roomColor[floor][col]==2) ||   //免费准备蓝色房间
+                            (game.players[game.currPlayer].hasHiredServer(9) && game.players[game.currPlayer].hotel.roomColor[floor][col]==0) ||  //免费准备红色房间
+                            (game.players[game.currPlayer].hasHiredServer(10) && game.players[game.currPlayer].hotel.roomColor[floor][col]==1))     //免费准备黄色房间
                         ){ // exceptions to pay preparation fee
                             game.players[game.currPlayer].loseMoney(floor);
                         }
@@ -493,7 +493,7 @@ class Game{
                         console.log("checkout room at floor " + floor + " col " + col);
                         // close selected room, take guest bonus if any
                         game.players[game.currPlayer].hotel.roomClose(floor, col);
-                        game.players[game.currPlayer].checkoutServerBonus(game.players[game.currPlayer].hotel.roomToCloseGuestTableID);
+                        game.checkoutServerBonus(game.players[game.currPlayer].hotel.roomToCloseGuestTableID);
                         game.players[game.currPlayer].hotel.guestBonus(game.players[game.currPlayer].hotel.roomToCloseGuestID);
                         // remove guest from table (to coffin lmao)
                         game.players[game.currPlayer].hotel.removeGuestFromTable(game.players[game.currPlayer].hotel.roomToCloseGuestTableID);
@@ -783,44 +783,54 @@ class Game{
                 if(game.players[game.currPlayer].money>0){
                     console.log("boost selected");
                     if(game.players[game.currPlayer].atActionBoost){
-                        game.players[game.currPlayer].money++;
-                        if(game.players[game.currPlayer].atRoyal > 0){
+                        game.players[game.currPlayer].gainMoney(1);
+                        if(game.players[game.currPlayer].hasHiredServer(14)){
                             game.players[game.currPlayer].atRoyal--;
-                        } else {
                             game.players[game.currPlayer].atMoney--;
+                        } else {
+                            if(game.players[game.currPlayer].atRoyal > 0){
+                                game.players[game.currPlayer].atRoyal--
+                            } else {
+                                game.players[game.currPlayer].atMoney--;
+                            }
                         }
                         game.players[game.currPlayer].atActionBoost = false;
                     } else {
-                        game.players[game.currPlayer].money--;
-                        game.players[game.currPlayer].atRoyal++;
+                        game.players[game.currPlayer].loseMoney(1);
+                        if(game.players[game.currPlayer].hasHiredServer(14)){
+                            game.players[game.currPlayer].atMoney++;
+                            game.players[game.currPlayer].atRoyal++;
+                        } else {
+                            game.players[game.currPlayer].atRoyal++;
+                        }
                         game.players[game.currPlayer].atActionBoost = true;
                     }
                     game.players[game.currPlayer].updateAlertCanvas(alertContext, 3);
                     game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
                 }
             } else if(event.offsetX>=225 && event.offsetX<=275 && event.offsetY>=90 && event.offsetY<=110){ // increase royal
-                if(game.players[game.currPlayer].atMoney > 0){
+                if(game.players[game.currPlayer].atMoney > 0 && !game.players[game.currPlayer].hasHiredServer(14)){
                     game.players[game.currPlayer].atRoyal++;
                     game.players[game.currPlayer].atMoney--;
                 }
                 game.players[game.currPlayer].updateAlertCanvas(alertContext, 3);
                 console.log("royal increase selected");
             } else if(event.offsetX>=225 && event.offsetX<=275 && event.offsetY>=120 && event.offsetY<=140){ // decrease royal
-                if(game.players[game.currPlayer].atRoyal > 0){
+                if(game.players[game.currPlayer].atRoyal > 0 && !game.players[game.currPlayer].hasHiredServer(14)){
                     game.players[game.currPlayer].atRoyal--;
                     game.players[game.currPlayer].atMoney++;
                 }
                 game.players[game.currPlayer].updateAlertCanvas(alertContext, 3);
                 console.log("royal decrease selected");
             } else if(event.offsetX>=375 && event.offsetX<=425 && event.offsetY>=90 && event.offsetY<=110){ // increase money
-                if(game.players[game.currPlayer].atRoyal > 0){
+                if(game.players[game.currPlayer].atRoyal > 0 && !game.players[game.currPlayer].hasHiredServer(14)){
                     game.players[game.currPlayer].atRoyal--;
                     game.players[game.currPlayer].atMoney++;
                 }
                 game.players[game.currPlayer].updateAlertCanvas(alertContext, 3);
                 console.log("money increase selected");
             } else if(event.offsetX>=375 && event.offsetX<=425 && event.offsetY>=120 && event.offsetY<=140){ // decrease money
-                if(game.players[game.currPlayer].atMoney > 0){
+                if(game.players[game.currPlayer].atMoney > 0 && !game.players[game.currPlayer].hasHiredServer(14)){
                     game.players[game.currPlayer].atRoyal++;
                     game.players[game.currPlayer].atMoney--;
                 }
@@ -1027,16 +1037,13 @@ class Game{
             serverBonus = 1;
         }
         if(this.players[this.currPlayer].hasHiredServer(13) && (value==0 || value==1)) {//使用色子1或2时可以准备一个房间
-            // TODO
-            ;
-        }
-        if(this.players[this.currPlayer].hasHiredServer(14) && value==3) {//使用色子4时可以同时获得钱和皇家点数
-            // TODO
-            ;
+            this.players[this.currPlayer].hotel.roomToPrepare = 1;
+            this.players[this.currPlayer].hotel.roomHighLightFlag = true;
+            this.players[this.currPlayer].hotel.highlightRoomToPrepare(this.players[this.currPlayer].money);
+            this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
         }
         if(this.players[this.currPlayer].hasHiredServer(15) && value==3) {//使用色子4时可以获得4游戏点数
-            // TODO
-            ;
+            this.players[this.currPlayer].gainGamePoint(4);
         }
         if(this.players[this.currPlayer].hasHiredServer(17) && value==4) {//使用色子5时加2强度
             serverBonus = 2;
@@ -1048,8 +1055,10 @@ class Game{
             this.players[this.currPlayer].gainRoyal(2);
         }
         if(this.players[this.currPlayer].hasHiredServer(21) && value==2) {//使用色子3时可以雇佣一位员工
-            // TODO
-            ;
+            this.players[this.currPlayer].serverOnHandHighLightFlag = true;
+            this.players[this.currPlayer].hireFlag = true;
+            this.players[this.currPlayer].highlightServerToHire(0);
+            this.players[this.currPlayer].updateServerCanvas(serverContext);
         }
         
         switch(value){
@@ -1071,6 +1080,7 @@ class Game{
             case 5: // mirror an action
             if(!this.players[this.currPlayer].hasHiredServer(16)) {//使用色子6时无需支付费用并且强度加1
                 this.players[this.currPlayer].money--; // dice 6 fee exception
+            } else {
                 serverBonus = 1;
             }
             this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
@@ -1102,31 +1112,31 @@ class Game{
     }
 
     checkoutServerBonus(guestTableID) {
-        if(this.hasHiredServer(5)) { //满足红色客人时获得2块钱
-            if(this.hotel.guestOnTable[guestTableID].guestColor==0){
+        if(this.players[this.currPlayer].hasHiredServer(4)) { //满足红色客人时获得2块钱
+            if(this.players[this.currPlayer].hotel.guestOnTable[guestTableID].guestColor==0){
                 this.players[this.currPlayer].gainMoney(2);
             }
         }
-        if(this.hasHiredServer(6)) { //满足蓝色客人时获得1皇家点数
-            if(this.hotel.guestOnTable[guestTableID].guestColor==2){
+        if(this.players[this.currPlayer].hasHiredServer(5)) { //满足蓝色客人时获得1皇家点数
+            if(this.players[this.currPlayer].hotel.guestOnTable[guestTableID].guestColor==2){
                 this.players[this.currPlayer].gainRoyal(1);
             }
         }
-        if(this.hasHiredServer(7)) { //满足黄色客人时获得1块钱
-            if(this.hotel.guestOnTable[guestTableID].guestColor==1){
+        if(this.players[this.currPlayer].hasHiredServer(6)) { //满足黄色客人时获得1块钱
+            if(this.players[this.currPlayer].hotel.guestOnTable[guestTableID].guestColor==1){
                 this.players[this.currPlayer].gainMoney(1);
             }
         }
-        if(this.hasHiredServer(8)) { //满足绿色客人时获得2游戏点数
-            if(this.hotel.guestOnTable[guestTableID].guestColor===4){
+        if(this.players[this.currPlayer].hasHiredServer(7)) { //满足绿色客人时获得2游戏点数
+            if(this.players[this.currPlayer].hotel.guestOnTable[guestTableID].guestColor===4){
                 this.players[this.currPlayer].gainGamePoint(2);
             }
         }
-        if(this.hasHiredServer(22)) { //满足客人并入住时可以获得1块钱
+        if(this.players[this.currPlayer].hasHiredServer(22)) { //满足客人并入住时可以获得1块钱
             this.players[this.currPlayer].gainMoney(1);
         }
-        if(this.hasHiredServer(32)) { //满足食物或饮料需求量为4的客人时获得4游戏点数
-            if(this.hotel.guestOnTable[guestTableID].guestRequirementNum==4){
+        if(this.players[this.currPlayer].hasHiredServer(32)) { //满足食物或饮料需求量为4的客人时获得4游戏点数
+            if(this.players[this.currPlayer].hotel.guestOnTable[guestTableID].guestRequirementNum==4){
                 this.players[this.currPlayer].gainGamePoint(4);
             }
         }
