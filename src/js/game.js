@@ -812,13 +812,13 @@ class Game{
             
         } else if(game.players[game.currPlayer].atTakeMirror){
             if(event.offsetX>=225 && event.offsetX<=275 && event.offsetY>=90 && event.offsetY<=110){ // increase dice
-                if(game.players[game.currPlayer].atMirrorDice < 5){
+                if(game.players[game.currPlayer].atMirrorDice < 6){
                     game.players[game.currPlayer].atMirrorDice++;
                 }
                 game.players[game.currPlayer].updateAlertCanvas(alertContext, 5);
                 console.log("brown increase selected");
             } else if(event.offsetX>=225 && event.offsetX<=275 && event.offsetY>=120 && event.offsetY<=140){ // decrease dice
-                if(game.players[game.currPlayer].atMirrorDice > 0){
+                if(game.players[game.currPlayer].atMirrorDice > 1){
                     game.players[game.currPlayer].atMirrorDice--;
                 }
                 game.players[game.currPlayer].updateAlertCanvas(alertContext, 5);
@@ -827,11 +827,11 @@ class Game{
                 alertCanvas.style.display = 'none';
                 game.players[game.currPlayer].atTakeMirror = false;
                 switch(game.players[game.currPlayer].atMirrorDice){
-                    case 1: game.players[game.currPlayer].actionTakeBrownWhite(game.players[game.currPlayer].atMirrorStrength);
-                    case 2: game.players[game.currPlayer].actionTakeRedBlack(game.players[game.currPlayer].atMirrorStrength);
-                    case 3: game.players[game.currPlayer].actionPrepareRoom(game.players[game.currPlayer].atMirrorStrength);
-                    case 4: game.players[game.currPlayer].actionTakeRoyalMoney(game.players[game.currPlayer].atMirrorStrength);
-                    case 5: game.players[game.currPlayer].actionHireServer(game.players[game.currPlayer].atMirrorStrength);
+                    case 1: game.players[game.currPlayer].actionTakeBrownWhite(game.players[game.currPlayer].atMirrorStrength); break;
+                    case 2: game.players[game.currPlayer].actionTakeRedBlack(game.players[game.currPlayer].atMirrorStrength); break;
+                    case 3: game.players[game.currPlayer].actionPrepareRoom(game.players[game.currPlayer].atMirrorStrength); break;
+                    case 4: game.players[game.currPlayer].actionTakeRoyalMoney(game.players[game.currPlayer].atMirrorStrength); break;
+                    case 5: game.players[game.currPlayer].actionHireServer(game.players[game.currPlayer].atMirrorStrength); break;
                 }
                 game.players[game.currPlayer].atAction = false;
                 game.players[game.currPlayer].atActionBoost = false;
@@ -862,7 +862,9 @@ class Game{
                     if(event.offsetX>=(65+170*i) && event.offsetX<=(225+170*i) && event.offsetY>=35 && event.offsetY<=275 && 
                         game.players[game.currPlayer].hireFlag && game.players[game.currPlayer].serverOnHandHighLight[serverIdx]){
                         console.log("hire server " + serverIdx);
-                        game.players[game.currPlayer].money -= (game.players[game.currPlayer].serverOnHand[serverIdx].serverCost - game.players[game.currPlayer].atHireServerdiscount);
+                        if(game.players[game.currPlayer].serverOnHand[serverIdx].serverCost > game.players[game.currPlayer].atHireServerdiscount) {
+                            game.players[game.currPlayer].money -= (game.players[game.currPlayer].serverOnHand[serverIdx].serverCost - game.players[game.currPlayer].atHireServerdiscount);
+                        }
                         game.players[game.currPlayer].hireFlag = false;
                         game.players[game.currPlayer].hireServer(serverIdx);
                         game.players[game.currPlayer].serverOnHandHighLightFlag = false;
@@ -894,11 +896,38 @@ class Game{
             this.players[this.currPlayer].updateServerCanvas(serverContext);
             this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
         } else { // normal mini round
-            ;
+            this.players[this.currPlayer].turnFlag = false;
+            this.players[this.currPlayer].inviteFlag = false;
+            this.players[this.currPlayer].actionFlag = false;
+            this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
+            if(this.miniRound == (2*this.playerNumber-1)) { // end of main round
+                if(this.mainRound == 6) { // end of entire game
+                    this.gameEnd();
+                    window.alert("游戏结束!");
+                } else { // next main round
+                    this.mainRoundEnd();
+                    this.mainRound++;
+                    this.miniRound = 0;
+                    this.currPlayer = 0;
+                    for(let i=0; i<4; i++){
+                        this.players[i].diceTaken = [-1, -1];
+                        this.players[i].updatePlayerCanvas(this.players[i].context);
+                    }
+                }
+            } else { // next mini round
+                this.miniRound++;
+                this.currPlayer = (this.miniRound < this.playerNumber) ? this.miniRound : 2*this.playerNumber-this.miniRound-1;
+            }
+            this.players[this.currPlayer].turnFlag = true;
+            this.updateGuestCanvas(guestContext);
+            this.players[this.currPlayer].checkOpStatus();
+            this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
+            this.players[this.currPlayer].updateServerCanvas(serverContext);
+            this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
         }
     }
 
-    nextMainRound() {
+    mainRoundEnd() {
         ;
     }
 
@@ -907,7 +936,7 @@ class Game{
     }
 
     takeDice(value) {
-        if(this.miniRound <= this.playerNumber) {
+        if(this.miniRound < this.playerNumber) {
             this.players[this.currPlayer].diceTaken[0] = value+1;
         } else {
             this.players[this.currPlayer].diceTaken[1] = value+1;
