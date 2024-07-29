@@ -449,6 +449,7 @@ class Game{
     handleHotelClick(event) {
         console.log("hotel canvas clicked");
         // first guest invite stage, prepare 3 rooms
+        // otherwise depend on the action point
         for(let floor=0; floor<4; floor++){
             for(let col=0; col<5; col++){
                 if(event.offsetX >= (60+115*col) && event.offsetX < (60+115*col+115) && event.offsetY >= (120+120*(3-floor)) && event.offsetY < (120+120*(3-floor)+120)) {
@@ -481,11 +482,79 @@ class Game{
                 }
             }
         }
+        // serve food to guests on tables
+        var   foodXoffset = 40;
+        var   foodYoffset = 618;
+        const foodWidth   = 30;
+        const foodHeight  = 28;
+        for(let i=0; i<3; i++){
+            if(game.players[game.currPlayer].hotel.guestOnTable[i] != null) {
+                for(let j=0; j<game.players[game.currPlayer].hotel.guestOnTable[i].guestRequirement.length; j++){
+                    if(event.offsetX>=foodXoffset && event.offsetX<=(foodXoffset+foodWidth) && event.offsetY>=foodYoffset && event.offsetY<=(foodYoffset+foodHeight)) {
+                        console.log("guest table " + i + " food " + j + " is clicked");
+                    }
+                    if(event.offsetX>=foodXoffset && event.offsetX<=(foodXoffset+foodWidth) && event.offsetY>=foodYoffset && event.offsetY<=(foodYoffset+foodHeight) &&
+                        !game.players[game.currPlayer].hotel.guestOnTable[i].guestFoodServed[j] &&
+                        game.players[game.currPlayer].atServe){
+                        var serveFlag = false;
+                        switch(game.players[game.currPlayer].hotel.guestOnTable[i].guestRequirement[j]){
+                            case 0: // need brown
+                            serveFlag = game.players[game.currPlayer].hasBrown();
+                            if(serveFlag){
+                                game.players[game.currPlayer].loseBrown();
+                            }
+                            break;
+                            case 1: // need white
+                            serveFlag = game.players[game.currPlayer].hasWhite(); 
+                            if(serveFlag){
+                                game.players[game.currPlayer].loseWhite();
+                            }
+                            break;
+                            case 2: // need red
+                            serveFlag = game.players[game.currPlayer].hasRed(); 
+                            if(serveFlag){
+                                game.players[game.currPlayer].loseRed();
+                            }
+                            break;
+                            case 3: // need black
+                            serveFlag = game.players[game.currPlayer].hasBlack(); 
+                            if(serveFlag){
+                                game.players[game.currPlayer].loseBlack();
+                            }
+                            break;
+                        }
+                        
+                        if(serveFlag){
+                            console.log("served a food to guest " + game.players[game.currPlayer].hotel.guestOnTable[i].guestTableID);
+                            game.players[game.currPlayer].serveFoodNum--;
+                            game.players[game.currPlayer].hotel.guestOnTable[i].guestFoodServed[j] = 1;
+                            game.players[game.currPlayer].hotel.guestOnTable[i].guestFoodServedNum++;
+                            game.players[game.currPlayer].hotel.guestOnTable[i].guestSatisfied = 
+                                (game.players[game.currPlayer].hotel.guestOnTable[i].guestRequirementNum == 
+                                game.players[game.currPlayer].hotel.guestOnTable[i].guestFoodServedNum);
+                            if(game.players[game.currPlayer].serveFoodNum==0){
+                                game.players[game.currPlayer].atServe = false;
+                                game.players[game.currPlayer].checkOpStatus();
+                            }
+                        }
+
+                        game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
+                        game.players[game.currPlayer].hotel.updateHotelCanvas(hotelContext);
+                    }
+                    foodYoffset += 28;
+                }
+            }           
+            foodXoffset += 182;
+            foodYoffset = 618;
+        }
     }
 
     handleAlertClick(event) {
         console.log("alert canvas clicked");
-        if(game.players[game.currPlayer].atTakeBrownWhite){
+        if(game.players[game.currPlayer].atServe) {
+            // TODO
+            ;
+        } else if(game.players[game.currPlayer].atTakeBrownWhite){
             if(event.offsetX>=20 && event.offsetX<=120 && event.offsetY>=90 && event.offsetY<=140){ // boost
                 if(game.players[game.currPlayer].money>0){
                     console.log("boost selected");

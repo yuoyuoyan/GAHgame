@@ -44,6 +44,7 @@ class Player{
         this.inviteFlag = false; // whether already invited this turn
         this.actionFlag = false; // whether already took dice this turn
         this.hireFlag = false;
+        this.serveFoodNum = 0;
         this.gamePoint = 0;
         this.royalPoint = 0;
         this.hotelID = hotelID;
@@ -98,6 +99,14 @@ class Player{
         // check if this event is serve
         if(event.offsetX >= 802 && event.offsetX <= 842 && event.offsetY >= 10 && event.offsetY <= 30){
             console.log("Serve button pressed");
+            if(this.opServe){
+                // no need to disable other options
+                this.money--;
+                this.atServe = true;
+                this.serveFoodNum = 3;
+                this.checkOpStatus();
+                this.updatePlayerCanvas(this.context);
+            }
             return 3;
         }
 
@@ -125,7 +134,7 @@ class Player{
         // No op other than invite available at the first guest picking round
         this.opInvite = !this.inviteFlag;
         this.opAction = !this.actionFlag && !this.firstGuestTurn;
-        this.opServe = (this.money > 0) && (this.food > 0) && !this.firstGuestTurn;
+        this.opServe = (this.money > 0) && (this.food > 0) && !this.firstGuestTurn && !this.atServe;
         this.opCheckout = false;
         if(!this.firstGuestTurn){
             for(let i=0; i<this.hotel.numGuestOnTable; i++){
@@ -708,7 +717,7 @@ class Player{
     }
 
     hasBrown() {
-        return this.brown >= 0;
+        return this.brown > 0;
     }
 
     gainWhite(value) {
@@ -722,7 +731,7 @@ class Player{
     }
 
     hasWhite() {
-        return this.white >= 0;
+        return this.white > 0;
     }
 
     gainRed(value) {
@@ -736,7 +745,7 @@ class Player{
     }
 
     hasRed() {
-        return this.red >= 0;
+        return this.red > 0;
     }
 
     gainBlack(value) {
@@ -750,7 +759,7 @@ class Player{
     }
 
     hasBlack() {
-        return this.black >= 0;
+        return this.black > 0;
     }
 
     clearKitchen() {
