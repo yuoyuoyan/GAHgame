@@ -41,7 +41,7 @@ class Player{
         this.atHireServerdiscount = 0;
         this.atMirrorDice = 1;
         this.atActionBoost = false;
-        this.freeInviteFlag = false;
+        this.freeInviteNum = 0;
         this.inviteFlag = false; // whether already invited this turn
         this.actionFlag = false; // whether already took dice this turn
         this.hireFlag = false;
@@ -936,6 +936,173 @@ class Player{
         }
         if(this.hasHiredServer(47)){ //最终结算时每个入住的红黄蓝房间组合获得4游戏点数
             this.gainGamePoint(Math.min(this.hotel.roomRedClosedNum, this.hotel.roomBlueClosedNum, this.hotel.roomYellowClosedNum) * 4);
+        }
+    }
+
+    guestBonus(guestID) {
+        if(guestID==-1){
+            console.log("invalid guest ID");
+            return;
+        }
+
+        // game point
+        this.gainGamePoint(guestBonusGamePointByID[guestID]);
+        
+        // extra bonus
+        // point bonus
+        switch(guestID) {
+            case 4: // 获得1个棕饼干和2块钱
+            this.gainMoney(2); break;
+            case 5: // 获得1个黑咖啡和2个皇室点数
+            this.gainRoyal(2); break;
+            case 6: // 获得1个任意食物资源和2块钱
+            this.gainMoney(2); break;
+            case 12: // 获得1个黑咖啡和3块钱
+            this.gainMoney(3); break;
+            case 14: // 免费邀请1位客人并获得3个皇室点数
+            this.gainRoyal(3); break;
+            case 19: // 抽取2张员工到手牌并获得2个皇室点数
+            this.gainRoyal(2); break;
+            case 20: // 获得3个皇室点数
+            this.gainRoyal(3); break;
+            case 21: // 获得3块钱
+            this.gainMoney(3); break;
+            case 22: // 减1费打出1张员工并获得3个皇室点数
+            this.gainRoyal(3); break;
+            case 26: // 获得1块钱
+            this.gainMoney(1); break;
+            case 29: // 获得3个皇室点数
+            this.gainRoyal(3); break;
+            case 30: // 获得1块钱
+            this.gainMoney(1); break;
+            case 32: // 获得1块钱和1个皇室点数
+            this.gainMoney(1); this.gainRoyal(1); break;
+            case 34: // 获得1个红酒盒3块钱
+            this.gainMoney(3); break;
+            case 36: // 获得5块钱
+            this.gainMoney(5); break;
+            case 37: // 获得3块钱并免费邀请1位客人
+            this.gainMoney(3); break;
+            case 38: // 获得3块钱
+            this.gainMoney(3); break;
+            case 40: // 获得3块钱并免费邀请2位客人
+            this.gainMoney(3); break;
+            case 42: // 获得4块钱
+            this.gainMoney(4); break;
+            case 43: // 获得1个红酒和3块钱
+            this.gainMoney(3); break;
+            case 45: // 获得1块钱
+            this.gainMoney(1); break;
+            case 46: // 获得1个皇室点数
+            this.gainRoyal(1); break;
+            case 48: // 获得2个皇室点数
+            this.gainRoyal(2); break;
+            case 51: // 获得4块钱
+            this.gainMoney(4); break;
+            case 52: // 抽取1张员工到手牌并获得2个皇室点数
+            this.gainRoyal(2); break;
+            case 53: // 额外关闭1个房间并获得3个皇室点数
+            this.gainRoyal(3); break;
+            case 54: // 免费邀请1位客人并获得3个皇室点数
+            this.gainRoyal(3); break;
+            case 55: //额外关闭1个房间并获得1个皇室点数
+            this.gainRoyal(1); break;
+        }
+        // server related
+        switch(guestID){
+            case 2: // 原价开1个房间并抽取1张员工到手牌
+            this.addServerToHand(game.serverDeck[game.serverDeck.length-1]);
+            game.serverDeck.pop();
+            break;
+            case 7: // 抽取2张员工到手牌
+            this.addServerToHand(game.serverDeck[game.serverDeck.length-1]);
+            game.serverDeck.pop();
+            this.addServerToHand(game.serverDeck[game.serverDeck.length-1]);
+            game.serverDeck.pop();
+            break;
+            case 8: // 获得1个白蛋糕并减3费打出1张员工
+            case 11: // 获得1个白蛋糕并减2费打出1张员工
+            case 16: // 减1费打出1张员工
+            case 18: // 减1费打出1张员工并原价开1个房间
+            case 19: // 抽取2张员工到手牌并获得2个皇室点数
+            case 22: // 减1费打出1张员工并获得3个皇室点数
+            case 25: // 分别减1费打出2张员工
+            case 27: // 抽取3张员工，减3费打出其中1张，剩余放回牌堆底部
+            case 28: // 抽取3张员工，免费打出其中1张，剩余放回牌堆底部
+            case 39: // 减3费打出1张员工
+            case 44: // 抽取3张员工到手牌
+            this.addServerToHand(game.serverDeck[game.serverDeck.length-1]);
+            game.serverDeck.pop();
+            this.addServerToHand(game.serverDeck[game.serverDeck.length-1]);
+            game.serverDeck.pop();
+            this.addServerToHand(game.serverDeck[game.serverDeck.length-1]);
+            game.serverDeck.pop();
+            break;
+            case 47: // 减1费打出1张员工
+            case 49: // 减3费打出1张员工
+            case 52: // 抽取1张员工到手牌并获得2个皇室点数
+            case 56: // 抽取2张员工到手牌
+            this.addServerToHand(game.serverDeck[game.serverDeck.length-1]);
+            game.serverDeck.pop();
+            this.addServerToHand(game.serverDeck[game.serverDeck.length-1]);
+            game.serverDeck.pop();
+            break;
+            case 57: // 免费打出1张员工
+        }
+        // room related
+        switch(guestID) {
+            case 1: // 免费开1间1层或2层房间
+            case 2: // 原价开1个房间并抽取1张员工到手牌
+            case 9: // 分别减1费开2个房间
+            case 10: // 额外关闭1个房间
+            case 13: // 减1费开1个房间并原价开1个房间
+            case 18: // 减1费打出1张员工并原价开1个房间
+            case 23: // 免费开1个房间
+            case 24: // 额外关闭1个房间
+            case 35: // 额外关闭1个房间
+            case 41: // 免费开2个房间
+            case 53: // 额外关闭1个房间并获得3个皇室点数
+            case 55: // 额外关闭1个房间并获得1个皇室点数
+        }
+        // food related
+        switch(guestID) {
+            case 3: // 获得1个棕饼干
+            this.gainBrown(1); break;
+            case 4: // 获得1个棕饼干和2块钱
+            this.gainBrown(1); break;
+            case 5: // 获得1个黑咖啡和2个皇室点数
+            this.gainBlack(1); break;
+            case 6: // 获得1个任意食物资源和2块钱
+            // TODO
+            case 8: // 获得1个白蛋糕并减3费打出1张员工
+            this.gainWhite(1); break;
+            case 11: // 获得1个白蛋糕并减2费打出1张员工
+            this.gainWhite(1); break;
+            case 12: // 获得1个黑咖啡和3块钱
+            this.gainBlack(1); break;
+            case 34: // 获得1个红酒盒3块钱
+            this.gainRed(1); break;
+            case 43: // 获得1个红酒和3块钱
+            this.gainRed(1); break;
+        }
+        // free invite
+        this.freeInviteNum = 1;
+        switch(guestID) {
+            case  0:
+            case 14:
+            case 15:
+            case 31:
+            case 33:
+            case 37:
+            case 54: this.freeInviteNum = 1; break;
+            case 40: this.freeInviteNum = 2; break;
+        }
+        game.guestHighLightFlag = true;
+        game.checkGuestInvite(10);
+        game.updateGuestCanvas(guestContext);
+        // special bonus
+        if(guestID==50) { // 立即额外进行一个回合，不需要拿取骰子
+            ;
         }
     }
 }

@@ -5,7 +5,7 @@ window.onload = gameOn;
 const game = new Game(playerNames.length, playerNames, 1);
 
 const skipPrepare = 1;
-const debugState = 0;
+const debugState = 1;
 
 function gameOn() {
     // debug
@@ -48,9 +48,10 @@ function gameOn() {
             // const finalServerID = [26, 27, 28, 29, 30, 31, 33, 36, 39, 40, 45, 46, 47];
             // game.players[1].serverHired.push(new Server(45));
             // game.players[2].serverHired.push(new Server(46));
-            game.players[game.currPlayer].serverHired.push(new Server(32));
-            game.players[game.currPlayer].numServerHired = 1;
+            // game.players[game.currPlayer].serverHired.push(new Server(32));
+            // game.players[game.currPlayer].numServerHired = 1;
             // game.players[game.currPlayer].calculateFinalGamePoint();
+            // game.players[game.currPlayer].hotel.addGuestToTable(40);
         }
     }
     

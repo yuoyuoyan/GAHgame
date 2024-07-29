@@ -264,13 +264,6 @@ class Hotel{
         ;
     }
 
-    guestBonus(guestID) {
-        if(guestID==-1){
-            console.log("invalid guest ID");
-            return;
-        }
-    }
-
     addGuestToTable(guestID){
         if(this.numGuestOnTable >= 3){
             console.log("no available table for new guests");

@@ -377,7 +377,7 @@ class Game{
 
     handleGuestClick(event) {
         console.log("guest canvas clicked");
-        if(!game.players[game.currPlayer].atInvite){
+        if(!game.players[game.currPlayer].atInvite && game.players[game.currPlayer].freeInviteNum == 0 && game.players[game.currPlayer].hotel.numGuestOnTable<3){
             console.log("current player is not inviting");
         } else {
             var guestSelected = -1;
@@ -400,18 +400,23 @@ class Game{
             }
             // selected a guest to invite
             if(guestSelected >= 0){
-                game.guestHighLightFlag = false;
                 game.players[game.currPlayer].hotel.addGuestToTable(game.guestInQueue[guestSelected]);
                 if(!game.players[game.currPlayer].hasHiredServer(24) && 
                    !game.players[game.currPlayer].hotel.firstThreeRoom && 
-                   !game.players[game.currPlayer].freeInviteFlag){ // exceptions for invitation fee
+                   game.players[game.currPlayer].freeInviteNum == 0){ // exceptions for invitation fee
                     game.players[game.currPlayer].money -= (guestSelected<3)?(3-guestSelected):0;
                 }
                 game.takeOneGuestFromQueue(guestSelected);
+                if(game.players[game.currPlayer].freeInviteNum>0 && game.players[game.currPlayer].hotel.numGuestOnTable<3) { // free invitation not considered
+                    game.players[game.currPlayer].freeInviteNum--;
+                } else {
+                    game.guestHighLightFlag = false;
+                    game.players[game.currPlayer].inviteFlag = false;
+                    game.players[game.currPlayer].freeInviteNum = 0;
+                }
+                game.players[game.currPlayer].checkOpStatus();
                 game.updateGuestCanvas(guestContext);
                 game.players[game.currPlayer].hotel.updateHotelCanvas(hotelContext);
-                game.players[game.currPlayer].inviteFlag = true;
-                game.players[game.currPlayer].checkOpStatus();
                 game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
             }
         }
@@ -494,7 +499,7 @@ class Game{
                         // close selected room, take guest bonus if any
                         game.players[game.currPlayer].hotel.roomClose(floor, col);
                         game.checkoutServerBonus(game.players[game.currPlayer].hotel.roomToCloseGuestTableID);
-                        game.players[game.currPlayer].hotel.guestBonus(game.players[game.currPlayer].hotel.roomToCloseGuestID);
+                        game.players[game.currPlayer].guestBonus(game.players[game.currPlayer].hotel.roomToCloseGuestID);
                         // remove guest from table (to coffin lmao)
                         game.players[game.currPlayer].hotel.removeGuestFromTable(game.players[game.currPlayer].hotel.roomToCloseGuestTableID);
                         game.players[game.currPlayer].hotel.roomToClose--;
@@ -525,7 +530,7 @@ class Game{
                     game.players[game.currPlayer].hotel.roomHighLightFlag = true;
                     game.players[game.currPlayer].hotel.roomToClose = 1;
                     game.players[game.currPlayer].hotel.roomToCloseColor = game.players[game.currPlayer].hotel.guestOnTable[i].guestColor;
-                    game.players[game.currPlayer].hotel.roomToCloseGuestID = game.players[game.currPlayer].hotel.guestOnTable[i].gusetID;
+                    game.players[game.currPlayer].hotel.roomToCloseGuestID = game.players[game.currPlayer].hotel.guestOnTable[i].guestID;
                     game.players[game.currPlayer].hotel.roomToCloseGuestTableID = game.players[game.currPlayer].hotel.guestOnTable[i].guestTableID;
                     game.players[game.currPlayer].hotel.updateHotelCanvas(hotelContext);
                 } else if(game.players[game.currPlayer].hotel.atSelectUnSatisfiedGuest &&
