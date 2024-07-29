@@ -804,8 +804,21 @@ class Player{
         this.serverHired.push(this.serverOnHand[serverIndex]);
         this.numServerHired++;
         // activate the bonus of server if it's one turn type
-        if(this.serverOnHand[serverIndex].serverType == 1){
+        // also auto fulfill the per-turn server
+        if(this.serverOnHand[serverIndex].serverType == 1 || this.serverOnHand[serverIndex].serverType == 0) {
             switch(this.serverOnHand[serverIndex].serverID){
+                case 0: //每回合获得一个饼干
+                this.gainBrown(1);
+                break;
+                case 1: //每回合获得一个蛋糕
+                this.gainWhite(1);
+                break;
+                case 2: //每回合获得一个红酒
+                this.gainRed(1);
+                break;
+                case 3: //每回合获得一个咖啡
+                this.gainBlack(1);
+                break;
                 case 20: //一次性获得所有食物或饮料各一份
                 this.gainBrown(1);
                 this.gainWhite(1);

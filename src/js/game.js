@@ -962,11 +962,26 @@ class Game{
                         this.players[i].diceTaken = [-1, -1];
                         this.players[i].updatePlayerCanvas(this.players[i].context);
                     }
+                    this.rollDice();
                 }
             } else { // next mini round
                 this.miniRound++;
                 this.currPlayer = (this.miniRound < this.playerNumber) ? this.miniRound : 2*this.playerNumber-this.miniRound-1;
             }
+            // take a food for every per-turn server
+            if(this.players[this.currPlayer].hasHiredServer(0)){
+                this.players[this.currPlayer].gainBrown(1);
+            }
+            if(this.players[this.currPlayer].hasHiredServer(1)){
+                this.players[this.currPlayer].gainWhite(1);
+            }
+            if(this.players[this.currPlayer].hasHiredServer(2)){
+                this.players[this.currPlayer].gainRed(1);
+            }
+            if(this.players[this.currPlayer].hasHiredServer(3)){
+                this.players[this.currPlayer].gainBlack(1);
+            }
+            // update all canvas
             this.players[this.currPlayer].turnFlag = true;
             this.updateGuestCanvas(guestContext);
             this.players[this.currPlayer].checkOpStatus();

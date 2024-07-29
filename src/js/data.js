@@ -338,7 +338,7 @@ const serverNameByID = [
 ];
 
 const serverDescriptionByID = [
-    "每回合获得一个咖啡",
+    "每回合获得一个饼干",
     "每回合获得一个蛋糕",
     "每回合获得一个红酒",
     "每回合获得一个咖啡",

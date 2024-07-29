@@ -22,7 +22,7 @@ function gameOn() {
             game.players[game.currPlayer].hotel.firstThreeRoom = false;
             game.players[game.currPlayer].hotel.roomHighLightFlag = false;
             game.players[game.currPlayer].checkOpStatus();
-            game.players[game.currPlayer].addServerToHand(37);
+            game.players[game.currPlayer].addServerToHand(0);
             game.rollDice();
         }
         game.currPlayer = 0;
