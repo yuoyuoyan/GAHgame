@@ -813,13 +813,18 @@ class Player{
                 this.gainBlack(1);
                 break;
                 case 34: //一次性将两个准备好的房间入住
-                // TODO
+                this.hotel.highlightRoomToCheckout(4);
+                this.hotel.roomHighLightFlag = true;
+                this.hotel.roomToClose = 2;
+                this.hotel.roomToCloseColor = 4;
+                this.hotel.roomToCloseGuestID = -1;
+                this.hotel.roomToCloseGuestTableID = -1;
                 break;
                 case 35: //一次性获得4份红酒
                 this.gainRed(4);
                 break;
                 case 37: //一次性满足一位客人的所有用餐需求
-                // TODO
+                this.hotel.atSelectUnSatisfiedGuest = true;
                 break;
                 case 38: //一次性获得4份蛋糕
                 this.gainWhite(4);

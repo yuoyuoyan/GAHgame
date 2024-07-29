@@ -486,11 +486,13 @@ class Game{
                         game.players[game.currPlayer].hotel.guestBonus(game.players[game.currPlayer].hotel.roomToCloseGuestID);
                         // remove guest from table (to coffin lmao)
                         game.players[game.currPlayer].hotel.removeGuestFromTable(game.players[game.currPlayer].hotel.roomToCloseGuestTableID);
-                        game.players[game.currPlayer].hotel.roomHighLightFlag = false;
+                        game.players[game.currPlayer].hotel.roomToClose--;
+                        if(game.players[game.currPlayer].hotel.roomToClose == 0){
+                            game.players[game.currPlayer].hotel.roomHighLightFlag = false;
+                        }
                         game.players[game.currPlayer].hotel.updateHotelCanvas(hotelContext);
                         game.players[game.currPlayer].checkOpStatus();
                         game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
-                        game.players[game.currPlayer].hotel.roomToClose--;
                     }
                 }
             }
@@ -502,19 +504,29 @@ class Game{
         const guestHeight  = 240;
         for(let i=0; i<3; i++){
             if(game.players[game.currPlayer].hotel.guestOnTable[i] != null && 
-                event.offsetX>=guestXoffset && event.offsetX<=(guestXoffset+guestWidth) && event.offsetY>=guestYoffset && event.offsetY<=(guestYoffset+guestHeight) &&
-                game.players[game.currPlayer].hotel.guestOnTable[i].guestSatisfied &&
-                game.players[game.currPlayer].hotel.atSelectSatisfiedGuest) {
-                console.log("satisfied guest " + i + " is clicked");
-                // start picking the room to close
-                game.players[game.currPlayer].hotel.atSelectSatisfiedGuest = false;
-                game.players[game.currPlayer].hotel.highlightRoomToCheckout(game.players[game.currPlayer].hotel.guestOnTable[i].guestColor);
-                game.players[game.currPlayer].hotel.roomHighLightFlag = true;
-                game.players[game.currPlayer].hotel.roomToClose = 1;
-                game.players[game.currPlayer].hotel.roomToCloseColor = game.players[game.currPlayer].hotel.guestOnTable[i].guestColor;
-                game.players[game.currPlayer].hotel.roomToCloseGuestID = game.players[game.currPlayer].hotel.guestOnTable[i].gusetID;
-                game.players[game.currPlayer].hotel.roomToCloseGuestTableID = game.players[game.currPlayer].hotel.guestOnTable[i].guestTableID;
-                game.players[game.currPlayer].hotel.updateHotelCanvas(hotelContext);
+                event.offsetX>=guestXoffset && event.offsetX<=(guestXoffset+guestWidth) && event.offsetY>=guestYoffset && event.offsetY<=(guestYoffset+guestHeight)) {
+                if(game.players[game.currPlayer].hotel.atSelectSatisfiedGuest &&
+                    game.players[game.currPlayer].hotel.guestOnTable[i].guestSatisfied){
+                    console.log("satisfied guest " + i + " is clicked");
+                    // start picking the room to close
+                    game.players[game.currPlayer].hotel.atSelectSatisfiedGuest = false;
+                    game.players[game.currPlayer].hotel.highlightRoomToCheckout(game.players[game.currPlayer].hotel.guestOnTable[i].guestColor);
+                    game.players[game.currPlayer].hotel.roomHighLightFlag = true;
+                    game.players[game.currPlayer].hotel.roomToClose = 1;
+                    game.players[game.currPlayer].hotel.roomToCloseColor = game.players[game.currPlayer].hotel.guestOnTable[i].guestColor;
+                    game.players[game.currPlayer].hotel.roomToCloseGuestID = game.players[game.currPlayer].hotel.guestOnTable[i].gusetID;
+                    game.players[game.currPlayer].hotel.roomToCloseGuestTableID = game.players[game.currPlayer].hotel.guestOnTable[i].guestTableID;
+                    game.players[game.currPlayer].hotel.updateHotelCanvas(hotelContext);
+                } else if(game.players[game.currPlayer].hotel.atSelectUnSatisfiedGuest &&
+                    !game.players[game.currPlayer].hotel.guestOnTable[i].guestSatisfied){
+                    game.players[game.currPlayer].hotel.atSelectUnSatisfiedGuest = false;
+                    game.players[game.currPlayer].hotel.satisfyGuest(i);
+                    game.players[game.currPlayer].hotel.updateHotelCanvas(hotelContext);
+                    game.players[game.currPlayer].checkOpStatus();
+                    game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
+                }
+                
+                
             }
             guestXoffset += 182;
         }
@@ -906,6 +918,7 @@ class Game{
                         game.players[game.currPlayer].serverOnHandHighLightFlag = false;
                         game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
                         game.players[game.currPlayer].updateServerCanvas(serverContext);
+                        game.players[game.currPlayer].hotel.updateHotelCanvas(hotelContext);
                     }
                 }
             }

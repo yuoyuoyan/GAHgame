@@ -24,6 +24,7 @@ class Hotel{
         this.roomToCloseGuestID = 0;
         this.roomToCloseGuestTableID = 0;
         this.atSelectSatisfiedGuest = false; // assert it to select satisfied guest from table
+        this.atSelectUnSatisfiedGuest = false; // assert it to select unsatisfied guest from table
         // highlight the room to be prepared at first stage
         this.highlightRoomToPrepare(10);
         // draw the hotel board
@@ -106,6 +107,10 @@ class Hotel{
             if(this.guestOnTable[i] != null) {
                 context.drawImage(guestImg[this.guestOnTable[i].guestID], guestXoffset, guestYoffset, guestWidth, guestHeight);
                 if(this.atSelectSatisfiedGuest && this.guestOnTable[i].guestSatisfied) { // hightlight satisfied guests if flag on
+                    context.strokeStyle = "red";
+                    context.lineWidth = 3;
+                    context.strokeRect(guestXoffset, guestYoffset, guestWidth, guestHeight);
+                } else if(this.atSelectUnSatisfiedGuest && !this.guestOnTable[i].guestSatisfied) { // highlight unsatisfied guests if flag on
                     context.strokeStyle = "red";
                     context.lineWidth = 3;
                     context.strokeRect(guestXoffset, guestYoffset, guestWidth, guestHeight);
@@ -252,7 +257,10 @@ class Hotel{
     }
 
     guestBonus(guestID) {
-        ;
+        if(guestID==-1){
+            console.log("invalid guest ID");
+            return;
+        }
     }
 
     addGuestToTable(guestID){
@@ -275,11 +283,23 @@ class Hotel{
     }
 
     removeGuestFromTable(guestTableID){
+        if(guestTableID==-1){
+            console.log("invalie guest table");
+            return;
+        }
         if(this.guestOnTable[guestTableID]==null){
             console.log("this guest on table is not valid");
             return;
         }
         this.guestOnTable[guestTableID]=null;
         this.numGuestOnTable--;
+    }
+
+    satisfyGuest(guestTableID){
+        for(let i=0; i<this.guestOnTable[guestTableID].guestFoodServed.length; i++){
+            this.guestOnTable[guestTableID].guestFoodServed[i] = 1;
+        }
+        this.guestOnTable[guestTableID].guestFoodServedNum = this.guestOnTable[guestTableID].guestFoodServed.length;
+        this.guestOnTable[guestTableID].guestSatisfied = true;
     }
 }
