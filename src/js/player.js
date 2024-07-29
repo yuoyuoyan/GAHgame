@@ -13,7 +13,7 @@ class Player{
         }
         this.turnFlag = false; // assert when it's this player's turn
         this.endFlag = false; // game class wait for this flag to go to next turn
-        this.miniTurn = [0, 0];
+        this.miniTurn = [-1, -1];
         this.diceTaken = [-1, -1];
         this.firstGuestTurn = true; // whether at the first-guest-picking turn
         this.opInvite = true;
@@ -508,7 +508,7 @@ class Player{
         var   miniRoundYoffset = 8;
         var   miniRoundWidth = 34;
         var   miniRoundHeight = 34;
-        if(this.diceTaken[0] != -1){ // draw the dice
+        if(this.diceTaken[1] != -1){ // draw the dice
             var diceImg = dice1Img;
             switch(this.diceTaken[1]){
                 case 1: diceImg = dice1Img; break;

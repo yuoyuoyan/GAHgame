@@ -907,6 +907,12 @@ class Game{
     }
 
     takeDice(value) {
+        if(this.miniRound <= this.playerNumber) {
+            this.players[this.currPlayer].diceTaken[0] = value+1;
+        } else {
+            this.players[this.currPlayer].diceTaken[1] = value+1;
+        }
+        this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
         switch(value){
             case 0: // take brown and white
             this.players[this.currPlayer].actionTakeBrownWhite(this.actionPoint[0]);
