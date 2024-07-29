@@ -317,11 +317,11 @@ class Player{
                 this.markCanvas(context, 80, 110, 90, 120, 100, 100);
             }
             context.drawImage(royalTokenImg, 150, 95, 30, 40);
-            this.textCanvas(context, game.players[game.currPlayer].atMoney.toString(), 200, 120);
+            this.textCanvas(context, game.players[game.currPlayer].atRoyal.toString(), 200, 120);
             this.triangleCanvas(context, 225, 110, 250, 90, 275, 110);
             this.triangleCanvas(context, 225, 120, 250, 140, 275, 120);
             context.drawImage(moneyImg, 300, 100, 30, 30);
-            this.textCanvas(context, game.players[game.currPlayer].atRoyal.toString(), 350, 120);
+            this.textCanvas(context, game.players[game.currPlayer].atMoney.toString(), 350, 120);
             this.triangleCanvas(context, 375, 110, 400, 90, 425, 110);
             this.triangleCanvas(context, 375, 120, 400, 140, 425, 120);
             context.fillStyle = 'white';
@@ -688,7 +688,7 @@ class Player{
         return this.gamePoint;
     }
 
-    gainRoyalPoint(value) {
+    gainRoyal(value) {
         if(this.royalPoint + value > 13){ // royal overflow to game point
             this.gamePoint += (this.royalPoint + value - 13);
         } else {
@@ -696,7 +696,7 @@ class Player{
         }
     }
 
-    loseRoyalPoint(value) {
+    loseRoyal(value) {
         this.royalPoint = Math.max(this.royalPoint-value, 0); // cannot below 0
     }
 
