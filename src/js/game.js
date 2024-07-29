@@ -598,7 +598,7 @@ class Game{
                 console.log("confirm selected");
             }
         } else if(game.players[game.currPlayer].atPrepareRoom){
-            var roomTmp = game.players[game.currPlayer].atRoomToPrepare;
+            var roomTmp = game.actionPoint[2]+1+(game.players[game.currPlayer].atActionBoost?1:0);
             if(event.offsetX>=20 && event.offsetX<=120 && event.offsetY>=90 && event.offsetY<=140){ // boost
                 if(game.players[game.currPlayer].money>0){
                     console.log("boost selected");
