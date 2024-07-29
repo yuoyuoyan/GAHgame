@@ -13,6 +13,9 @@ class Hotel{
         this.roomColumnClosedNum = 0;
         this.roomRowClosedNum = 0;
         this.roomAreaClosedNum = 0;
+        this.roomRedClosedNum = 0;
+        this.roomYellowClosedNum = 0;
+        this.roomBlueClosedNum = 0;
         this.roomHighLightFlag = true;
         this.roomHighLight = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]];
         this.numGuestOnTable = 0;
@@ -217,6 +220,11 @@ class Hotel{
         }
         this.roomClosedNum++;
         this.roomPreparedNum--;
+        switch(this.roomColor[floor][col]){
+            case 0: this.roomRedClosedNum++; break;
+            case 1: this.roomYellowClosedNum++; break;
+            case 2: this.roomBlueClosedNum++; break;
+        }
         // count the closed floors
         this.roomRowClosedNum = 0;
         for(let floor=0; floor<4; floor++){

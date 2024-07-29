@@ -996,7 +996,9 @@ class Game{
     }
 
     gameEnd() {
-        ;
+        for(let i=0; i<this.playerNumber; i++){
+            this.players[i].calculateFinalGamePoint();
+        }
     }
 
     takeDice(value) {

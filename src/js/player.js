@@ -875,4 +875,60 @@ class Player{
         }
         return false;
     }
+
+    calculateFinalGamePoint() {
+        // the most special, handle first
+        var orgHiredServerNum = this.serverHired.length;
+        if(this.hasHiredServer(28)){ //最终结算时获得所有其他玩家的结算效果
+            for(let i=0; i<game.playerNumber; i++){
+                if(i==this.playerID){
+                    continue;
+                }
+                const finalServerID = [26, 27, 29, 30, 31, 33, 36, 39, 40, 45, 46, 47];
+                for(let j=0; j<finalServerID.length; j++){
+                    if(game.players[i].hasHiredServer(finalServerID[j])) {
+                        this.serverHired.push(new Server(finalServerID[j]));
+                    }
+                }
+            }
+        }
+
+        if(this.hasHiredServer(26)){ // 最终结算时每个入住的红房间获得5游戏点数
+            this.gamePoint += this.hotel.roomRedClosedNum * 5;
+        }
+        if(this.hasHiredServer(27)){ //最终结算时每个入住的蓝房间获得5游戏点数
+            this.gamePoint += this.hotel.roomBlueClosedNum * 5;
+        }
+        if(this.hasHiredServer(29)){ //最终结算时每个入住的黄房间获得5游戏点数
+            this.gamePoint += this.hotel.roomYellowClosedNum * 5;
+        }
+        if(this.hasHiredServer(30)){ //最终结算时每个入住的房间获得1游戏点数
+            this.gamePoint += this.hotel.roomClosedNum;
+        }
+        if(this.hasHiredServer(31)){ //最终结算时每个雇佣的员工获得2游戏点数
+            this.gamePoint += orgHiredServerNum * 2;
+        }
+        if(this.hasHiredServer(33)){ //最终结算时每个准备好或者入住的房间获得1游戏点数
+            this.gamePoint += this.hotel.roomClosedNum + this.hotel.roomPreparedNum;
+        }
+        if(this.hasHiredServer(36)){ //最终结算时每个全部入住的区域获得2游戏点数
+            this.gamePoint += this.hotel.roomAreaClosedNum * 2;
+        }
+        if(this.hasHiredServer(39)){ //最终结算时每个完成的全局任务获得5游戏点数
+            // TODO
+            ;
+        }
+        if(this.hasHiredServer(40)){ //最终结算时每个剩余的皇室点数获得2游戏点数
+            this.gamePoint += this.royalPoint * 2;
+        }
+        if(this.hasHiredServer(45)){ //最终结算时每个全部入住的层获得5游戏点数
+            this.gamePoint += this.hotel.roomRowClosedNum * 5;
+        }
+        if(this.hasHiredServer(46)){ //最终结算时每个全部入住的列获得5游戏点数
+            this.gamePoint += this.hotel.roomColumnClosedNum * 5;
+        }
+        if(this.hasHiredServer(47)){ //最终结算时每个入住的红黄蓝房间组合获得4游戏点数
+            this.gamePoint += Math.min(this.hotel.roomRedClosedNum, this.hotel.roomBlueClosedNum, this.hotel.roomYellowClosedNum) * 4;
+        }
+    }
 }
