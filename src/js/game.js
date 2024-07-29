@@ -267,9 +267,11 @@ class Game{
         const blockHeight = 120;
         if(this.actionHighLightFlag){
             for(let i=0; i<6; i++){
-                context.strokeStyle = "red";
-                context.lineWidth = 5;
-                context.strokeRect(blockXoffset, blockYoffset, blockWidth, blockHeight);
+                if(this.actionHighLight[i]){
+                    context.strokeStyle = "red";
+                    context.lineWidth = 5;
+                    context.strokeRect(blockXoffset, blockYoffset, blockWidth, blockHeight);
+                }
                 blockXoffset+=159;
                 context.strokeStyle = "white";
             }
@@ -361,6 +363,9 @@ class Game{
             game.updateActionCanvas(actionContext);
             break;
             case 3: // serve
+            if(game.players[game.currPlayer].money > 0) {
+                ;
+            }
             break;
             case 4: // checkout
             break;
@@ -427,6 +432,9 @@ class Game{
                         continue;
                     }
                     game.actionHighLightFlag = false;
+                    for(let i=0; i<6; i++){
+                        game.actionHighLight[i] = 0;
+                    }
                     game.updateActionCanvas(actionContext);
                     game.players[game.currPlayer].atAction = false;
                     game.players[game.currPlayer].checkOpStatus();
