@@ -467,6 +467,7 @@ class Game{
                         game.players[game.currPlayer].checkOpStatus();
                         game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
                     } else if(game.players[game.currPlayer].hotel.roomToPrepare>0 && game.players[game.currPlayer].hotel.roomHighLight[floor][col]){
+                        console.log("prepare room at floor " + floor + " col " + col);
                         // prepare selected room, check money
                         game.players[game.currPlayer].hotel.roomPrepare(floor, col);
                         game.players[game.currPlayer].loseMoney(floor);
@@ -478,9 +479,44 @@ class Game{
                         game.players[game.currPlayer].checkOpStatus();
                         game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
                         game.players[game.currPlayer].hotel.roomToPrepare--;
+                    } else if(game.players[game.currPlayer].hotel.roomToClose>0 && game.players[game.currPlayer].hotel.roomHighLight[floor][col]){
+                        console.log("checkout room at floor " + floor + " col " + col);
+                        // close selected room, take guest bonus if any
+                        game.players[game.currPlayer].hotel.roomClose(floor, col);
+                        game.players[game.currPlayer].hotel.guestBonus(game.players[game.currPlayer].hotel.roomToCloseGuestID);
+                        // remove guest from table (to coffin lmao)
+                        game.players[game.currPlayer].hotel.removeGuestFromTable(game.players[game.currPlayer].hotel.roomToCloseGuestTableID);
+                        game.players[game.currPlayer].hotel.roomHighLightFlag = false;
+                        game.players[game.currPlayer].hotel.updateHotelCanvas(hotelContext);
+                        game.players[game.currPlayer].checkOpStatus();
+                        game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
+                        game.players[game.currPlayer].hotel.roomToClose--;
                     }
                 }
             }
+        }
+        // pick guests to checkout
+        var   guestXoffset = 36;
+        var   guestYoffset = 610;
+        const guestWidth   = 160;
+        const guestHeight  = 240;
+        for(let i=0; i<3; i++){
+            if(game.players[game.currPlayer].hotel.guestOnTable[i] != null && 
+                event.offsetX>=guestXoffset && event.offsetX<=(guestXoffset+guestWidth) && event.offsetY>=guestYoffset && event.offsetY<=(guestYoffset+guestHeight) &&
+                game.players[game.currPlayer].hotel.guestOnTable[i].guestSatisfied &&
+                game.players[game.currPlayer].hotel.atSelectSatisfiedGuest) {
+                console.log("satisfied guest " + i + " is clicked");
+                // start picking the room to close
+                game.players[game.currPlayer].hotel.atSelectSatisfiedGuest = false;
+                game.players[game.currPlayer].hotel.highlightRoomToCheckout(game.players[game.currPlayer].hotel.guestOnTable[i].guestColor);
+                game.players[game.currPlayer].hotel.roomHighLightFlag = true;
+                game.players[game.currPlayer].hotel.roomToClose = 1;
+                game.players[game.currPlayer].hotel.roomToCloseColor = game.players[game.currPlayer].hotel.guestOnTable[i].guestColor;
+                game.players[game.currPlayer].hotel.roomToCloseGuestID = game.players[game.currPlayer].hotel.guestOnTable[i].gusetID;
+                game.players[game.currPlayer].hotel.roomToCloseGuestTableID = game.players[game.currPlayer].hotel.guestOnTable[i].guestTableID;
+                game.players[game.currPlayer].hotel.updateHotelCanvas(hotelContext);
+            }
+            guestXoffset += 182;
         }
         // serve food to guests on tables
         var   foodXoffset = 40;
@@ -534,8 +570,8 @@ class Game{
                                 game.players[game.currPlayer].hotel.guestOnTable[i].guestFoodServedNum);
                             if(game.players[game.currPlayer].serveFoodNum==0){
                                 game.players[game.currPlayer].atServe = false;
-                                game.players[game.currPlayer].checkOpStatus();
                             }
+                            game.players[game.currPlayer].checkOpStatus();
                         }
 
                         game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);

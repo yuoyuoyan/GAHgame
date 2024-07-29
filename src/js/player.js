@@ -113,6 +113,14 @@ class Player{
         // check if this event is checkout
         if(event.offsetX >= 847 && event.offsetX <= 887 && event.offsetY >= 10 && event.offsetY <= 30){
             console.log("Checkout button pressed");
+            if(this.opCheckout){
+                // disable all
+                this.disableAllOp();
+                this.atCheckout = true;
+                this.hotel.atSelectSatisfiedGuest = true;
+                this.hotel.updateHotelCanvas(hotelContext);
+                this.updatePlayerCanvas(this.context);
+            }
             return 4;
         }
 
@@ -795,6 +803,38 @@ class Player{
 
         this.serverHired.push(this.serverOnHand[serverIndex]);
         this.numServerHired++;
+        // activate the bonus of server if it's one turn type
+        if(this.serverOnHand[serverIndex].serverType == 1){
+            switch(this.serverOnHand[serverIndex].serverID){
+                case 20: //一次性获得所有食物或饮料各一份
+                this.gainBrown(1);
+                this.gainWhite(1);
+                this.gainRed(1);
+                this.gainBlack(1);
+                break;
+                case 34: //一次性将两个准备好的房间入住
+                // TODO
+                break;
+                case 35: //一次性获得4份红酒
+                this.gainRed(4);
+                break;
+                case 37: //一次性满足一位客人的所有用餐需求
+                // TODO
+                break;
+                case 38: //一次性获得4份蛋糕
+                this.gainWhite(4);
+                break;
+                case 42: //一次性获得4份咖啡
+                this.gainBlack(4);
+                break;
+                case 43: //一次性获得4份饼干
+                this.gainBrown(4);
+                break;
+                case 44: //一次性获得3皇家点数
+                this.gainRoyal(3);
+                break;
+            }
+        }
         this.serverOnHand.splice(serverIndex, 1); // remove this server on hand
         this.serverOnHandHighLight.splice(serverIndex, 1);
         this.numServerOnHand--;

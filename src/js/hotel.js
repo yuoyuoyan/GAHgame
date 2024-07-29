@@ -19,6 +19,11 @@ class Hotel{
         this.guestOnTable = [null, null, null];
         this.firstThreeRoom = true;
         this.roomToPrepare = 0;
+        this.roomToClose = 0;
+        this.roomToCloseColor = 0; // 1,2,3 as r/y/b, 4 as any color
+        this.roomToCloseGuestID = 0;
+        this.roomToCloseGuestTableID = 0;
+        this.atSelectSatisfiedGuest = false; // assert it to select satisfied guest from table
         // highlight the room to be prepared at first stage
         this.highlightRoomToPrepare(10);
         // draw the hotel board
@@ -98,10 +103,13 @@ class Hotel{
         const guestWidth   = 160;
         const guestHeight  = 240;
         for(let i=0; i<3; i++){
-            if(this.guestOnTable[i] == null) {
-                guestXoffset += 182;
-            } else {
+            if(this.guestOnTable[i] != null) {
                 context.drawImage(guestImg[this.guestOnTable[i].guestID], guestXoffset, guestYoffset, guestWidth, guestHeight);
+                if(this.atSelectSatisfiedGuest && this.guestOnTable[i].guestSatisfied) { // hightlight satisfied guests if flag on
+                    context.strokeStyle = "red";
+                    context.lineWidth = 3;
+                    context.strokeRect(guestXoffset, guestYoffset, guestWidth, guestHeight);
+                }
             }
             guestXoffset += 182;
         }
@@ -155,6 +163,31 @@ class Hotel{
         }
     }
 
+    highlightRoomToCheckout(color) {
+        for(let floor=0; floor<4; floor++){
+            for(let col=0; col<5; col++){
+                if (this.roomStatus[floor][col] == 0 && // prepared
+                    (this.roomColor[floor][col] == color || color==4)) { // match color or color doesn't care
+                    this.roomHighLight[floor][col] = 1;
+                } else {
+                    this.roomHighLight[floor][col] = 0;
+                }
+            }
+        }
+    }
+
+    hasRoomToCheckout(color){
+        for(let floor=0; floor<4; floor++){
+            for(let col=0; col<5; col++){
+                if (this.roomStatus[floor][col] == 0 && // prepared
+                    (this.roomColor[floor][col] == color || color==4)) { // match color or color doesn't care
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     roomPrepare(floor, col) {
         if(floor<0 || floor>3 || col<0 || col>4){
             return;
@@ -163,7 +196,62 @@ class Hotel{
         this.roomPreparedNum++;
     }
 
-    roomClose(colorID) {
+    roomClose(floor, col) {
+        if(floor<0 || floor>3 || col<0 || col>4){
+            return;
+        }
+
+        if(this.roomStatus[floor][col] != 0){
+            return;
+        }
+
+        this.roomStatus[floor][col] = 1; // close room
+        this.roomAreaRoom[this.roomArea[floor][col]]--; // area room counter
+        if(this.roomAreaRoom[this.roomArea[floor][col]]==0){ // trigger the area bonus
+            ;
+        }
+        this.roomClosedNum++;
+        this.roomPreparedNum--;
+        // count the closed floors
+        this.roomRowClosedNum = 0;
+        for(let floor=0; floor<4; floor++){
+            var floorFlag = true;
+            for(let col=0; col<5; col++){
+                if(this.roomStatus[floor][col]!=1){
+                    floorFlag = false;
+                }
+            }
+            if(floorFlag){
+                this.roomRowClosedNum++;
+            }
+        }
+        // count the closed cols
+        this.roomColumnClosedNum = 0;
+        for(let col=0; col<5; col++){
+            var colFlag = true;
+            for(let floor=0; floor<4; floor++){
+                if(this.roomStatus[floor][col]!=1){
+                    colFlag = false;
+                }
+            }
+            if(colFlag){
+                this.roomColumnClosedNum++;
+            }
+        }
+        // count the closed areas
+        this.roomAreaClosedNum = 0;
+        for(let i=0; i<10; i++){
+            if(this.roomAreaRoom[i]==0){
+                this.roomAreaClosedNum++;
+            }
+        }
+    }
+
+    areaBonus() {
+        ;
+    }
+
+    guestBonus(guestID) {
         ;
     }
 
@@ -184,5 +272,14 @@ class Hotel{
         this.guestOnTable[availableTable] = new Guest(guestID, availableTable);
         this.numGuestOnTable++;
         console.log("Add guest " + this.guestOnTable[availableTable].guestName + " to table " + availableTable);
+    }
+
+    removeGuestFromTable(guestTableID){
+        if(this.guestOnTable[guestTableID]==null){
+            console.log("this guest on table is not valid");
+            return;
+        }
+        this.guestOnTable[guestTableID]=null;
+        this.numGuestOnTable--;
     }
 }
