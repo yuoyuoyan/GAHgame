@@ -13,6 +13,8 @@ class Player{
             case 3: this.canvas = player3Canvas; this.context = player3Context; this.markerColor = "grey";   /*console.log("link to canvas 3");*/ break;
         }
         this.endFlag = false; // game class wait for this flag to go to next turn
+        this.royalResult = [-1, -1, -1]; // punish 0 reward 1 notyet -1
+        this.royalResultPending = false;
         this.miniTurn = [-1, -1];
         this.diceTaken = [-1, -1];
         this.firstGuestTurn = true; // whether at the first-guest-picking turn
@@ -47,6 +49,7 @@ class Player{
         this.actionFlag = false; // whether already took dice this turn
         this.hireNum = 0;
         this.hireLimitLastThree = false; // only used at draw 3 and hire 1
+        this.loseServerNum = 0;
         this.serveFoodNum = 0;
         this.specialRound = false;
         this.gamePoint = 0;
@@ -72,9 +75,10 @@ class Player{
     checkOpStatus() {
         // check operation availability based on player status
         // No op other than invite available at the first guest picking round
-        this.opInvite = !this.inviteFlag;
-        this.opAction = !this.actionFlag && !this.firstGuestTurn;
-        this.opServe = (this.money > 0) && (this.food > 0) && !this.firstGuestTurn && !this.atServe;
+        // In royal round, can only end when the reward or punishment complete
+        this.opInvite = this.game.royalRound ? false : !this.inviteFlag;
+        this.opAction = this.game.royalRound ? false : (!this.actionFlag && !this.firstGuestTurn);
+        this.opServe = this.game.royalRound ? false : ((this.money > 0) && (this.food > 0) && !this.firstGuestTurn && !this.atServe);
         this.opCheckout = false;
         if(!this.firstGuestTurn){
             for(let i=0; i<this.hotel.numGuestOnTable; i++){
@@ -83,8 +87,13 @@ class Player{
                 }
             }
         }
+        if(this.game.royalRound) this.opCheckout = false;
         // first guest round, need to invite a guest and prepare 3 rooms
-        this.opEnd = this.firstGuestTurn ? (this.inviteFlag && (this.hotel.roomPreparedNum == 3)) : this.actionFlag;
+        if(this.game.royalRound) {
+            this.opEnd = !this.royalResultPending;
+        } else {
+            this.opEnd = this.firstGuestTurn ? (this.inviteFlag && (this.hotel.roomPreparedNum == 3)) : this.actionFlag;
+        }
     }
 
     disableAllOp() {
@@ -153,6 +162,14 @@ class Player{
         this.atMirrorStrength = value;
         this.atMirrorDice = 1;
         this.alertType = 5;
+    }
+
+    highlightServerToLose(numServer) {
+        this.serverOnHandHighLightFlag = true;
+        this.loseServerNum=numServer;
+        for(let i=0; i<this.serverOnHand.length; i++){
+            this.serverOnHandHighLight[i] = 1; // all servers can be lost
+        }
     }
 
     highlightServerToHire(discount, hireLimitLastThree=false) {
@@ -279,6 +296,18 @@ class Player{
         this.red = 0;
         this.black = 0;
         this.food = 0;
+    }
+
+    clearGuestTable() {
+        for(let i=0; i<3; i++){
+            if(this.guestOnTable[i]!=null){
+                this.guestOnTable[i].guestSatisfied = false;
+                this.guestOnTable[i].guestFoodServedNum = 0;
+                for(let j=0; j<this.guestOnTable[i].guestRequirementNum; j++){
+                    this.guestOnTable[i].guestFoodServed[i] = 0;
+                }
+            }
+        }
     }
 
     hasMoney(value) {
@@ -828,6 +857,21 @@ class Player{
             context.strokeRect(200, 170, 100, 40);
             context.fillRect(200, 170, 100, 40);
             this.textCanvas(context, "确定", 228, 200);
+            break;
+            case 7: // pick royal task result
+            // TODO
+            var img0, img1;
+            if(this.game.mainRound==2 && this.game.royalTask0==0 && this.royalResult[0]==0) { //失去3块钱或5游戏点数
+                img0 = moneyImg; img1 = gamePointTokenImg;
+            } else if(this.game.mainRound==2 && this.game.royalTask0==3 && this.royalResult[0]==0) { //失去最高的准备好的房间或失去5游戏点数
+                img0 = roomRedPreparedImg; img1 = gamePointTokenImg;
+            } else if(this.game.mainRound==4 && this.game.royalTask0==1 && this.royalResult[0]==0) { //失去5块钱或失去7游戏点数
+                ;
+            }
+            //丢弃3张员工手牌或失去7游戏点数
+            //失去最高的已入住的2个房间或失去7游戏点数
+            context.drawImage(brownImg, 100, 25, 30, 30);
+            break;
         }
     }
 
@@ -1188,8 +1232,8 @@ class Player{
             console.log("End button pressed");
             if(this.opEnd){
                 this.endFlag = true;
+                this.nextMiniRound();
             }
-            this.nextMiniRound();
         }
         
         // update canvas

@@ -17,6 +17,7 @@ class Hotel{
         this.roomRedClosedNum = 0;
         this.roomYellowClosedNum = 0;
         this.roomBlueClosedNum = 0;
+        this.roomMaxFloor = -1;
         this.roomHighLightFlag = true;
         this.roomHighLight = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]];
         this.numGuestOnTable = 0;
@@ -24,6 +25,7 @@ class Hotel{
         this.firstThreeRoom = true;
         this.roomToPrepare = 0;
         this.roomToPrepareDiscount = [];
+        this.roomToLose = 0;
         this.roomToClose = 0;
         this.roomToCloseColor = 0; // 1,2,3 as r/y/b, 4 as any color
         this.roomToCloseGuestID = 0;
@@ -31,6 +33,24 @@ class Hotel{
         this.roomCloseBonus = false;
         this.atSelectSatisfiedGuest = false; // assert it to select satisfied guest from table
         this.atSelectUnSatisfiedGuest = false; // assert it to select unsatisfied guest from table
+    }
+
+    highlightRoomToLose(isMaxLevel=false, isNextMaxLevel=false, updateOnly=false) {
+        if(!updateOnly){ // click handle need to update highlight without increase number
+            this.roomToLose++;
+            this.roomHighLightFlag = true;
+        }
+        for(let floor=0; floor<4; floor++){
+            for(let col=0; col<5; col++){
+                if((this.roomStatus[floor][col] == 1) && // occupied room
+                    (isMaxLevel && floor==this.maxLevel) || // room at max level
+                    (isNextMaxLevel && floor==Math.max(0,this.maxLevel-1)) ) {
+                    this.roomHighLight[floor][col] = 1;
+                } else {
+                    this.roomHighLight[floor][col] = 0;
+                }
+            }
+        }
     }
 
     highlightRoomToPrepare(money, discount=0, maxLevel=3, updateOnly=false) {
@@ -128,6 +148,8 @@ class Hotel{
             case 1: this.roomYellowClosedNum++; break;
             case 2: this.roomBlueClosedNum++; break;
         }
+        // update max level
+        this.roomMaxFloor = Math.max(this.roomMaxFloor, floor);
         // count the closed floors
         this.roomRowClosedNum = 0;
         for(let floor=0; floor<4; floor++){

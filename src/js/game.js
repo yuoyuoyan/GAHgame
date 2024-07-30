@@ -15,7 +15,7 @@ class Game{
         // console.log("major task 2: " + majorTaskDescription[1][this.majorTask1]);
         this.majorTask2 = Math.floor(Math.random() * 4);
         // console.log("major task 3: " + majorTaskDescription[2][this.majorTask2]);
-        this.majorTaskComp = [[0, 1, 2], [1, 2, 3], [2, 3, 0]];
+        this.majorTaskComp = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]];
         this.royalTask0 = Math.floor(Math.random() * 4);
         // console.log("royal task 1: " + royalTaskDescription[0][this.royalTask0]);
         this.royalTask1 = Math.floor(Math.random() * 4);
@@ -25,6 +25,7 @@ class Game{
         this.mainRound = 0;
         // console.log("main round: " + this.mainRound);
         this.miniRound = 0;
+        this.royalRound = false;
         this.actionPoint = [0, 0, 0, 0, 0, 0];
         this.actionHighLightFlag = false;
         this.actionHighLight = [0, 0, 0, 0, 0, 0];
@@ -112,43 +113,70 @@ class Game{
             this.players[this.currPlayer].firstGuestTurn = false;
             this.players[this.currPlayer].inviteFlag = false;
             this.players[this.currPlayer].actionFlag = false;
-            this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
             if(this.currPlayer == this.playerNumber-1){ // all players complete preparation
                 this.currPlayer = 0;
                 this.rollDice();
-                this.players[this.currPlayer].checkOpStatus();
             } else {
                 this.currPlayer++;
             }
-            this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
-            this.players[this.currPlayer].updateServerCanvas(serverContext);
-            this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
+        } else if(this.miniRound == (2*this.playerNumber-1) || this.royalRound) { // end of main round, check royal round first
+            if(!this.royalRound){ // start of royal round, reset curr player first
+                this.currPlayer = 0;
+            } else {
+                this.currPlayer++;
+            }
+            this.royalRound = true;
+            // disable all operation other than ending
+            if(this.mainRound==2 || this.mainRound==4 || this.mainRound==6) { // check if any players need pause
+                var pauseFlag = false;
+                for(let i=this.game.currPlayer; i<this.game.playerNumber; i++){
+                    pauseFlag = royalResult();
+                    if(pauseFlag) {
+                        alertCanvas.style.display = 'block';
+                        this.players[this.currPlayer].alertType = 7;
+                        return; // pause and assert alert canvas
+                    }
+                    this.currPlayer++;
+                }
+            }
+
+            if(this.mainRound == 6) { // end of entire game
+                this.gameEnd();
+                window.alert("游戏结束!");
+            } else { // go to next main round
+                this.royalRound = false;
+                this.players[this.currPlayer].inviteFlag = false;
+                this.players[this.currPlayer].actionFlag = false;
+                this.mainRound++;
+                this.miniRound = 0;
+                this.currPlayer = 0;
+                for(let i=0; i<4; i++){
+                    this.players[i].diceTaken = [-1, -1];
+                }
+                this.rollDice();
+                // take a food for every per-turn server
+                if(this.players[this.currPlayer].hasHiredServer(0)){
+                    this.players[this.currPlayer].gainBrown(1);
+                }
+                if(this.players[this.currPlayer].hasHiredServer(1)){
+                    this.players[this.currPlayer].gainWhite(1);
+                }
+                if(this.players[this.currPlayer].hasHiredServer(2)){
+                    this.players[this.currPlayer].gainRed(1);
+                }
+                if(this.players[this.currPlayer].hasHiredServer(3)){
+                    this.players[this.currPlayer].gainBlack(1);
+                }
+            }
         } else { // normal mini round
-            this.players[this.currPlayer].inviteFlag = false;
-            this.players[this.currPlayer].actionFlag = false;
-            this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
             if(this.specialRound){ // special round from guest
                 return;
             }
-            if(this.miniRound == (2*this.playerNumber-1)) { // end of main round
-                if(this.mainRound == 6) { // end of entire game
-                    this.gameEnd();
-                    window.alert("游戏结束!");
-                } else { // next main round
-                    this.mainRoundEnd();
-                    this.mainRound++;
-                    this.miniRound = 0;
-                    this.currPlayer = 0;
-                    for(let i=0; i<4; i++){
-                        this.players[i].diceTaken = [-1, -1];
-                        this.players[i].updatePlayerCanvas(this.players[i].context);
-                    }
-                    this.rollDice();
-                }
-            } else { // next mini round
-                this.miniRound++;
-                this.currPlayer = (this.miniRound < this.playerNumber) ? this.miniRound : 2*this.playerNumber-this.miniRound-1;
-            }
+            // next mini round
+            this.players[this.currPlayer].inviteFlag = false;
+            this.players[this.currPlayer].actionFlag = false;
+            this.miniRound++;
+            this.currPlayer = (this.miniRound < this.playerNumber) ? this.miniRound : 2*this.playerNumber-this.miniRound-1;
             // take a food for every per-turn server
             if(this.players[this.currPlayer].hasHiredServer(0)){
                 this.players[this.currPlayer].gainBrown(1);
@@ -162,90 +190,110 @@ class Game{
             if(this.players[this.currPlayer].hasHiredServer(3)){
                 this.players[this.currPlayer].gainBlack(1);
             }
-            // update all canvas
-            this.updateGuestCanvas(guestContext);
-            this.players[this.currPlayer].checkOpStatus();
-            this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
-            this.players[this.currPlayer].updateServerCanvas(serverContext);
-            this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
         }
     }
 
-    mainRoundEnd() { // handle royal tasks
+    royalResult() { // handle royal tasks
         // TODO
         // some reward and punishment need selection
         // set flag to show alert canvas when needed, and return it
-        for(let i=0; i<this.playerNumber; i++) {
-            switch(this.mainRound){ // reduce royal first
-                case 2: this.players[i].loseRoyal(3); break;
-                case 4: this.players[i].loseRoyal(5); break;
-                case 6: this.players[i].loseRoyal(7); break;
+        const i = this.currPlayer;
+        switch(this.mainRound){ // reduce royal first
+            case 2: this.players[i].loseRoyal(3); break;
+            case 4: this.players[i].loseRoyal(5); break;
+            case 6: this.players[i].loseRoyal(7); break;
+        }
+        if(this.players[i].royalPoint < 1) { // punishment
+            this.players[i].royalResult = 0;
+            // with server 25, always need to check
+            if(this.players[i].hasHiredServer(25)){ // 可支付1块钱替代皇家任务惩罚
+                alertCanvas.style.display = 'block'; this.players[i].alertType = 7; this.players[i].royalResultPending = true; 
+                return true;
             }
-            if(this.players[i].royalPoint < 1) { // punishment
-                switch(this.mainRound){
-                    case 2: 
-                        switch(this.royalTask0){
-                            case 0: break; // 获得3块钱/失去3块钱或5游戏点数
-                            case 1: break; // 获得2份任意食物/失去厨房全部食物
-                            case 2: break; // 抽3员工打1减3费返还剩余/丢弃2张员工手牌或失去5游戏点数
-                            case 3: break; // 免费准备1个房间/失去最高的准备好的房间或失去5游戏点数
-                        }
-                        break;
-                    case 4:
-                        switch(this.royalTask1){
-                            case 0: break; // 获得4种食物各1份/失去厨房和客桌上的全部食物
-                            case 1: break; // 获得5块钱/失去5块钱或失去7游戏点数
-                            case 2: break; // 抽3员工打1免费返还剩余/丢弃3张员工手牌或失去7游戏点数
-                            case 3: break; // 2层以内免费准备2个房间/失去最高的已入住的2个房间或失去7游戏点数
-                        }
-                        break;
-                    case 6:
-                        switch(this.royalTask2){
-                            case 0: break; // 获得8游戏点数/失去8游戏点数
-                            case 1: break; // 免费准备1个房间并入住/失去最高层和次高层各1个已入住房间
-                            case 2: break; // 每个已雇佣员工获得2游戏点数/每个已雇佣员工失去2游戏点数
-                            case 3: break; // 免费雇佣1位手牌上的员工/失去1位已雇佣员工（终局结算优先）或失去10游戏点数
-                        }
-                        break;
-                }
-            } else if(this.players[i].royalPoint > 2) { // reward
-                if(this.players[i].hasHiredServer(41)){ //在获得皇室任务奖励时可以获得5游戏点数
-                    this.players[i].gainGamePoint(5);
-                }
-                switch(this.mainRound){
-                    case 2: 
-                        switch(this.royalTask0){
-                            case 0: // 获得3块钱/失去3块钱或5游戏点数 
-                            this.players[i].gainMoney(3); break; 
-                            case 1: // 获得2份任意食物/失去厨房全部食物
-                            alertCanvas.style.display = 'block';
-                            this.players[i].atSelectFood = 2;
-                            this.players[i].atTakeBrown = 2; // default to brown
-                            this.players[i].updateAlertCanvas(alertContext, 6);
-                            break;
-                            case 2: // 抽3员工打1减3费返还剩余/丢弃2张员工手牌或失去5游戏点数
-                            this.players[i].highlightServerToHire(3, true); break; 
-                            case 3: // 免费准备1个房间/失去最高的准备好的房间或失去5游戏点数
-                            this.hotel.highlightRoomToPrepare(this.players[i].money, 5); break; 
-                        }
-                        break;
-                    case 4:
-                        switch(this.royalTask1){
-                            case 0: break; // 获得4种食物各1份/失去厨房和客桌上的全部食物
-                            case 1: break; // 获得5块钱/失去5块钱或失去7游戏点数
-                            case 2: break; // 抽3员工打1免费返还剩余/丢弃3张员工手牌或失去7游戏点数
-                            case 3: break; // 2层以内免费准备2个房间/失去最高的已入住的2个房间或失去7游戏点数
-                        }
-                        break;
-                    case 6:
-                        switch(this.royalTask2){
-                            case 0: break; // 获得8游戏点数/失去8游戏点数
-                            case 1: break; // 免费准备1个房间并入住/失去最高层和次高层各1个已入住房间
-                            case 2: break; // 每个已雇佣员工获得2游戏点数/每个已雇佣员工失去2游戏点数
-                            case 3: break; // 免费雇佣1位手牌上的员工/失去1位已雇佣员工（终局结算优先）或失去10游戏点数
-                        }
-                        break;
-                }
+            switch(this.mainRound){
+                case 2: 
+                    switch(this.royalTask0){
+                        case 0: alertCanvas.style.display = 'block'; this.players[i].alertType = 7; this.players[i].royalResultPending = true; 
+                        return true; // 获得3块钱/失去3块钱或5游戏点数
+                        case 1: this.players[i].clearKitchen(); 
+                        return false; // 获得2份任意食物/失去厨房全部食物
+                        case 2: alertCanvas.style.display = 'block'; this.players[i].alertType = 7; this.players[i].royalResultPending = true; 
+                        return false; // 抽3员工打1减3费返还剩余/丢弃2张员工手牌或失去5游戏点数
+                        case 3: alertCanvas.style.display = 'block'; this.players[i].alertType = 7; this.players[i].royalResultPending = true; 
+                        return true; // 免费准备1个房间/失去最高的准备好的房间或失去5游戏点数
+                    }
+                    break;
+                case 4:
+                    switch(this.royalTask1){
+                        case 0: this.players[i].clearGuestTable(); this.players[i].clearKitchen(); 
+                        return false; // 获得4种食物各1份/失去厨房和客桌上的全部食物
+                        case 1: alertCanvas.style.display = 'block'; this.players[i].alertType = 7; this.players[i].royalResultPending = true; 
+                        return true; // 获得5块钱/失去5块钱或失去7游戏点数
+                        case 2: alertCanvas.style.display = 'block'; this.players[i].alertType = 7; this.players[i].royalResultPending = true; 
+                        return true; // 抽3员工打1免费返还剩余/丢弃3张员工手牌或失去7游戏点数
+                        case 3: alertCanvas.style.display = 'block'; this.players[i].alertType = 7; this.players[i].royalResultPending = true; 
+                        return true; // 2层以内免费准备2个房间/失去最高的已入住的2个房间或失去7游戏点数
+                    }
+                    break;
+                case 6:
+                    switch(this.royalTask2){
+                        case 0: this.players[i].loseGamePoint(8);
+                        return false; // 获得8游戏点数/失去8游戏点数
+                        case 1: this.players[i].hotel.highlightRoomToLose(true, false, false); this.players[i].hotel.highlightRoomToLose(true, false, false);
+                        return true; // 免费准备1个房间并入住/失去最高层和次高层各1个已入住房间
+                        case 2: this.players[i].loseGamePoint(2*this.players[i].numServerHired);
+                        return false; // 每个已雇佣员工获得2游戏点数/每个已雇佣员工失去2游戏点数
+                        case 3: alertCanvas.style.display = 'block'; this.players[i].alertType = 7; this.players[i].royalResultPending = true; 
+                        return true; // 免费雇佣1位手牌上的员工/失去1位已雇佣员工（终局结算优先）或失去10游戏点数
+                    }
+                    break;
+            }
+        } else if(this.players[i].royalPoint > 2) { // reward
+            this.players[i].royalResult = 1;
+            if(this.players[i].hasHiredServer(41)){ //在获得皇室任务奖励时可以获得5游戏点数
+                this.players[i].gainGamePoint(5);
+            }
+            switch(this.mainRound){
+                case 2: 
+                    switch(this.royalTask0){
+                        case 0: // 获得3块钱/失去3块钱或5游戏点数 
+                        this.players[i].gainMoney(3); return false; 
+                        case 1: // 获得2份任意食物/失去厨房全部食物
+                        alertCanvas.style.display = 'block';
+                        this.players[i].atSelectFood = 2;
+                        this.players[i].atTakeBrown = 2; // default to brown
+                        this.alertType = 6;
+                        return false;
+                        case 2: // 抽3员工打1减3费返还剩余/丢弃2张员工手牌或失去5游戏点数
+                        this.players[i].highlightServerToHire(3, true); return true; 
+                        case 3: // 免费准备1个房间/失去最高的准备好的房间或失去5游戏点数
+                        this.players[i].hotel.highlightRoomToPrepare(this.players[i].money, 5); return true; 
+                    }
+                    break;
+                case 4:
+                    switch(this.royalTask1){
+                        case 0: this.players[i].gainBrown(1); this.players[i].gainWhite(1); this.players[i].gainRed(1); this.players[i].gainBlack(1);
+                        return false; // 获得4种食物各1份/失去厨房和客桌上的全部食物
+                        case 1: this.players[i].gainMoney(5);
+                        return false; // 获得5块钱/失去5块钱或失去7游戏点数
+                        case 2: this.players[i].highlightServerToHire(3, true);
+                        return true; // 抽3员工打1免费返还剩余/丢弃3张员工手牌或失去7游戏点数
+                        case 3: this.players[i].hotel.highlightRoomToPrepare(this.money, 5, 1);
+                        return true; // 2层以内免费准备2个房间/失去最高的已入住的2个房间或失去7游戏点数
+                    }
+                    break;
+                case 6:
+                    switch(this.royalTask2){
+                        case 0: this.players[i].gainGamePoint(8);
+                        return false; // 获得8游戏点数/失去8游戏点数
+                        case 1: this.players[i].hotel.highlightRoomToPrepare(this.money, 5, 1); this.players[i].hotel.highlightRoomToCheckout(true, 1);
+                        return true; // 免费准备1个房间并入住/失去最高层和次高层各1个已入住房间
+                        case 2: this.players[i].gainGamePoint(2*this.players[i].numServerHired);
+                        return false; // 每个已雇佣员工获得2游戏点数/每个已雇佣员工失去2游戏点数
+                        case 3: this.players[i].highlightServerToHire(10);
+                        return true; // 免费雇佣1位手牌上的员工/失去1位已雇佣员工（终局结算优先）或失去10游戏点数
+                    }
+                    break;
             }
         }
     }
@@ -262,7 +310,6 @@ class Game{
         } else {
             this.players[this.currPlayer].diceTaken[1] = value+1;
         }
-        this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
         var serverBonus = 0;
         if(this.players[this.currPlayer].hasHiredServer(11) && (value==2 || value==3)) {//使用色子3或4时获得2游戏点数
             this.players[this.currPlayer].gainGamePoint(2);
@@ -333,7 +380,6 @@ class Game{
         for(let i=0; i<this.diceNumber; i++){
             this.actionPoint[Math.floor(Math.random() * 6)]++;
         }
-        this.updateActionCanvas(actionContext);
     }
 
     checkoutServerBonus(guestTableID) {
@@ -1192,22 +1238,32 @@ class Game{
                 if(this.players[this.currPlayer].serverOnHandCanvasIdx + i < this.players[this.currPlayer].numServerOnHand){
                     const serverIdx = this.players[this.currPlayer].serverOnHandCanvasIdx + i;
                     if(event.offsetX>=(65+170*i) && event.offsetX<=(225+170*i) && event.offsetY>=35 && event.offsetY<=275 && 
-                        this.players[this.currPlayer].hireNum && this.players[this.currPlayer].serverOnHandHighLight[serverIdx]){
-                        console.log("hire server " + serverIdx);
-                        if(this.players[this.currPlayer].serverOnHand[serverIdx].serverCost > this.players[this.currPlayer].atHireServerdiscount.at(-1)) {
-                            this.players[this.currPlayer].money -= (this.players[this.currPlayer].serverOnHand[serverIdx].serverCost - this.players[this.currPlayer].atHireServerdiscount.at(-1));
-                            this.players[this.currPlayer].atHireServerdiscount.pop();
+                        this.players[this.currPlayer].serverOnHandHighLight[serverIdx]){
+                        if(this.players[this.currPlayer].hireNum) {
+                            console.log("hire server " + serverIdx);
+                            if(this.players[this.currPlayer].serverOnHand[serverIdx].serverCost > this.players[this.currPlayer].atHireServerdiscount.at(-1)) {
+                                this.players[this.currPlayer].money -= (this.players[this.currPlayer].serverOnHand[serverIdx].serverCost - this.players[this.currPlayer].atHireServerdiscount.at(-1));
+                                this.players[this.currPlayer].atHireServerdiscount.pop();
+                            }
+                            this.players[this.currPlayer].hireNum--;
+                            this.players[this.currPlayer].hireServer(serverIdx);
+                            if(this.players[this.currPlayer].hireLimitLastThree){ // draw 3 hire 1 senario, put back the reset
+                                this.serverDeck.push(this.players[this.currPlayer].serverOnHand.pop());
+                                this.serverDeck.push(this.players[this.currPlayer].serverOnHand.pop());
+                                this.shuffleDeck(this.serverDeck);
+                            }
+                            if(this.players[this.currPlayer].hireNum==0){
+                                this.players[this.currPlayer].serverOnHandHighLightFlag = false;
+                            }
+                        } else if(this.players[this.currPlayer].loseServerNum) {
+                            console.log("lose server " + serverIdx);
+                            this.players[this.currPlayer].loseServerNum--;
+                            this.players[this.currPlayer].loseServer(serverIdx);
+                            if(this.players[this.currPlayer].loseServerNum==0){
+                                this.players[this.currPlayer].serverOnHandHighLightFlag = false;
+                            }
                         }
-                        this.players[this.currPlayer].hireNum--;
-                        this.players[this.currPlayer].hireServer(serverIdx);
-                        if(this.players[this.currPlayer].hireLimitLastThree){ // draw 3 hire 1 senario, put back the reset
-                            this.serverDeck.push(this.players[this.currPlayer].serverOnHand.pop());
-                            this.serverDeck.push(this.players[this.currPlayer].serverOnHand.pop());
-                            this.shuffleDeck(this.serverDeck);
-                        }
-                        if(this.players[this.currPlayer].hireNum==0){
-                            this.players[this.currPlayer].serverOnHandHighLightFlag = false;
-                        }
+                        
                     }
                 }
             }
