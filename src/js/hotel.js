@@ -33,125 +33,6 @@ class Hotel{
         this.atSelectUnSatisfiedGuest = false; // assert it to select unsatisfied guest from table
     }
 
-    updateHotelCanvas(context) {
-        // clear canvas
-        context.clearRect(0, 0, 640, 840);
-
-        // room bonus
-        var   bonusRoomXoffset = 0;
-        var   bonusRoomYoffset = 0;
-        var   bonusRoomWidth = 640;
-        var   bonusRoomHeight = 120;
-        context.drawImage(bonusRoomImg, bonusRoomXoffset, bonusRoomYoffset, bonusRoomWidth, bonusRoomHeight);
-
-        // hotel base
-        var   hotelBaseImg;
-        switch(this.hotelID){
-            case 0: hotelBaseImg = hotel0Img; break;
-            case 1: hotelBaseImg = hotel1Img; break;
-            case 2: hotelBaseImg = hotel2Img; break;
-            case 3: hotelBaseImg = hotel3Img; break;
-            case 4: hotelBaseImg = hotel4Img; break;
-        }
-        var   hotelBaseXoffset = 0;
-        var   hotelBaseYoffset = bonusRoomHeight;
-        const hotelBaseWidth = 640;
-        const hotelBaseHeight = 480;
-        context.drawImage(hotelBaseImg, hotelBaseXoffset, hotelBaseYoffset, hotelBaseWidth, hotelBaseHeight);
-
-        // hotel room status
-        var   hotelRoomXoffset = 60;
-        var   hotelRoomYoffset = bonusRoomHeight;
-        const hotelRoomWidth = 100;
-        const hotelRoomHeight = 120;
-        for(let floor=0; floor<4; floor++){
-            for(let col=0; col<5; col++){
-                if(this.roomStatus[floor][col] == 1) { // closed
-                    var hotelRoomImg;
-                    switch(this.roomColor[floor][col]){
-                        case 0: hotelRoomImg = roomRedClosedImg; break;
-                        case 1: hotelRoomImg = roomYellowClosedImg; break;
-                        case 2: hotelRoomImg = roomBlueClosedImg; break;
-                    }
-                    context.drawImage(hotelRoomImg, hotelRoomXoffset + 115 * col, hotelRoomYoffset + 120 * (3-floor), hotelRoomWidth, hotelRoomHeight);
-                } else if(this.roomStatus[floor][col] == 0) { // prepared
-                    var hotelRoomImg;
-                    switch(this.roomColor[floor][col]){
-                        case 0: hotelRoomImg = roomRedPreparedImg; break;
-                        case 1: hotelRoomImg = roomYellowPreparedImg; break;
-                        case 2: hotelRoomImg = roomBluePreparedImg; break;
-                    }
-                    context.drawImage(hotelRoomImg, hotelRoomXoffset + 115 * col, hotelRoomYoffset + 120 * (3-floor), hotelRoomWidth, hotelRoomHeight);
-                }
-                // hightlight the marked room
-                if(this.roomHighLightFlag && this.roomHighLight[floor][col]) {
-                    context.strokeStyle = "red";
-                    context.lineWidth = 5;
-                    context.strokeRect(hotelRoomXoffset + 115 * col, hotelRoomYoffset + 120 * (3-floor), hotelRoomWidth, hotelRoomHeight);
-                }
-            }
-        }
-
-        // hotel table
-        var   guestTableXoffset = 0;
-        var   guestTableYoffset = hotelRoomYoffset+480;
-        const guestTableWidth = 640;
-        const guestTableHeight = 200;
-        context.drawImage(tableImg, guestTableXoffset, guestTableYoffset, guestTableWidth, guestTableHeight);
-
-        // hotel room highlight
-        // guest table
-        var   guestXoffset = 36;
-        var   guestYoffset = guestTableYoffset+10;
-        const guestWidth   = 160;
-        const guestHeight  = 240;
-        for(let i=0; i<3; i++){
-            if(this.guestOnTable[i] != null) {
-                context.drawImage(guestImg[this.guestOnTable[i].guestID], guestXoffset, guestYoffset, guestWidth, guestHeight);
-                if(this.atSelectSatisfiedGuest && this.guestOnTable[i].guestSatisfied) { // hightlight satisfied guests if flag on
-                    context.strokeStyle = "red";
-                    context.lineWidth = 3;
-                    context.strokeRect(guestXoffset, guestYoffset, guestWidth, guestHeight);
-                } else if(this.atSelectUnSatisfiedGuest && !this.guestOnTable[i].guestSatisfied) { // highlight unsatisfied guests if flag on
-                    context.strokeStyle = "red";
-                    context.lineWidth = 3;
-                    context.strokeRect(guestXoffset, guestYoffset, guestWidth, guestHeight);
-                }
-            }
-            guestXoffset += 182;
-        }
-        // highlight the food requirement on guest tables
-        var   foodXoffset = 40;
-        var   foodYoffset = guestYoffset + 8;
-        const foodWidth   = 30;
-        const foodHeight  = 28;
-        for(let i=0; i<3; i++){
-            if(this.guestOnTable[i] != null) {
-                for(let j=0; j<this.guestOnTable[i].guestRequirement.length; j++){
-                    if(!this.guestOnTable[i].guestFoodServed[j]){ // draw red circle if not served
-                        context.strokeStyle = "red";
-                        context.lineWidth = 3;
-                        context.strokeRect(foodXoffset, foodYoffset, foodWidth, foodHeight);
-                    } else { // draw green circle and a mark if not served
-                        context.strokeStyle = "green";
-                        context.lineWidth = 3;
-                        context.strokeRect(foodXoffset, foodYoffset, foodWidth, foodHeight);
-                        context.lineWidth = 3;
-                        context.beginPath();
-                        context.moveTo(foodXoffset, foodYoffset+14);
-                        context.lineTo(foodXoffset+15, foodYoffset+28);
-                        context.lineTo(foodXoffset+30, foodYoffset);
-                        context.strokeStyle = 'green';
-                        context.stroke();
-                    }
-                    foodYoffset += 28;
-                }
-            }
-            foodXoffset += 182;
-            foodYoffset = guestYoffset + 8;
-        }
-    }
-
     highlightRoomToPrepare(money, discount=0, maxLevel=3, updateOnly=false) {
         if(!updateOnly){ // click handle need to update highlight without increase number
             this.roomToPrepare++;
@@ -408,4 +289,125 @@ class Hotel{
         this.guestOnTable[guestTableID].guestFoodServedNum = this.guestOnTable[guestTableID].guestFoodServed.length;
         this.guestOnTable[guestTableID].guestSatisfied = true;
     }
+
+    // ========================================canvas==============================================
+    updateHotelCanvas(context) {
+        // clear canvas
+        context.clearRect(0, 0, 640, 840);
+
+        // room bonus
+        var   bonusRoomXoffset = 0;
+        var   bonusRoomYoffset = 0;
+        var   bonusRoomWidth = 640;
+        var   bonusRoomHeight = 120;
+        context.drawImage(bonusRoomImg, bonusRoomXoffset, bonusRoomYoffset, bonusRoomWidth, bonusRoomHeight);
+
+        // hotel base
+        var   hotelBaseImg;
+        switch(this.hotelID){
+            case 0: hotelBaseImg = hotel0Img; break;
+            case 1: hotelBaseImg = hotel1Img; break;
+            case 2: hotelBaseImg = hotel2Img; break;
+            case 3: hotelBaseImg = hotel3Img; break;
+            case 4: hotelBaseImg = hotel4Img; break;
+        }
+        var   hotelBaseXoffset = 0;
+        var   hotelBaseYoffset = bonusRoomHeight;
+        const hotelBaseWidth = 640;
+        const hotelBaseHeight = 480;
+        context.drawImage(hotelBaseImg, hotelBaseXoffset, hotelBaseYoffset, hotelBaseWidth, hotelBaseHeight);
+
+        // hotel room status
+        var   hotelRoomXoffset = 60;
+        var   hotelRoomYoffset = bonusRoomHeight;
+        const hotelRoomWidth = 100;
+        const hotelRoomHeight = 120;
+        for(let floor=0; floor<4; floor++){
+            for(let col=0; col<5; col++){
+                if(this.roomStatus[floor][col] == 1) { // closed
+                    var hotelRoomImg;
+                    switch(this.roomColor[floor][col]){
+                        case 0: hotelRoomImg = roomRedClosedImg; break;
+                        case 1: hotelRoomImg = roomYellowClosedImg; break;
+                        case 2: hotelRoomImg = roomBlueClosedImg; break;
+                    }
+                    context.drawImage(hotelRoomImg, hotelRoomXoffset + 115 * col, hotelRoomYoffset + 120 * (3-floor), hotelRoomWidth, hotelRoomHeight);
+                } else if(this.roomStatus[floor][col] == 0) { // prepared
+                    var hotelRoomImg;
+                    switch(this.roomColor[floor][col]){
+                        case 0: hotelRoomImg = roomRedPreparedImg; break;
+                        case 1: hotelRoomImg = roomYellowPreparedImg; break;
+                        case 2: hotelRoomImg = roomBluePreparedImg; break;
+                    }
+                    context.drawImage(hotelRoomImg, hotelRoomXoffset + 115 * col, hotelRoomYoffset + 120 * (3-floor), hotelRoomWidth, hotelRoomHeight);
+                }
+                // hightlight the marked room
+                if(this.roomHighLightFlag && this.roomHighLight[floor][col]) {
+                    context.strokeStyle = "red";
+                    context.lineWidth = 5;
+                    context.strokeRect(hotelRoomXoffset + 115 * col, hotelRoomYoffset + 120 * (3-floor), hotelRoomWidth, hotelRoomHeight);
+                }
+            }
+        }
+
+        // hotel table
+        var   guestTableXoffset = 0;
+        var   guestTableYoffset = hotelRoomYoffset+480;
+        const guestTableWidth = 640;
+        const guestTableHeight = 200;
+        context.drawImage(tableImg, guestTableXoffset, guestTableYoffset, guestTableWidth, guestTableHeight);
+
+        // hotel room highlight
+        // guest table
+        var   guestXoffset = 36;
+        var   guestYoffset = guestTableYoffset+10;
+        const guestWidth   = 160;
+        const guestHeight  = 240;
+        for(let i=0; i<3; i++){
+            if(this.guestOnTable[i] != null) {
+                context.drawImage(guestImg[this.guestOnTable[i].guestID], guestXoffset, guestYoffset, guestWidth, guestHeight);
+                if(this.atSelectSatisfiedGuest && this.guestOnTable[i].guestSatisfied) { // hightlight satisfied guests if flag on
+                    context.strokeStyle = "red";
+                    context.lineWidth = 3;
+                    context.strokeRect(guestXoffset, guestYoffset, guestWidth, guestHeight);
+                } else if(this.atSelectUnSatisfiedGuest && !this.guestOnTable[i].guestSatisfied) { // highlight unsatisfied guests if flag on
+                    context.strokeStyle = "red";
+                    context.lineWidth = 3;
+                    context.strokeRect(guestXoffset, guestYoffset, guestWidth, guestHeight);
+                }
+            }
+            guestXoffset += 182;
+        }
+        // highlight the food requirement on guest tables
+        var   foodXoffset = 40;
+        var   foodYoffset = guestYoffset + 8;
+        const foodWidth   = 30;
+        const foodHeight  = 28;
+        for(let i=0; i<3; i++){
+            if(this.guestOnTable[i] != null) {
+                for(let j=0; j<this.guestOnTable[i].guestRequirement.length; j++){
+                    if(!this.guestOnTable[i].guestFoodServed[j]){ // draw red circle if not served
+                        context.strokeStyle = "red";
+                        context.lineWidth = 3;
+                        context.strokeRect(foodXoffset, foodYoffset, foodWidth, foodHeight);
+                    } else { // draw green circle and a mark if not served
+                        context.strokeStyle = "green";
+                        context.lineWidth = 3;
+                        context.strokeRect(foodXoffset, foodYoffset, foodWidth, foodHeight);
+                        context.lineWidth = 3;
+                        context.beginPath();
+                        context.moveTo(foodXoffset, foodYoffset+14);
+                        context.lineTo(foodXoffset+15, foodYoffset+28);
+                        context.lineTo(foodXoffset+30, foodYoffset);
+                        context.strokeStyle = 'green';
+                        context.stroke();
+                    }
+                    foodYoffset += 28;
+                }
+            }
+            foodXoffset += 182;
+            foodYoffset = guestYoffset + 8;
+        }
+    }
+    // ========================================canvas==============================================
 }
