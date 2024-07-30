@@ -1097,8 +1097,97 @@ class Game{
         }
     }
 
-    mainRoundEnd() {
-        ;
+    mainRoundEnd() { // handle royal tasks
+        // TODO
+        // some reward and punishment need selection
+        // set flag to show alert canvas when needed, and return it
+        for(let i=0; i<this.playerNumber; i++) {
+            switch(this.mainRound){ // reduce royal first
+                case 2: this.players[i].loseRoyal(3); break;
+                case 4: this.players[i].loseRoyal(5); break;
+                case 6: this.players[i].loseRoyal(7); break;
+            }
+            if(this.players[i].royalPoint < 1) { // punishment
+                switch(this.mainRound){
+                    case 2: 
+                        switch(this.royalTask0){
+                            case 0: break; // 获得3块钱/失去3块钱或5游戏点数
+                            case 1: break; // 获得2份任意食物/失去厨房全部食物
+                            case 2: break; // 抽3员工打1减3费返还剩余/丢弃2张员工手牌或失去5游戏点数
+                            case 3: break; // 免费准备1个房间/失去最高的准备好的房间或失去5游戏点数
+                        }
+                        break;
+                    case 4:
+                        switch(this.royalTask1){
+                            case 0: break; // 获得4种食物各1份/失去厨房和客桌上的全部食物
+                            case 1: break; // 获得5块钱/失去5块钱或失去7游戏点数
+                            case 2: break; // 抽3员工打1免费返还剩余/丢弃3张员工手牌或失去7游戏点数
+                            case 3: break; // 2层以内免费准备2个房间/失去最高的已入住的2个房间或失去7游戏点数
+                        }
+                        break;
+                    case 6:
+                        switch(this.royalTask2){
+                            case 0: break; // 获得8游戏点数/失去8游戏点数
+                            case 1: break; // 免费准备1个房间并入住/失去最高层和次高层各1个已入住房间
+                            case 2: break; // 每个已雇佣员工获得2游戏点数/每个已雇佣员工失去2游戏点数
+                            case 3: break; // 免费雇佣1位手牌上的员工/失去1位已雇佣员工（终局结算优先）或失去10游戏点数
+                        }
+                        break;
+                }
+            } else if(this.players[i].royalPoint > 2) { // reward
+                switch(this.mainRound){
+                    case 2: 
+                        switch(this.royalTask0){
+                            case 0: // 获得3块钱/失去3块钱或5游戏点数 
+                            this.players[i].gainMoney(3);
+                            break; 
+                            case 1: // 获得2份任意食物/失去厨房全部食物
+                            alertCanvas.style.display = 'block';
+                            this.players[i].atSelectFood = 2;
+                            this.players[i].atTakeBrown = 2; // default to brown
+                            this.players[i].updateAlertCanvas(alertContext, 6);
+                            break;
+                            case 2: // 抽3员工打1减3费返还剩余/丢弃2张员工手牌或失去5游戏点数
+                            this.players[i].addServerToHand(this.serverDeck.at(-1));
+                            this.serverDeck.pop();
+                            this.players[i].addServerToHand(this.serverDeck.at(-1));
+                            this.serverDeck.pop();
+                            this.players[i].addServerToHand(this.serverDeck.at(-1));
+                            this.serverDeck.pop();
+                            this.players[i].serverOnHandHighLightFlag = true;
+                            this.players[i].hireFlag++;
+                            this.players[i].hireLimitLastThree = true;
+                            this.players[i].highlightServerToHire(3);
+                            this.players[i].atHireServerdiscount.push(3);
+                            break; 
+                            case 3: // 免费准备1个房间/失去最高的准备好的房间或失去5游戏点数
+                            this.hotel.roomToPrepare = 1;
+                            this.hotel.roomHighLightFlag = true;
+                            this.hotel.roomToPrepareDiscount.push(5); // free
+                            this.hotel.highlightRoomToPrepare(this.players[i].money);
+                            break; 
+                        }
+                        break;
+                    case 4:
+                        switch(this.royalTask1){
+                            case 0: break; // 获得4种食物各1份/失去厨房和客桌上的全部食物
+                            case 1: break; // 获得5块钱/失去5块钱或失去7游戏点数
+                            case 2: break; // 抽3员工打1免费返还剩余/丢弃3张员工手牌或失去7游戏点数
+                            case 3: break; // 2层以内免费准备2个房间/失去最高的已入住的2个房间或失去7游戏点数
+                        }
+                        break;
+                    case 6:
+                        switch(this.royalTask2){
+                            case 0: break; // 获得8游戏点数/失去8游戏点数
+                            case 1: break; // 免费准备1个房间并入住/失去最高层和次高层各1个已入住房间
+                            case 2: break; // 每个已雇佣员工获得2游戏点数/每个已雇佣员工失去2游戏点数
+                            case 3: break; // 免费雇佣1位手牌上的员工/失去1位已雇佣员工（终局结算优先）或失去10游戏点数
+                        }
+                        break;
+                }
+            }
+        }
+        
     }
 
     gameEnd() {

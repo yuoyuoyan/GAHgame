@@ -204,6 +204,11 @@ class Hotel{
         }
         this.roomStatus[floor][col] = 0;
         this.roomPreparedNum++;
+        // check major task A3
+        // 准备/入住12个房间
+        if(game.majorTask0==3 && (this.roomPreparedNum + this.roomClosedNum) >= 12){
+            game.players[game.currPlayer].gainMajorTaskBonus(0);
+        }
     }
 
     roomClose(floor, col) {
@@ -240,6 +245,11 @@ class Hotel{
                 this.roomRowClosedNum++;
             }
         }
+        // check major task B0
+        // 完整入住2个楼层
+        if(game.majorTask1==0 && this.roomRowClosedNum >= 2){
+            game.players[game.currPlayer].gainMajorTaskBonus(1);
+        }
         // count the closed cols
         this.roomColumnClosedNum = 0;
         for(let col=0; col<5; col++){
@@ -253,12 +263,59 @@ class Hotel{
                 this.roomColumnClosedNum++;
             }
         }
+        // check major task B1
+        // 完整入住2个列
+        if(game.majorTask1==1 && this.roomColumnClosedNum >= 2){
+            game.players[game.currPlayer].gainMajorTaskBonus(1);
+        }
         // count the closed areas
         this.roomAreaClosedNum = 0;
         for(let i=0; i<10; i++){
             if(this.roomAreaRoom[i]==0){
                 this.roomAreaClosedNum++;
             }
+        }
+        // check major task B2
+        // 完整入住6个区域
+        if(game.majorTask1==2 && this.roomAreaClosedNum >= 6){
+            game.players[game.currPlayer].gainMajorTaskBonus(1);
+        }
+        // check major task B3
+        // 完整入住所有的某颜色房间
+        if(game.majorTask1==3 && 
+            (this.roomRedClosedNum    == roomColorNumByID[this.hotelID][0]) ||
+            (this.roomYellowClosedNum == roomColorNumByID[this.hotelID][1]) ||
+            (this.roomBlueClosedNum   == roomColorNumByID[this.hotelID][2]) ){
+            game.players[game.currPlayer].gainMajorTaskBonus(1);
+        }
+        // check major task C0
+        // 入住3个红和3个黄和3个蓝房间
+        if(game.majorTask2==0 && 
+            (this.roomRedClosedNum    >= 3) ||
+            (this.roomYellowClosedNum >= 3) ||
+            (this.roomBlueClosedNum   >= 3) ){
+            game.players[game.currPlayer].gainMajorTaskBonus(2);
+        }
+        // check major task C1
+        // 入住4个红和3个黄房间
+        if(game.majorTask2==1 && 
+            (this.roomRedClosedNum    >= 4) ||
+            (this.roomYellowClosedNum >= 3) ){
+            game.players[game.currPlayer].gainMajorTaskBonus(2);
+        }
+        // check major task C2
+        // 入住4个黄和3个蓝房间
+        if(game.majorTask2==2 && 
+            (this.roomYellowClosedNum >= 4) ||
+            (this.roomBlueClosedNum   >= 3) ){
+            game.players[game.currPlayer].gainMajorTaskBonus(2);
+        }
+        // check major task C3
+        // 入住4个蓝和3个红房间
+        if(game.majorTask2==2 && 
+            (this.roomBlueClosedNum   >= 4) ||
+            (this.roomRedClosedNum    >= 3) ){
+            game.players[game.currPlayer].gainMajorTaskBonus(2);
         }
     }
 

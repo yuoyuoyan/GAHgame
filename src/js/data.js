@@ -244,6 +244,14 @@ const roomColorByID = [
     ]
 ];
 
+const roomColorNumByID = [
+    [7, 6, 7],
+    [6, 6, 8],
+    [7, 5, 8],
+    [7, 7, 6],
+    [7, 6, 7]
+];
+
 const roomAreaByID = [
     [
         [8, 6, 7, 7, 9],
