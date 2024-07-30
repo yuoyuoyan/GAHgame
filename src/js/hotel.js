@@ -1,6 +1,7 @@
 // Hotel class definition
 class Hotel{
-    constructor(hotelID) {
+    constructor(game, hotelID) {
+        this.game = game;
         // console.log("hotel ID is " + hotelID);
         this.hotelID = hotelID;
         this.roomColor = roomColorByID[hotelID];
@@ -31,9 +32,7 @@ class Hotel{
         this.atSelectSatisfiedGuest = false; // assert it to select satisfied guest from table
         this.atSelectUnSatisfiedGuest = false; // assert it to select unsatisfied guest from table
         // highlight the room to be prepared at first stage
-        this.highlightRoomToPrepare(10);
-        // draw the hotel board
-        this.updateHotelCanvas(hotelContext);
+        // this.highlightRoomToPrepare(10);
     }
 
     updateHotelCanvas(context) {
@@ -206,8 +205,8 @@ class Hotel{
         this.roomPreparedNum++;
         // check major task A3
         // 准备/入住12个房间
-        if(game.majorTask0==3 && (this.roomPreparedNum + this.roomClosedNum) >= 12){
-            game.players[game.currPlayer].gainMajorTaskBonus(0);
+        if(this.game.majorTask0==3 && (this.roomPreparedNum + this.roomClosedNum) >= 12){
+            this.game.players[this.game.currPlayer].gainMajorTaskBonus(0);
         }
     }
 
@@ -247,8 +246,8 @@ class Hotel{
         }
         // check major task B0
         // 完整入住2个楼层
-        if(game.majorTask1==0 && this.roomRowClosedNum >= 2){
-            game.players[game.currPlayer].gainMajorTaskBonus(1);
+        if(this.game.majorTask1==0 && this.roomRowClosedNum >= 2){
+            this.game.players[this.game.currPlayer].gainMajorTaskBonus(1);
         }
         // count the closed cols
         this.roomColumnClosedNum = 0;
@@ -265,8 +264,8 @@ class Hotel{
         }
         // check major task B1
         // 完整入住2个列
-        if(game.majorTask1==1 && this.roomColumnClosedNum >= 2){
-            game.players[game.currPlayer].gainMajorTaskBonus(1);
+        if(this.game.majorTask1==1 && this.roomColumnClosedNum >= 2){
+            this.game.players[this.game.currPlayer].gainMajorTaskBonus(1);
         }
         // count the closed areas
         this.roomAreaClosedNum = 0;
@@ -277,45 +276,45 @@ class Hotel{
         }
         // check major task B2
         // 完整入住6个区域
-        if(game.majorTask1==2 && this.roomAreaClosedNum >= 6){
-            game.players[game.currPlayer].gainMajorTaskBonus(1);
+        if(this.game.majorTask1==2 && this.roomAreaClosedNum >= 6){
+            this.game.players[this.game.currPlayer].gainMajorTaskBonus(1);
         }
         // check major task B3
         // 完整入住所有的某颜色房间
-        if(game.majorTask1==3 && 
+        if(this.game.majorTask1==3 && 
             (this.roomRedClosedNum    == roomColorNumByID[this.hotelID][0]) ||
             (this.roomYellowClosedNum == roomColorNumByID[this.hotelID][1]) ||
             (this.roomBlueClosedNum   == roomColorNumByID[this.hotelID][2]) ){
-            game.players[game.currPlayer].gainMajorTaskBonus(1);
+            this.game.players[this.game.currPlayer].gainMajorTaskBonus(1);
         }
         // check major task C0
         // 入住3个红和3个黄和3个蓝房间
-        if(game.majorTask2==0 && 
+        if(this.game.majorTask2==0 && 
             (this.roomRedClosedNum    >= 3) ||
             (this.roomYellowClosedNum >= 3) ||
             (this.roomBlueClosedNum   >= 3) ){
-            game.players[game.currPlayer].gainMajorTaskBonus(2);
+            this.game.players[this.game.currPlayer].gainMajorTaskBonus(2);
         }
         // check major task C1
         // 入住4个红和3个黄房间
-        if(game.majorTask2==1 && 
+        if(this.game.majorTask2==1 && 
             (this.roomRedClosedNum    >= 4) ||
             (this.roomYellowClosedNum >= 3) ){
-            game.players[game.currPlayer].gainMajorTaskBonus(2);
+            this.game.players[this.game.currPlayer].gainMajorTaskBonus(2);
         }
         // check major task C2
         // 入住4个黄和3个蓝房间
-        if(game.majorTask2==2 && 
+        if(this.game.majorTask2==2 && 
             (this.roomYellowClosedNum >= 4) ||
             (this.roomBlueClosedNum   >= 3) ){
-            game.players[game.currPlayer].gainMajorTaskBonus(2);
+            this.game.players[this.game.currPlayer].gainMajorTaskBonus(2);
         }
         // check major task C3
         // 入住4个蓝和3个红房间
-        if(game.majorTask2==2 && 
+        if(this.game.majorTask2==2 && 
             (this.roomBlueClosedNum   >= 4) ||
             (this.roomRedClosedNum    >= 3) ){
-            game.players[game.currPlayer].gainMajorTaskBonus(2);
+            this.game.players[this.game.currPlayer].gainMajorTaskBonus(2);
         }
     }
 
@@ -325,30 +324,30 @@ class Hotel{
         switch(roomNum) {
             case 1: 
                 switch(color) {
-                    case 0: game.players[game.currPlayer].gainMoney(1); break;
-                    case 1: game.players[game.currPlayer].gainRoyal(1); break;
-                    case 2: game.players[game.currPlayer].gainGamePoint(2); break;
+                    case 0: this.game.players[this.game.currPlayer].gainMoney(1); break;
+                    case 1: this.game.players[this.game.currPlayer].gainRoyal(1); break;
+                    case 2: this.game.players[this.game.currPlayer].gainGamePoint(2); break;
                 }
                 break;
             case 2:
                 switch(color) {
-                    case 0: game.players[game.currPlayer].gainMoney(3); break;
-                    case 1: game.players[game.currPlayer].gainRoyal(3); break;
-                    case 2: game.players[game.currPlayer].gainGamePoint(5); break;
+                    case 0: this.game.players[this.game.currPlayer].gainMoney(3); break;
+                    case 1: this.game.players[this.game.currPlayer].gainRoyal(3); break;
+                    case 2: this.game.players[this.game.currPlayer].gainGamePoint(5); break;
                 }
                 break;
             case 3:
                 switch(color) {
-                    case 0: game.players[game.currPlayer].gainMoney(6); break;
-                    case 1: game.players[game.currPlayer].gainRoyal(6); break;
-                    case 2: game.players[game.currPlayer].gainGamePoint(9); break;
+                    case 0: this.game.players[this.game.currPlayer].gainMoney(6); break;
+                    case 1: this.game.players[this.game.currPlayer].gainRoyal(6); break;
+                    case 2: this.game.players[this.game.currPlayer].gainGamePoint(9); break;
                 }
                 break;
             case 4:
                 switch(color) {
-                    case 0: game.players[game.currPlayer].gainMoney(10); break;
-                    case 1: game.players[game.currPlayer].gainRoyal(10); break;
-                    case 2: game.players[game.currPlayer].gainGamePoint(15); break;
+                    case 0: this.game.players[this.game.currPlayer].gainMoney(10); break;
+                    case 1: this.game.players[this.game.currPlayer].gainRoyal(10); break;
+                    case 2: this.game.players[this.game.currPlayer].gainGamePoint(15); break;
                 }
                 break;
         }

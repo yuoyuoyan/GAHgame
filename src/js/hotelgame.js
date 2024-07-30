@@ -1,11 +1,21 @@
 var playerNames = JSON.parse(decodeURIComponent(document.cookie));
+const skipPrepare = 1;
+const debugState = 0;
 
 // init game info and draw background
 window.onload = gameOn;
 const game = new Game(playerNames.length, playerNames, 1);
 
-const skipPrepare = 1;
-const debugState = 1;
+// listen to canvas click
+guestCanvas.addEventListener("click",   handleGuestClickWrap);
+actionCanvas.addEventListener("click",  handleActionClickWrap);
+hotelCanvas.addEventListener("click",   handleHotelClickWrap);
+serverCanvas.addEventListener("click",  handleServerClickWrap);
+alertCanvas.addEventListener("click",   handleAlertClickWrap);
+player0Canvas.addEventListener("click", handlePlayer0ClickWrap);
+player1Canvas.addEventListener("click", handlePlayer1ClickWrap);
+player2Canvas.addEventListener("click", handlePlayer2ClickWrap);
+player3Canvas.addEventListener("click", handlePlayer3ClickWrap);
 
 function gameOn() {
     // debug
@@ -25,8 +35,8 @@ function gameOn() {
             game.players[game.currPlayer].checkOpStatus();
             // add something special
             // game.players[game.currPlayer].addServerToHand(26);
-            game.rollDice();
         }
+        game.rollDice();
         game.currPlayer = 0;
         if(debugState) {
             // test room closure and bonus
@@ -63,11 +73,35 @@ function gameOn() {
     }
     
     // normal start
-    game.updateGuestCanvas(guestContext);
-    game.updateActionCanvas(actionContext);
-    for(let i=0; i<game.playerNumber; i++){
-        game.players[i].updatePlayerCanvas(game.players[i].context);
-    }
-    game.players[0].hotel.updateHotelCanvas(hotelContext);
-    game.players[0].updateServerCanvas(serverContext);
+    game.updateAllCanvas();
+}
+
+function handleGuestClickWrap(event){
+    game.handleGuestClick(event);
+}
+
+function handleActionClickWrap(event){
+    game.handleActionClick(event);
+}
+
+function handleHotelClickWrap(event) {
+    game.handleHotelClick(event);
+}
+function handleServerClickWrap(event) {
+    game.handleServerClick(event);
+}
+function handleAlertClickWrap(event) {
+    game.handleAlertClick(event);
+}
+function handlePlayer0ClickWrap(event) {
+    game.handlePlayer0Click(event);
+}
+function handlePlayer1ClickWrap(event) {
+    game.handlePlayer1Click(event);
+}
+function handlePlayer2ClickWrap(event) {
+    game.handlePlayer2Click(event);
+}
+function handlePlayer3ClickWrap(event) {
+    game.handlePlayer3Click(event);
 }

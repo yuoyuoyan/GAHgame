@@ -5,6 +5,8 @@ class Game{
         console.log("new game!!")
         this.playerNumber = playerNumber;
         // console.log("number of player: " + this.playerNumber);
+        this.playerName = playerName;
+        this.standardHotel = standardHotel;
         this.diceNumber = playerNumber * 2 + 6;
         // console.log("number of dice: " + this.diceNumber);
         this.majorTask0 = Math.floor(Math.random() * 4);
@@ -28,6 +30,8 @@ class Game{
         this.actionHighLight = [0, 0, 0, 0, 0, 0];
         this.guestHighLightFlag = false;
         this.guestHighLight = [0, 0, 0, 0, 0];
+        // alert type depends on game phase
+        this.alertType = 0;
 
         // init guest deck and server deck
         this.guestDeck = Array.from({length: 58}, (_, i) => i);
@@ -44,73 +48,58 @@ class Game{
             this.guestDeck.pop();
         }
 
-        // draw everything on guest board
-        this.updateGuestCanvas(guestContext);
-
-        // draw everything on action board
-        this.updateActionCanvas(actionContext);
-
         // init player info
         this.players = [];
-        for(let i=0; i<playerNumber; i++) {
-            if(standardHotel){
-                this.players.push(new Player(i, playerName[i], 0));
+
+        for(let i=0; i<this.playerNumber; i++) { // construct players
+            if(this.standardHotel){
+                this.players.push(new Player(this, i, this.playerName[i], 0));
             } else {
-                this.players.push(new Player(i, playerName[i], Math.floor(Math.random() * 4) + 1 ));
+                this.players.push(new Player(this, i, this.playerName[i], Math.floor(Math.random() * 4) + 1 ));
             }
         }
-        switch(playerNumber){ // assign mini rounds
+        switch(this.playerNumber){ // assign mini rounds
             case 2: 
             this.players[0].miniTurn = [1, 4];
             this.players[1].miniTurn = [2, 3];
-            this.players[0].updatePlayerCanvas(this.players[0].context);
-            this.players[1].updatePlayerCanvas(this.players[1].context);
             break;
             case 3: 
             this.players[0].miniTurn = [1, 6];
             this.players[1].miniTurn = [2, 5];
             this.players[2].miniTurn = [3, 4];
-            this.players[0].updatePlayerCanvas(this.players[0].context);
-            this.players[1].updatePlayerCanvas(this.players[1].context);
-            this.players[2].updatePlayerCanvas(this.players[2].context);
             break;
             case 4: 
             this.players[0].miniTurn = [1, 8];
             this.players[1].miniTurn = [2, 7];
             this.players[2].miniTurn = [3, 6];
             this.players[3].miniTurn = [4, 5];
-            this.players[0].updatePlayerCanvas(this.players[0].context);
-            this.players[1].updatePlayerCanvas(this.players[1].context);
-            this.players[2].updatePlayerCanvas(this.players[2].context);
-            this.players[3].updatePlayerCanvas(this.players[3].context);
             break;
         }
         for(let k=0; k<6; k++) { // draw first 6 servers
-            for(let i=0; i<playerNumber; i++) {
+            for(let i=0; i<this.playerNumber; i++) {
                 this.players[i].addServerToHand(this.serverDeck.at(-1));
                 // console.log("player " + playerName[i] + " draw a server ID: " + this.serverDeck.at(-1));
                 this.serverDeck.pop();
             }
         }
-        for(let i=0; i<playerNumber; i++) {
-            this.players[i].updateServerCanvas(serverContext);
-        }
-
-        // listen to canvas click
-        guestCanvas.addEventListener("click", this.handleGuestClick);
-        actionCanvas.addEventListener("click", this.handleActionClick);
-        hotelCanvas.addEventListener("click", this.handleHotelClick);
-        serverCanvas.addEventListener("click", this.handleServerClick);
-        alertCanvas.addEventListener("click", this.handleAlertClick);
-        player0Canvas.addEventListener("click", this.handlePlayer0Click);
-        player1Canvas.addEventListener("click", this.handlePlayer1Click);
-        player2Canvas.addEventListener("click", this.handlePlayer2Click);
-        player3Canvas.addEventListener("click", this.handlePlayer3Click);
-
+        
         // place the first player to start
         this.currPlayer = 0;
-        this.players[0].turnFlag = true;
-        console.log("current player: " + playerName[this.currPlayer]);
+        console.log("current player: " + this.playerName[this.currPlayer]);
+        // draw canvas
+        this.updateAllCanvas();
+    }
+
+    updateAllCanvas(){
+        this.updateGuestCanvas(guestContext);
+        this.updateActionCanvas(actionContext);
+        for(let i=0; i<this.playerNumber; i++){
+            this.players[i].checkOpStatus();
+            this.players[i].updatePlayerCanvas(this.players[i].context);
+        }
+        this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
+        this.players[this.currPlayer].updateServerCanvas(serverContext);
+        this.players[this.currPlayer].updateAlertCanvas(alertContext, this.alertType);
     }
 
     updateGuestCanvas(context){
@@ -293,93 +282,55 @@ class Game{
 
     handlePlayer0Click(event) {
         // check if this players turn first
-        if(!game.players[0].turnFlag){
+        if(this.currPlayer!=0){
             console.log("Not player 0 turn");
             return;
         }
         // turn to player class
         console.log("player 0 canvas clicked");
-        var statusPlayer = game.players[0].handlePlayerClick(event);
-        game.handlePlayerClick(statusPlayer);
+        this.players[0].handlePlayerClick(event);
     }
 
     handlePlayer1Click(event) {
         // check if this players turn first
-        if(!game.players[1].turnFlag){
+        if(this.currPlayer!=1){
             console.log("Not player 1 turn");
             return;
         }
         // turn to player class
         console.log("player 1 canvas clicked");
-        var statusPlayer = game.players[1].handlePlayerClick(event);
-        game.handlePlayerClick(statusPlayer);
+        this.players[1].handlePlayerClick(event);
     }
 
     handlePlayer2Click(event) {
         // check if this players exist and its turn
-        if(game.playerNumber < 3 || !game.players[2].turnFlag){
+        if(this.playerNumber < 3 || this.currPlayer!=2){
             console.log("Not player 2 turn");
             return;
         }
         // turn to player class
         console.log("player 2 canvas clicked");
-        var statusPlayer = game.players[2].handlePlayerClick(event);
-        game.handlePlayerClick(statusPlayer);
+        this.players[2].handlePlayerClick(event);
     }
 
     handlePlayer3Click(event) {
         // check if this players turn first
-        if(game.playerNumber < 4 || !game.players[3].turnFlag){
+        if(this.playerNumber < 4 || this.currPlayer!=3){
             console.log("Not player 3 turn");
             return;
         }
         // turn to player class
         console.log("player 3 canvas clicked");
-        var statusPlayer = game.players[3].handlePlayerClick(event);
-        game.handlePlayerClick(statusPlayer);
-    }
-
-    handlePlayerClick(statusPlayer){
-        switch(statusPlayer) {
-            case 0: return; //nothing
-            case 1: // invite
-            game.guestHighLightFlag = true;
-            if(game.players[0].firstGuestTurn){
-                game.checkGuestInvite(10); // make sure all guest available at the first guest
-            } else {
-                game.checkGuestInvite(game.players[0].money);
-            }
-            game.updateGuestCanvas(guestContext);
-            break;
-            case 2: // action
-            game.actionHighLightFlag = true;
-            for(let i=0; i<6; i++){
-                if(game.actionPoint[i]>0){
-                    game.actionHighLight[i] = 1;
-                }
-            }
-            game.updateActionCanvas(actionContext);
-            break;
-            case 3: // serve
-            if(game.players[game.currPlayer].money > 0) {
-                ;
-            }
-            break;
-            case 4: // checkout
-            break;
-            case 5: // end turn
-            game.nextMiniRound();
-            break;
-        }
+        this.players[3].handlePlayerClick(event);
     }
 
     handleGuestClick(event) {
         console.log("guest canvas clicked");
-        if(!game.players[game.currPlayer].atInvite && game.players[game.currPlayer].freeInviteNum == 0 && game.players[game.currPlayer].hotel.numGuestOnTable<3){
+        if(!this.players[this.currPlayer].atInvite && this.players[this.currPlayer].freeInviteNum == 0 && this.players[this.currPlayer].hotel.numGuestOnTable<3){
             console.log("current player is not inviting");
         } else {
             var guestSelected = -1;
-            game.players[game.currPlayer].atInvite = false;
+            this.players[this.currPlayer].atInvite = false;
             if(event.offsetX >= 36 && event.offsetX <= 196 && event.offsetY >= 350 && event.offsetY <= 590){
                 console.log("guest 5 is selected");
                 guestSelected = 0;
@@ -398,31 +349,31 @@ class Game{
             }
             // selected a guest to invite
             if(guestSelected >= 0){
-                game.players[game.currPlayer].hotel.addGuestToTable(game.guestInQueue[guestSelected]);
-                if(!game.players[game.currPlayer].hasHiredServer(24) && 
-                   !game.players[game.currPlayer].hotel.firstThreeRoom && 
-                   game.players[game.currPlayer].freeInviteNum == 0){ // exceptions for invitation fee
-                    game.players[game.currPlayer].money -= (guestSelected<3)?(3-guestSelected):0;
+                this.players[this.currPlayer].hotel.addGuestToTable(this.guestInQueue[guestSelected]);
+                if(!this.players[this.currPlayer].hasHiredServer(24) && 
+                   !this.players[this.currPlayer].hotel.firstThreeRoom && 
+                   this.players[this.currPlayer].freeInviteNum == 0){ // exceptions for invitation fee
+                    this.players[this.currPlayer].money -= (guestSelected<3)?(3-guestSelected):0;
                 }
-                game.takeOneGuestFromQueue(guestSelected);
-                if(game.players[game.currPlayer].freeInviteNum>0 && game.players[game.currPlayer].hotel.numGuestOnTable<3) { // free invitation not considered
-                    game.players[game.currPlayer].freeInviteNum--;
+                this.takeOneGuestFromQueue(guestSelected);
+                if(this.players[this.currPlayer].freeInviteNum>0 && this.players[this.currPlayer].hotel.numGuestOnTable<3) { // free invitation not considered
+                    this.players[this.currPlayer].freeInviteNum--;
                 } else {
-                    game.guestHighLightFlag = false;
-                    game.players[game.currPlayer].inviteFlag = false;
-                    game.players[game.currPlayer].freeInviteNum = 0;
+                    this.guestHighLightFlag = false;
+                    this.players[this.currPlayer].inviteFlag = false;
+                    this.players[this.currPlayer].freeInviteNum = 0;
                 }
-                game.players[game.currPlayer].checkOpStatus();
-                game.updateGuestCanvas(guestContext);
-                game.players[game.currPlayer].hotel.updateHotelCanvas(hotelContext);
-                game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
+                this.players[this.currPlayer].checkOpStatus();
+                this.updateGuestCanvas(guestContext);
+                this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
+                this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
             }
         }
     }
 
     handleActionClick(event) {
         console.log("action canvas clicked");
-        if(game.players[game.currPlayer].atAction){
+        if(this.players[this.currPlayer].atAction){
             var   blockXoffset = 30;
             var   blockYoffset = 30;
             const blockWidth = 100;
@@ -430,23 +381,23 @@ class Game{
             for(let i=0; i<6; i++){
                 if(event.offsetX >= blockXoffset && event.offsetX < blockXoffset+blockWidth && event.offsetY >= blockYoffset && event.offsetY < blockYoffset+blockHeight){
                     console.log("action " + i + " is selected");
-                    if(game.actionPoint[i]==0){
+                    if(this.actionPoint[i]==0){
                         console.log("no more dice here");
                         break;
                     }
-                    if(i!=6 || game.players[game.currPlayer].money > 0){
-                        game.takeDice(i);
+                    if(i!=6 || this.players[this.currPlayer].money > 0){
+                        this.takeDice(i);
                     } else {
                         continue;
                     }
-                    game.actionHighLightFlag = false;
+                    this.actionHighLightFlag = false;
                     for(let i=0; i<6; i++){
-                        game.actionHighLight[i] = 0;
+                        this.actionHighLight[i] = 0;
                     }
-                    game.updateActionCanvas(actionContext);
-                    game.players[game.currPlayer].atAction = false;
-                    game.players[game.currPlayer].checkOpStatus();
-                    game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
+                    this.updateActionCanvas(actionContext);
+                    this.players[this.currPlayer].atAction = false;
+                    this.players[this.currPlayer].checkOpStatus();
+                    this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                     break;
                 }
                 blockXoffset += 159;
@@ -462,60 +413,60 @@ class Game{
             for(let col=0; col<5; col++){
                 if(event.offsetX >= (60+115*col) && event.offsetX < (60+115*col+115) && event.offsetY >= (120+120*(3-floor)) && event.offsetY < (120+120*(3-floor)+120)) {
                     console.log("hotel room at floor " + floor + " col " + col + " is clicked");
-                    if(game.players[game.currPlayer].hotel.firstThreeRoom && game.players[game.currPlayer].hotel.roomHighLight[floor][col]){
+                    if(this.players[this.currPlayer].hotel.firstThreeRoom && this.players[this.currPlayer].hotel.roomHighLight[floor][col]){
                         // prepare selected room, no need to worry about money
-                        game.players[game.currPlayer].hotel.roomPrepare(floor, col);
-                        game.players[game.currPlayer].loseMoney(floor);
-                        if(game.players[game.currPlayer].hotel.roomPreparedNum == 3){ // finished all three rooms
-                            game.players[game.currPlayer].hotel.roomHighLightFlag = false;
-                            game.players[game.currPlayer].hotel.firstThreeRoom = false;
+                        this.players[this.currPlayer].hotel.roomPrepare(floor, col);
+                        this.players[this.currPlayer].loseMoney(floor);
+                        if(this.players[this.currPlayer].hotel.roomPreparedNum == 3){ // finished all three rooms
+                            this.players[this.currPlayer].hotel.roomHighLightFlag = false;
+                            this.players[this.currPlayer].hotel.firstThreeRoom = false;
                         }
-                        game.players[game.currPlayer].hotel.highlightRoomToPrepare(10);
-                        game.players[game.currPlayer].hotel.updateHotelCanvas(hotelContext);
-                        game.players[game.currPlayer].checkOpStatus();
-                        game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
-                    } else if(game.players[game.currPlayer].hotel.roomToPrepare>0 && game.players[game.currPlayer].hotel.roomHighLight[floor][col]){
+                        this.players[this.currPlayer].hotel.highlightRoomToPrepare(10);
+                        this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
+                        this.players[this.currPlayer].checkOpStatus();
+                        this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
+                    } else if(this.players[this.currPlayer].hotel.roomToPrepare>0 && this.players[this.currPlayer].hotel.roomHighLight[floor][col]){
                         console.log("prepare room at floor " + floor + " col " + col);
                         // prepare selected room, check money
-                        game.players[game.currPlayer].hotel.roomPrepare(floor, col);
-                        if(!((game.players[game.currPlayer].hasHiredServer(8) && game.players[game.currPlayer].hotel.roomColor[floor][col]==2) ||   //免费准备蓝色房间
-                            (game.players[game.currPlayer].hasHiredServer(9) && game.players[game.currPlayer].hotel.roomColor[floor][col]==0) ||  //免费准备红色房间
-                            (game.players[game.currPlayer].hasHiredServer(10) && game.players[game.currPlayer].hotel.roomColor[floor][col]==1))     //免费准备黄色房间
+                        this.players[this.currPlayer].hotel.roomPrepare(floor, col);
+                        if(!((this.players[this.currPlayer].hasHiredServer(8) && this.players[this.currPlayer].hotel.roomColor[floor][col]==2) ||   //免费准备蓝色房间
+                            (this.players[this.currPlayer].hasHiredServer(9) && this.players[this.currPlayer].hotel.roomColor[floor][col]==0) ||  //免费准备红色房间
+                            (this.players[this.currPlayer].hasHiredServer(10) && this.players[this.currPlayer].hotel.roomColor[floor][col]==1))     //免费准备黄色房间
                         ){ // exceptions to pay preparation fee
-                            if(game.players[game.currPlayer].hotel.roomToPrepareDiscount.length > 0){
-                                game.players[game.currPlayer].loseMoney( Math.min(floor-game.players[game.currPlayer].hotel.roomToPrepareDiscount.at(-1), 0) );
+                            if(this.players[this.currPlayer].hotel.roomToPrepareDiscount.length > 0){
+                                this.players[this.currPlayer].loseMoney( Math.min(floor-this.players[this.currPlayer].hotel.roomToPrepareDiscount.at(-1), 0) );
                             } else {
-                                game.players[game.currPlayer].loseMoney(floor);
+                                this.players[this.currPlayer].loseMoney(floor);
                             }
-                            game.players[game.currPlayer].hotel.roomToPrepareDiscount.pop();
+                            this.players[this.currPlayer].hotel.roomToPrepareDiscount.pop();
                         }
-                        if(game.players[game.currPlayer].hotel.roomToPrepare == 1){ // finished rooms
-                            game.players[game.currPlayer].hotel.roomHighLightFlag = false;
+                        if(this.players[this.currPlayer].hotel.roomToPrepare == 1){ // finished rooms
+                            this.players[this.currPlayer].hotel.roomHighLightFlag = false;
                         }
-                        game.players[game.currPlayer].hotel.highlightRoomToPrepare(game.players[game.currPlayer].money);
-                        game.players[game.currPlayer].hotel.updateHotelCanvas(hotelContext);
-                        game.players[game.currPlayer].checkOpStatus();
-                        game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
-                        game.players[game.currPlayer].hotel.roomToPrepare--;
-                    } else if(game.players[game.currPlayer].hotel.roomToClose>0 && game.players[game.currPlayer].hotel.roomHighLight[floor][col]){
+                        this.players[this.currPlayer].hotel.highlightRoomToPrepare(this.players[this.currPlayer].money);
+                        this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
+                        this.players[this.currPlayer].checkOpStatus();
+                        this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
+                        this.players[this.currPlayer].hotel.roomToPrepare--;
+                    } else if(this.players[this.currPlayer].hotel.roomToClose>0 && this.players[this.currPlayer].hotel.roomHighLight[floor][col]){
                         console.log("checkout room at floor " + floor + " col " + col);
                         // close selected room, take guest bonus if any
-                        game.players[game.currPlayer].hotel.roomClose(floor, col);
-                        if(!game.players[game.currPlayer].hotel.roomCloseBonus) {
-                            game.checkoutServerBonus(game.players[game.currPlayer].hotel.roomToCloseGuestTableID);
-                            game.players[game.currPlayer].guestBonus(game.players[game.currPlayer].hotel.roomToCloseGuestID);
+                        this.players[this.currPlayer].hotel.roomClose(floor, col);
+                        if(!this.players[this.currPlayer].hotel.roomCloseBonus) {
+                            this.checkoutServerBonus(this.players[this.currPlayer].hotel.roomToCloseGuestTableID);
+                            this.players[this.currPlayer].guestBonus(this.players[this.currPlayer].hotel.roomToCloseGuestID);
                             // remove guest from table (to coffin lmao)
-                            game.players[game.currPlayer].hotel.removeGuestFromTable(game.players[game.currPlayer].hotel.roomToCloseGuestTableID);
+                            this.players[this.currPlayer].hotel.removeGuestFromTable(this.players[this.currPlayer].hotel.roomToCloseGuestTableID);
                         } else {
-                            game.players[game.currPlayer].hotel.roomCloseBonus = false;
+                            this.players[this.currPlayer].hotel.roomCloseBonus = false;
                         }
-                        game.players[game.currPlayer].hotel.roomToClose--;
-                        if(game.players[game.currPlayer].hotel.roomToClose == 0){
-                            game.players[game.currPlayer].hotel.roomHighLightFlag = false;
+                        this.players[this.currPlayer].hotel.roomToClose--;
+                        if(this.players[this.currPlayer].hotel.roomToClose == 0){
+                            this.players[this.currPlayer].hotel.roomHighLightFlag = false;
                         }
-                        game.players[game.currPlayer].hotel.updateHotelCanvas(hotelContext);
-                        game.players[game.currPlayer].checkOpStatus();
-                        game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
+                        this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
+                        this.players[this.currPlayer].checkOpStatus();
+                        this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                     }
                 }
             }
@@ -526,27 +477,27 @@ class Game{
         const guestWidth   = 160;
         const guestHeight  = 240;
         for(let i=0; i<3; i++){
-            if(game.players[game.currPlayer].hotel.guestOnTable[i] != null && 
+            if(this.players[this.currPlayer].hotel.guestOnTable[i] != null && 
                 event.offsetX>=guestXoffset && event.offsetX<=(guestXoffset+guestWidth) && event.offsetY>=guestYoffset && event.offsetY<=(guestYoffset+guestHeight)) {
-                if(game.players[game.currPlayer].hotel.atSelectSatisfiedGuest &&
-                    game.players[game.currPlayer].hotel.guestOnTable[i].guestSatisfied){
+                if(this.players[this.currPlayer].hotel.atSelectSatisfiedGuest &&
+                    this.players[this.currPlayer].hotel.guestOnTable[i].guestSatisfied){
                     console.log("satisfied guest " + i + " is clicked");
                     // start picking the room to close
-                    game.players[game.currPlayer].hotel.atSelectSatisfiedGuest = false;
-                    game.players[game.currPlayer].hotel.highlightRoomToCheckout(game.players[game.currPlayer].hotel.guestOnTable[i].guestColor);
-                    game.players[game.currPlayer].hotel.roomHighLightFlag = true;
-                    game.players[game.currPlayer].hotel.roomToClose = 1;
-                    game.players[game.currPlayer].hotel.roomToCloseColor = game.players[game.currPlayer].hotel.guestOnTable[i].guestColor;
-                    game.players[game.currPlayer].hotel.roomToCloseGuestID = game.players[game.currPlayer].hotel.guestOnTable[i].guestID;
-                    game.players[game.currPlayer].hotel.roomToCloseGuestTableID = game.players[game.currPlayer].hotel.guestOnTable[i].guestTableID;
-                    game.players[game.currPlayer].hotel.updateHotelCanvas(hotelContext);
-                } else if(game.players[game.currPlayer].hotel.atSelectUnSatisfiedGuest &&
-                    !game.players[game.currPlayer].hotel.guestOnTable[i].guestSatisfied){
-                    game.players[game.currPlayer].hotel.atSelectUnSatisfiedGuest = false;
-                    game.players[game.currPlayer].hotel.satisfyGuest(i);
-                    game.players[game.currPlayer].hotel.updateHotelCanvas(hotelContext);
-                    game.players[game.currPlayer].checkOpStatus();
-                    game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
+                    this.players[this.currPlayer].hotel.atSelectSatisfiedGuest = false;
+                    this.players[this.currPlayer].hotel.highlightRoomToCheckout(this.players[this.currPlayer].hotel.guestOnTable[i].guestColor);
+                    this.players[this.currPlayer].hotel.roomHighLightFlag = true;
+                    this.players[this.currPlayer].hotel.roomToClose = 1;
+                    this.players[this.currPlayer].hotel.roomToCloseColor = this.players[this.currPlayer].hotel.guestOnTable[i].guestColor;
+                    this.players[this.currPlayer].hotel.roomToCloseGuestID = this.players[this.currPlayer].hotel.guestOnTable[i].guestID;
+                    this.players[this.currPlayer].hotel.roomToCloseGuestTableID = this.players[this.currPlayer].hotel.guestOnTable[i].guestTableID;
+                    this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
+                } else if(this.players[this.currPlayer].hotel.atSelectUnSatisfiedGuest &&
+                    !this.players[this.currPlayer].hotel.guestOnTable[i].guestSatisfied){
+                    this.players[this.currPlayer].hotel.atSelectUnSatisfiedGuest = false;
+                    this.players[this.currPlayer].hotel.satisfyGuest(i);
+                    this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
+                    this.players[this.currPlayer].checkOpStatus();
+                    this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                 }
                 
                 
@@ -559,58 +510,58 @@ class Game{
         const foodWidth   = 30;
         const foodHeight  = 28;
         for(let i=0; i<3; i++){
-            if(game.players[game.currPlayer].hotel.guestOnTable[i] != null) {
-                for(let j=0; j<game.players[game.currPlayer].hotel.guestOnTable[i].guestRequirement.length; j++){
+            if(this.players[this.currPlayer].hotel.guestOnTable[i] != null) {
+                for(let j=0; j<this.players[this.currPlayer].hotel.guestOnTable[i].guestRequirement.length; j++){
                     if(event.offsetX>=foodXoffset && event.offsetX<=(foodXoffset+foodWidth) && event.offsetY>=foodYoffset && event.offsetY<=(foodYoffset+foodHeight)) {
                         console.log("guest table " + i + " food " + j + " is clicked");
                     }
                     if(event.offsetX>=foodXoffset && event.offsetX<=(foodXoffset+foodWidth) && event.offsetY>=foodYoffset && event.offsetY<=(foodYoffset+foodHeight) &&
-                        !game.players[game.currPlayer].hotel.guestOnTable[i].guestFoodServed[j] &&
-                        game.players[game.currPlayer].atServe){
+                        !this.players[this.currPlayer].hotel.guestOnTable[i].guestFoodServed[j] &&
+                        this.players[this.currPlayer].atServe){
                         var serveFlag = false;
-                        switch(game.players[game.currPlayer].hotel.guestOnTable[i].guestRequirement[j]){
+                        switch(this.players[this.currPlayer].hotel.guestOnTable[i].guestRequirement[j]){
                             case 0: // need brown
-                            serveFlag = game.players[game.currPlayer].hasBrown();
+                            serveFlag = this.players[this.currPlayer].hasBrown();
                             if(serveFlag){
-                                game.players[game.currPlayer].loseBrown();
+                                this.players[this.currPlayer].loseBrown();
                             }
                             break;
                             case 1: // need white
-                            serveFlag = game.players[game.currPlayer].hasWhite(); 
+                            serveFlag = this.players[this.currPlayer].hasWhite(); 
                             if(serveFlag){
-                                game.players[game.currPlayer].loseWhite();
+                                this.players[this.currPlayer].loseWhite();
                             }
                             break;
                             case 2: // need red
-                            serveFlag = game.players[game.currPlayer].hasRed(); 
+                            serveFlag = this.players[this.currPlayer].hasRed(); 
                             if(serveFlag){
-                                game.players[game.currPlayer].loseRed();
+                                this.players[this.currPlayer].loseRed();
                             }
                             break;
                             case 3: // need black
-                            serveFlag = game.players[game.currPlayer].hasBlack(); 
+                            serveFlag = this.players[this.currPlayer].hasBlack(); 
                             if(serveFlag){
-                                game.players[game.currPlayer].loseBlack();
+                                this.players[this.currPlayer].loseBlack();
                             }
                             break;
                         }
                         
                         if(serveFlag){
-                            console.log("served a food to guest " + game.players[game.currPlayer].hotel.guestOnTable[i].guestTableID);
-                            game.players[game.currPlayer].serveFoodNum--;
-                            game.players[game.currPlayer].hotel.guestOnTable[i].guestFoodServed[j] = 1;
-                            game.players[game.currPlayer].hotel.guestOnTable[i].guestFoodServedNum++;
-                            game.players[game.currPlayer].hotel.guestOnTable[i].guestSatisfied = 
-                                (game.players[game.currPlayer].hotel.guestOnTable[i].guestRequirementNum == 
-                                game.players[game.currPlayer].hotel.guestOnTable[i].guestFoodServedNum);
-                            if(game.players[game.currPlayer].serveFoodNum==0){
-                                game.players[game.currPlayer].atServe = false;
+                            console.log("served a food to guest " + this.players[this.currPlayer].hotel.guestOnTable[i].guestTableID);
+                            this.players[this.currPlayer].serveFoodNum--;
+                            this.players[this.currPlayer].hotel.guestOnTable[i].guestFoodServed[j] = 1;
+                            this.players[this.currPlayer].hotel.guestOnTable[i].guestFoodServedNum++;
+                            this.players[this.currPlayer].hotel.guestOnTable[i].guestSatisfied = 
+                                (this.players[this.currPlayer].hotel.guestOnTable[i].guestRequirementNum == 
+                                this.players[this.currPlayer].hotel.guestOnTable[i].guestFoodServedNum);
+                            if(this.players[this.currPlayer].serveFoodNum==0){
+                                this.players[this.currPlayer].atServe = false;
                             }
-                            game.players[game.currPlayer].checkOpStatus();
+                            this.players[this.currPlayer].checkOpStatus();
                         }
 
-                        game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
-                        game.players[game.currPlayer].hotel.updateHotelCanvas(hotelContext);
+                        this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
+                        this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
                     }
                     foodYoffset += 28;
                 }
@@ -622,363 +573,365 @@ class Game{
 
     handleAlertClick(event) {
         console.log("alert canvas clicked");
-        if(game.players[game.currPlayer].atSelectFood>0) { // pick any kinds of food
+        if(this.players[this.currPlayer].atSelectFood>0) { // pick any kinds of food
             if(event.offsetX>=175 && event.offsetX<=225 && event.offsetY>=15 && event.offsetY<=35){ // increase brown
-                if( (game.players[game.currPlayer].atTakeBrown + game.players[game.currPlayer].atTakeWhite + 
-                    game.players[game.currPlayer].atTakeRed + game.players[game.currPlayer].atTakeBlack) < game.players[game.currPlayer].atSelectFood){
-                    game.players[game.currPlayer].atTakeBrown++;
+                if( (this.players[this.currPlayer].atTakeBrown + this.players[this.currPlayer].atTakeWhite + 
+                    this.players[this.currPlayer].atTakeRed + this.players[this.currPlayer].atTakeBlack) < this.players[this.currPlayer].atSelectFood){
+                    this.players[this.currPlayer].atTakeBrown++;
                 }
-                game.players[game.currPlayer].updateAlertCanvas(alertContext, 6);
+                this.alertType = 6;
+                this.players[this.currPlayer].updateAlertCanvas(alertContext, 6);
                 console.log("brown increase selected");
             } else if(event.offsetX>=175 && event.offsetX<=225 && event.offsetY>=45 && event.offsetY<=65){ // decrease brown
-                if(game.players[game.currPlayer].atTakeBrown > 0){
-                    game.players[game.currPlayer].atTakeBrown--;
+                if(this.players[this.currPlayer].atTakeBrown > 0){
+                    this.players[this.currPlayer].atTakeBrown--;
                 }
-                game.players[game.currPlayer].updateAlertCanvas(alertContext, 6);
+                this.alertType = 6;
+                this.players[this.currPlayer].updateAlertCanvas(alertContext, 6);
                 console.log("brown decrease selected");
             } else if(event.offsetX>=325 && event.offsetX<=375 && event.offsetY>=15 && event.offsetY<=35){ // increase white
-                if( (game.players[game.currPlayer].atTakeBrown + game.players[game.currPlayer].atTakeWhite + 
-                    game.players[game.currPlayer].atTakeRed + game.players[game.currPlayer].atTakeBlack) < game.players[game.currPlayer].atSelectFood){
-                    game.players[game.currPlayer].atTakeWhite++;
+                if( (this.players[this.currPlayer].atTakeBrown + this.players[this.currPlayer].atTakeWhite + 
+                    this.players[this.currPlayer].atTakeRed + this.players[this.currPlayer].atTakeBlack) < this.players[this.currPlayer].atSelectFood){
+                    this.players[this.currPlayer].atTakeWhite++;
                 }
-                game.players[game.currPlayer].updateAlertCanvas(alertContext, 6);
+                this.players[this.currPlayer].updateAlertCanvas(alertContext, 6);
                 console.log("brown increase selected");
             } else if(event.offsetX>=325 && event.offsetX<=375 && event.offsetY>=45 && event.offsetY<=65){ // decrease white
-                if(game.players[game.currPlayer].atTakeWhite > 0){
-                    game.players[game.currPlayer].atTakeWhite--;
+                if(this.players[this.currPlayer].atTakeWhite > 0){
+                    this.players[this.currPlayer].atTakeWhite--;
                 }
-                game.players[game.currPlayer].updateAlertCanvas(alertContext, 6);
+                this.players[this.currPlayer].updateAlertCanvas(alertContext, 6);
                 console.log("brown decrease selected");
             } else if(event.offsetX>=175 && event.offsetX<=225 && event.offsetY>=90 && event.offsetY<=110){ // increase red
-                if( (game.players[game.currPlayer].atTakeBrown + game.players[game.currPlayer].atTakeWhite + 
-                    game.players[game.currPlayer].atTakeRed + game.players[game.currPlayer].atTakeBlack) < game.players[game.currPlayer].atSelectFood){
-                    game.players[game.currPlayer].atTakeRed++;
+                if( (this.players[this.currPlayer].atTakeBrown + this.players[this.currPlayer].atTakeWhite + 
+                    this.players[this.currPlayer].atTakeRed + this.players[this.currPlayer].atTakeBlack) < this.players[this.currPlayer].atSelectFood){
+                    this.players[this.currPlayer].atTakeRed++;
                 }
-                game.players[game.currPlayer].updateAlertCanvas(alertContext, 6);
+                this.players[this.currPlayer].updateAlertCanvas(alertContext, 6);
                 console.log("brown increase selected");
             } else if(event.offsetX>=175 && event.offsetX<=225 && event.offsetY>=120 && event.offsetY<=140){ // decrease red
-                if(game.players[game.currPlayer].atTakeRed > 0){
-                    game.players[game.currPlayer].atTakeRed--;
+                if(this.players[this.currPlayer].atTakeRed > 0){
+                    this.players[this.currPlayer].atTakeRed--;
                 }
-                game.players[game.currPlayer].updateAlertCanvas(alertContext, 6);
+                this.players[this.currPlayer].updateAlertCanvas(alertContext, 6);
                 console.log("brown decrease selected");
             } else if(event.offsetX>=325 && event.offsetX<=375 && event.offsetY>=90 && event.offsetY<=110){ // increase black
-                if( (game.players[game.currPlayer].atTakeBrown + game.players[game.currPlayer].atTakeWhite + 
-                    game.players[game.currPlayer].atTakeRed + game.players[game.currPlayer].atTakeBlack) < game.players[game.currPlayer].atSelectFood){
-                    game.players[game.currPlayer].atTakeBlack++;
+                if( (this.players[this.currPlayer].atTakeBrown + this.players[this.currPlayer].atTakeWhite + 
+                    this.players[this.currPlayer].atTakeRed + this.players[this.currPlayer].atTakeBlack) < this.players[this.currPlayer].atSelectFood){
+                    this.players[this.currPlayer].atTakeBlack++;
                 }
-                game.players[game.currPlayer].updateAlertCanvas(alertContext, 6);
+                this.players[this.currPlayer].updateAlertCanvas(alertContext, 6);
                 console.log("brown increase selected");
             } else if(event.offsetX>=325 && event.offsetX<=375 && event.offsetY>=120 && event.offsetY<=140){ // decrease black
-                if(game.players[game.currPlayer].atTakeBlack > 0){
-                    game.players[game.currPlayer].atTakeBlack--;
+                if(this.players[this.currPlayer].atTakeBlack > 0){
+                    this.players[this.currPlayer].atTakeBlack--;
                 }
-                game.players[game.currPlayer].updateAlertCanvas(alertContext, 6);
+                this.players[this.currPlayer].updateAlertCanvas(alertContext, 6);
                 console.log("brown decrease selected");
             } else if(event.offsetX>=200 && event.offsetX<=300 && event.offsetY>=170 && event.offsetY<=210){ // confirm
                 alertCanvas.style.display = 'none';
-                game.players[game.currPlayer].atSelectFood = 0;
-                game.players[game.currPlayer].gainBrown(game.players[game.currPlayer].atTakeBrown);
-                game.players[game.currPlayer].gainWhite(game.players[game.currPlayer].atTakeWhite);
-                game.players[game.currPlayer].gainRed(game.players[game.currPlayer].atTakeRed);
-                game.players[game.currPlayer].gainBlack(game.players[game.currPlayer].atTakeBlack);
-                game.players[game.currPlayer].checkOpStatus();
-                game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
+                this.players[this.currPlayer].atSelectFood = 0;
+                this.players[this.currPlayer].gainBrown(this.players[this.currPlayer].atTakeBrown);
+                this.players[this.currPlayer].gainWhite(this.players[this.currPlayer].atTakeWhite);
+                this.players[this.currPlayer].gainRed(this.players[this.currPlayer].atTakeRed);
+                this.players[this.currPlayer].gainBlack(this.players[this.currPlayer].atTakeBlack);
+                this.players[this.currPlayer].checkOpStatus();
+                this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                 console.log("confirm selected");
             }
-        } else if(game.players[game.currPlayer].atTakeBrownWhite){
+        } else if(this.players[this.currPlayer].atTakeBrownWhite){
             if(event.offsetX>=20 && event.offsetX<=120 && event.offsetY>=90 && event.offsetY<=140){ // boost
-                if(game.players[game.currPlayer].money>0){
+                if(this.players[this.currPlayer].money>0){
                     console.log("boost selected");
-                    if(game.players[game.currPlayer].atActionBoost){
-                        game.players[game.currPlayer].money++;
-                        if(game.players[game.currPlayer].atTakeBrown==game.players[game.currPlayer].atTakeWhite){
-                            game.players[game.currPlayer].atTakeWhite--;
+                    if(this.players[this.currPlayer].atActionBoost){
+                        this.players[this.currPlayer].money++;
+                        if(this.players[this.currPlayer].atTakeBrown==this.players[this.currPlayer].atTakeWhite){
+                            this.players[this.currPlayer].atTakeWhite--;
                         } else {
-                            game.players[game.currPlayer].atTakeBrown--;
+                            this.players[this.currPlayer].atTakeBrown--;
                         }
-                        game.players[game.currPlayer].atActionBoost = false;
+                        this.players[this.currPlayer].atActionBoost = false;
                     } else {
-                        game.players[game.currPlayer].money--;
-                        game.players[game.currPlayer].atTakeBrown++;
-                        game.players[game.currPlayer].atActionBoost = true;
+                        this.players[this.currPlayer].money--;
+                        this.players[this.currPlayer].atTakeBrown++;
+                        this.players[this.currPlayer].atActionBoost = true;
                     }
-                    game.players[game.currPlayer].updateAlertCanvas(alertContext, 0);
-                    game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
+                    this.players[this.currPlayer].updateAlertCanvas(alertContext, 0);
+                    this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                 }
             } else if(event.offsetX>=225 && event.offsetX<=275 && event.offsetY>=90 && event.offsetY<=110){ // increase brown
-                if(game.players[game.currPlayer].atTakeWhite > 0){
-                    game.players[game.currPlayer].atTakeBrown++;
-                    game.players[game.currPlayer].atTakeWhite--;
+                if(this.players[this.currPlayer].atTakeWhite > 0){
+                    this.players[this.currPlayer].atTakeBrown++;
+                    this.players[this.currPlayer].atTakeWhite--;
                 }
-                game.players[game.currPlayer].updateAlertCanvas(alertContext, 0);
+                this.players[this.currPlayer].updateAlertCanvas(alertContext, 0);
                 console.log("brown increase selected");
             } else if(event.offsetX>=225 && event.offsetX<=275 && event.offsetY>=120 && event.offsetY<=140){ // decrease brown
-                if(game.players[game.currPlayer].atTakeBrown > 0 && game.players[game.currPlayer].atTakeBrown > game.players[game.currPlayer].atTakeWhite + 1){
-                    game.players[game.currPlayer].atTakeBrown--;
-                    game.players[game.currPlayer].atTakeWhite++;
+                if(this.players[this.currPlayer].atTakeBrown > 0 && this.players[this.currPlayer].atTakeBrown > this.players[this.currPlayer].atTakeWhite + 1){
+                    this.players[this.currPlayer].atTakeBrown--;
+                    this.players[this.currPlayer].atTakeWhite++;
                 }
-                game.players[game.currPlayer].updateAlertCanvas(alertContext, 0);
+                this.players[this.currPlayer].updateAlertCanvas(alertContext, 0);
                 console.log("brown decrease selected");
             } else if(event.offsetX>=375 && event.offsetX<=425 && event.offsetY>=90 && event.offsetY<=110){ // increase white
-                if(game.players[game.currPlayer].atTakeBrown > 0 && game.players[game.currPlayer].atTakeBrown > game.players[game.currPlayer].atTakeWhite + 1){
-                    game.players[game.currPlayer].atTakeBrown--;
-                    game.players[game.currPlayer].atTakeWhite++;
+                if(this.players[this.currPlayer].atTakeBrown > 0 && this.players[this.currPlayer].atTakeBrown > this.players[this.currPlayer].atTakeWhite + 1){
+                    this.players[this.currPlayer].atTakeBrown--;
+                    this.players[this.currPlayer].atTakeWhite++;
                 }
-                game.players[game.currPlayer].updateAlertCanvas(alertContext, 0);
+                this.players[this.currPlayer].updateAlertCanvas(alertContext, 0);
                 console.log("white increase selected");
             } else if(event.offsetX>=375 && event.offsetX<=425 && event.offsetY>=120 && event.offsetY<=140){ // decrease white
-                if(game.players[game.currPlayer].atTakeWhite > 0){
-                    game.players[game.currPlayer].atTakeBrown++;
-                    game.players[game.currPlayer].atTakeWhite--;
+                if(this.players[this.currPlayer].atTakeWhite > 0){
+                    this.players[this.currPlayer].atTakeBrown++;
+                    this.players[this.currPlayer].atTakeWhite--;
                 }
-                game.players[game.currPlayer].updateAlertCanvas(alertContext, 0);
+                this.players[this.currPlayer].updateAlertCanvas(alertContext, 0);
                 console.log("white decrease selected");
             } else if(event.offsetX>=200 && event.offsetX<=300 && event.offsetY>=170 && event.offsetY<=210){ // confirm
                 alertCanvas.style.display = 'none';
-                game.players[game.currPlayer].atTakeBrownWhite = false;
-                game.players[game.currPlayer].gainBrown(game.players[game.currPlayer].atTakeBrown);
-                game.players[game.currPlayer].gainWhite(game.players[game.currPlayer].atTakeWhite);
-                game.players[game.currPlayer].atAction = false;
-                game.players[game.currPlayer].actionFlag = true;
-                game.players[game.currPlayer].atActionBoost = false;
-                game.players[game.currPlayer].checkOpStatus();
-                game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
+                this.players[this.currPlayer].atTakeBrownWhite = false;
+                this.players[this.currPlayer].gainBrown(this.players[this.currPlayer].atTakeBrown);
+                this.players[this.currPlayer].gainWhite(this.players[this.currPlayer].atTakeWhite);
+                this.players[this.currPlayer].atAction = false;
+                this.players[this.currPlayer].actionFlag = true;
+                this.players[this.currPlayer].atActionBoost = false;
+                this.players[this.currPlayer].checkOpStatus();
+                this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                 console.log("confirm selected");
             }
-        } else if(game.players[game.currPlayer].atTakeRedBlack){
+        } else if(this.players[this.currPlayer].atTakeRedBlack){
             if(event.offsetX>=20 && event.offsetX<=120 && event.offsetY>=90 && event.offsetY<=140){ // boost
-                if(game.players[game.currPlayer].money>0){
+                if(this.players[this.currPlayer].money>0){
                     console.log("boost selected");
-                    if(game.players[game.currPlayer].atActionBoost){
-                        game.players[game.currPlayer].money++;
-                        if(game.players[game.currPlayer].atTakeRed==game.players[game.currPlayer].atTakeBlack){
-                            game.players[game.currPlayer].atTakeBlack--;
+                    if(this.players[this.currPlayer].atActionBoost){
+                        this.players[this.currPlayer].money++;
+                        if(this.players[this.currPlayer].atTakeRed==this.players[this.currPlayer].atTakeBlack){
+                            this.players[this.currPlayer].atTakeBlack--;
                         } else {
-                            game.players[game.currPlayer].atTakeRed--;
+                            this.players[this.currPlayer].atTakeRed--;
                         }
-                        game.players[game.currPlayer].atActionBoost = false;
+                        this.players[this.currPlayer].atActionBoost = false;
                     } else {
-                        game.players[game.currPlayer].money--;
-                        game.players[game.currPlayer].atTakeRed++;
-                        game.players[game.currPlayer].atActionBoost = true;
+                        this.players[this.currPlayer].money--;
+                        this.players[this.currPlayer].atTakeRed++;
+                        this.players[this.currPlayer].atActionBoost = true;
                     }
-                    game.players[game.currPlayer].updateAlertCanvas(alertContext, 1);
-                    game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
+                    this.players[this.currPlayer].updateAlertCanvas(alertContext, 1);
+                    this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                 }
             } else if(event.offsetX>=225 && event.offsetX<=275 && event.offsetY>=90 && event.offsetY<=110){ // increase red
-                if(game.players[game.currPlayer].atTakeBlack > 0){
-                    game.players[game.currPlayer].atTakeRed++;
-                    game.players[game.currPlayer].atTakeBlack--;
+                if(this.players[this.currPlayer].atTakeBlack > 0){
+                    this.players[this.currPlayer].atTakeRed++;
+                    this.players[this.currPlayer].atTakeBlack--;
                 }
-                game.players[game.currPlayer].updateAlertCanvas(alertContext, 1);
+                this.players[this.currPlayer].updateAlertCanvas(alertContext, 1);
                 console.log("red increase selected");
             } else if(event.offsetX>=225 && event.offsetX<=275 && event.offsetY>=120 && event.offsetY<=140){ // decrease red
-                if(game.players[game.currPlayer].atTakeRed > 0 && game.players[game.currPlayer].atTakeRed > game.players[game.currPlayer].atTakeBlack + 1){
-                    game.players[game.currPlayer].atTakeRed--;
-                    game.players[game.currPlayer].atTakeBlack++;
+                if(this.players[this.currPlayer].atTakeRed > 0 && this.players[this.currPlayer].atTakeRed > this.players[this.currPlayer].atTakeBlack + 1){
+                    this.players[this.currPlayer].atTakeRed--;
+                    this.players[this.currPlayer].atTakeBlack++;
                 }
-                game.players[game.currPlayer].updateAlertCanvas(alertContext, 1);
+                this.players[this.currPlayer].updateAlertCanvas(alertContext, 1);
                 console.log("red decrease selected");
             } else if(event.offsetX>=375 && event.offsetX<=425 && event.offsetY>=90 && event.offsetY<=110){ // increase black
-                if(game.players[game.currPlayer].atTakeRed > 0 && game.players[game.currPlayer].atTakeRed > game.players[game.currPlayer].atTakeBlack + 1){
-                    game.players[game.currPlayer].atTakeRed--;
-                    game.players[game.currPlayer].atTakeBlack++;
+                if(this.players[this.currPlayer].atTakeRed > 0 && this.players[this.currPlayer].atTakeRed > this.players[this.currPlayer].atTakeBlack + 1){
+                    this.players[this.currPlayer].atTakeRed--;
+                    this.players[this.currPlayer].atTakeBlack++;
                 }
-                game.players[game.currPlayer].updateAlertCanvas(alertContext, 1);
+                this.players[this.currPlayer].updateAlertCanvas(alertContext, 1);
                 console.log("black increase selected");
             } else if(event.offsetX>=375 && event.offsetX<=425 && event.offsetY>=120 && event.offsetY<=140){ // decrease black
-                if(game.players[game.currPlayer].atTakeBlack > 0){
-                    game.players[game.currPlayer].atTakeRed++;
-                    game.players[game.currPlayer].atTakeBlack--;
+                if(this.players[this.currPlayer].atTakeBlack > 0){
+                    this.players[this.currPlayer].atTakeRed++;
+                    this.players[this.currPlayer].atTakeBlack--;
                 }
-                game.players[game.currPlayer].updateAlertCanvas(alertContext, 1);
+                this.players[this.currPlayer].updateAlertCanvas(alertContext, 1);
                 console.log("black decrease selected");
             } else if(event.offsetX>=200 && event.offsetX<=300 && event.offsetY>=170 && event.offsetY<=210){ // confirm
                 alertCanvas.style.display = 'none';
-                game.players[game.currPlayer].atTakeRedBlack = false;
-                game.players[game.currPlayer].gainRed(game.players[game.currPlayer].atTakeRed);
-                game.players[game.currPlayer].gainBlack(game.players[game.currPlayer].atTakeBlack);
-                game.players[game.currPlayer].atAction = false;
-                game.players[game.currPlayer].actionFlag = true;
-                game.players[game.currPlayer].atActionBoost = false;
-                game.players[game.currPlayer].checkOpStatus();
-                game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
+                this.players[this.currPlayer].atTakeRedBlack = false;
+                this.players[this.currPlayer].gainRed(this.players[this.currPlayer].atTakeRed);
+                this.players[this.currPlayer].gainBlack(this.players[this.currPlayer].atTakeBlack);
+                this.players[this.currPlayer].atAction = false;
+                this.players[this.currPlayer].actionFlag = true;
+                this.players[this.currPlayer].atActionBoost = false;
+                this.players[this.currPlayer].checkOpStatus();
+                this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                 console.log("confirm selected");
             }
-        } else if(game.players[game.currPlayer].atPrepareRoom){
-            var roomTmp = game.actionPoint[2]+1+(game.players[game.currPlayer].atActionBoost?1:0);
+        } else if(this.players[this.currPlayer].atPrepareRoom){
+            var roomTmp = this.actionPoint[2]+1+(this.players[this.currPlayer].atActionBoost?1:0);
             if(event.offsetX>=20 && event.offsetX<=120 && event.offsetY>=90 && event.offsetY<=140){ // boost
-                if(game.players[game.currPlayer].money>0){
+                if(this.players[this.currPlayer].money>0){
                     console.log("boost selected");
-                    if(game.players[game.currPlayer].atActionBoost){
-                        game.players[game.currPlayer].money++;
-                        game.players[game.currPlayer].atRoomToPrepare--;
+                    if(this.players[this.currPlayer].atActionBoost){
+                        this.players[this.currPlayer].money++;
+                        this.players[this.currPlayer].atRoomToPrepare--;
                         roomTmp--;
-                        game.players[game.currPlayer].atActionBoost = false;
+                        this.players[this.currPlayer].atActionBoost = false;
                     } else {
-                        game.players[game.currPlayer].money--;
-                        game.players[game.currPlayer].atRoomToPrepare++;
+                        this.players[this.currPlayer].money--;
+                        this.players[this.currPlayer].atRoomToPrepare++;
                         roomTmp++;
-                        game.players[game.currPlayer].atActionBoost = true;
+                        this.players[this.currPlayer].atActionBoost = true;
                     }
-                    game.players[game.currPlayer].updateAlertCanvas(alertContext, 2);
-                    game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
+                    this.players[this.currPlayer].updateAlertCanvas(alertContext, 2);
+                    this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                 }
             } else if(event.offsetX>=225 && event.offsetX<=275 && event.offsetY>=90 && event.offsetY<=110){ // increase room number
-                if(game.players[game.currPlayer].atRoomToPrepare < roomTmp){
-                    game.players[game.currPlayer].atRoomToPrepare++;
+                if(this.players[this.currPlayer].atRoomToPrepare < roomTmp){
+                    this.players[this.currPlayer].atRoomToPrepare++;
                 }
-                game.players[game.currPlayer].updateAlertCanvas(alertContext, 2);
+                this.players[this.currPlayer].updateAlertCanvas(alertContext, 2);
                 console.log("room increase selected");
             } else if(event.offsetX>=225 && event.offsetX<=275 && event.offsetY>=120 && event.offsetY<=140){ // decrease room number
-                if(game.players[game.currPlayer].atRoomToPrepare > 0){
-                    game.players[game.currPlayer].atRoomToPrepare--;
+                if(this.players[this.currPlayer].atRoomToPrepare > 0){
+                    this.players[this.currPlayer].atRoomToPrepare--;
                 }
-                game.players[game.currPlayer].updateAlertCanvas(alertContext, 2);
+                this.players[this.currPlayer].updateAlertCanvas(alertContext, 2);
                 console.log("room decrease selected");
             } else if(event.offsetX>=200 && event.offsetX<=300 && event.offsetY>=170 && event.offsetY<=210){ // confirm
                 alertCanvas.style.display = 'none';
-                game.players[game.currPlayer].atPrepareRoom = false;
-                game.players[game.currPlayer].hotel.roomToPrepare = game.players[game.currPlayer].atRoomToPrepare;
-                game.players[game.currPlayer].hotel.roomHighLightFlag = true;
-                game.players[game.currPlayer].hotel.highlightRoomToPrepare(game.players[game.currPlayer].money);
-                game.players[game.currPlayer].hotel.updateHotelCanvas(hotelContext);
-                game.players[game.currPlayer].atAction = false;
-                game.players[game.currPlayer].actionFlag = true;
-                game.players[game.currPlayer].atActionBoost = false;
-                game.players[game.currPlayer].checkOpStatus();
-                game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
+                this.players[this.currPlayer].atPrepareRoom = false;
+                this.players[this.currPlayer].hotel.roomToPrepare = this.players[this.currPlayer].atRoomToPrepare;
+                this.players[this.currPlayer].hotel.roomHighLightFlag = true;
+                this.players[this.currPlayer].hotel.highlightRoomToPrepare(this.players[this.currPlayer].money);
+                this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
+                this.players[this.currPlayer].atAction = false;
+                this.players[this.currPlayer].actionFlag = true;
+                this.players[this.currPlayer].atActionBoost = false;
+                this.players[this.currPlayer].checkOpStatus();
+                this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                 console.log("confirm selected");
             }
-        } else if(game.players[game.currPlayer].atRoyalMoney){
+        } else if(this.players[this.currPlayer].atRoyalMoney){
             if(event.offsetX>=20 && event.offsetX<=120 && event.offsetY>=90 && event.offsetY<=140){ // boost
-                if(game.players[game.currPlayer].money>0){
+                if(this.players[this.currPlayer].money>0){
                     console.log("boost selected");
-                    if(game.players[game.currPlayer].atActionBoost){
-                        game.players[game.currPlayer].gainMoney(1);
-                        if(game.players[game.currPlayer].hasHiredServer(14)){
-                            game.players[game.currPlayer].atRoyal--;
-                            game.players[game.currPlayer].atMoney--;
+                    if(this.players[this.currPlayer].atActionBoost){
+                        this.players[this.currPlayer].gainMoney(1);
+                        if(this.players[this.currPlayer].hasHiredServer(14)){
+                            this.players[this.currPlayer].atRoyal--;
+                            this.players[this.currPlayer].atMoney--;
                         } else {
-                            if(game.players[game.currPlayer].atRoyal > 0){
-                                game.players[game.currPlayer].atRoyal--
+                            if(this.players[this.currPlayer].atRoyal > 0){
+                                this.players[this.currPlayer].atRoyal--
                             } else {
-                                game.players[game.currPlayer].atMoney--;
+                                this.players[this.currPlayer].atMoney--;
                             }
                         }
-                        game.players[game.currPlayer].atActionBoost = false;
+                        this.players[this.currPlayer].atActionBoost = false;
                     } else {
-                        game.players[game.currPlayer].loseMoney(1);
-                        if(game.players[game.currPlayer].hasHiredServer(14)){
-                            game.players[game.currPlayer].atMoney++;
-                            game.players[game.currPlayer].atRoyal++;
+                        this.players[this.currPlayer].loseMoney(1);
+                        if(this.players[this.currPlayer].hasHiredServer(14)){
+                            this.players[this.currPlayer].atMoney++;
+                            this.players[this.currPlayer].atRoyal++;
                         } else {
-                            game.players[game.currPlayer].atRoyal++;
+                            this.players[this.currPlayer].atRoyal++;
                         }
-                        game.players[game.currPlayer].atActionBoost = true;
+                        this.players[this.currPlayer].atActionBoost = true;
                     }
-                    game.players[game.currPlayer].updateAlertCanvas(alertContext, 3);
-                    game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
+                    this.players[this.currPlayer].updateAlertCanvas(alertContext, 3);
+                    this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                 }
             } else if(event.offsetX>=225 && event.offsetX<=275 && event.offsetY>=90 && event.offsetY<=110){ // increase royal
-                if(game.players[game.currPlayer].atMoney > 0 && !game.players[game.currPlayer].hasHiredServer(14)){
-                    game.players[game.currPlayer].atRoyal++;
-                    game.players[game.currPlayer].atMoney--;
+                if(this.players[this.currPlayer].atMoney > 0 && !this.players[this.currPlayer].hasHiredServer(14)){
+                    this.players[this.currPlayer].atRoyal++;
+                    this.players[this.currPlayer].atMoney--;
                 }
-                game.players[game.currPlayer].updateAlertCanvas(alertContext, 3);
+                this.players[this.currPlayer].updateAlertCanvas(alertContext, 3);
                 console.log("royal increase selected");
             } else if(event.offsetX>=225 && event.offsetX<=275 && event.offsetY>=120 && event.offsetY<=140){ // decrease royal
-                if(game.players[game.currPlayer].atRoyal > 0 && !game.players[game.currPlayer].hasHiredServer(14)){
-                    game.players[game.currPlayer].atRoyal--;
-                    game.players[game.currPlayer].atMoney++;
+                if(this.players[this.currPlayer].atRoyal > 0 && !this.players[this.currPlayer].hasHiredServer(14)){
+                    this.players[this.currPlayer].atRoyal--;
+                    this.players[this.currPlayer].atMoney++;
                 }
-                game.players[game.currPlayer].updateAlertCanvas(alertContext, 3);
+                this.players[this.currPlayer].updateAlertCanvas(alertContext, 3);
                 console.log("royal decrease selected");
             } else if(event.offsetX>=375 && event.offsetX<=425 && event.offsetY>=90 && event.offsetY<=110){ // increase money
-                if(game.players[game.currPlayer].atRoyal > 0 && !game.players[game.currPlayer].hasHiredServer(14)){
-                    game.players[game.currPlayer].atRoyal--;
-                    game.players[game.currPlayer].atMoney++;
+                if(this.players[this.currPlayer].atRoyal > 0 && !this.players[this.currPlayer].hasHiredServer(14)){
+                    this.players[this.currPlayer].atRoyal--;
+                    this.players[this.currPlayer].atMoney++;
                 }
-                game.players[game.currPlayer].updateAlertCanvas(alertContext, 3);
+                this.players[this.currPlayer].updateAlertCanvas(alertContext, 3);
                 console.log("money increase selected");
             } else if(event.offsetX>=375 && event.offsetX<=425 && event.offsetY>=120 && event.offsetY<=140){ // decrease money
-                if(game.players[game.currPlayer].atMoney > 0 && !game.players[game.currPlayer].hasHiredServer(14)){
-                    game.players[game.currPlayer].atRoyal++;
-                    game.players[game.currPlayer].atMoney--;
+                if(this.players[this.currPlayer].atMoney > 0 && !this.players[this.currPlayer].hasHiredServer(14)){
+                    this.players[this.currPlayer].atRoyal++;
+                    this.players[this.currPlayer].atMoney--;
                 }
-                game.players[game.currPlayer].updateAlertCanvas(alertContext, 3);
+                this.players[this.currPlayer].updateAlertCanvas(alertContext, 3);
                 console.log("money decrease selected");
             } else if(event.offsetX>=200 && event.offsetX<=300 && event.offsetY>=170 && event.offsetY<=210){ // confirm
                 alertCanvas.style.display = 'none';
-                game.players[game.currPlayer].atRoyalMoney = false;
-                game.players[game.currPlayer].gainRoyal(game.players[game.currPlayer].atRoyal);
-                game.players[game.currPlayer].gainMoney(game.players[game.currPlayer].atMoney);
-                game.players[game.currPlayer].atAction = false;
-                game.players[game.currPlayer].actionFlag = true;
-                game.players[game.currPlayer].atActionBoost = false;
-                game.players[game.currPlayer].checkOpStatus();
-                game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
+                this.players[this.currPlayer].atRoyalMoney = false;
+                this.players[this.currPlayer].gainRoyal(this.players[this.currPlayer].atRoyal);
+                this.players[this.currPlayer].gainMoney(this.players[this.currPlayer].atMoney);
+                this.players[this.currPlayer].atAction = false;
+                this.players[this.currPlayer].actionFlag = true;
+                this.players[this.currPlayer].atActionBoost = false;
+                this.players[this.currPlayer].checkOpStatus();
+                this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                 console.log("confirm selected");
             }
-        } else if(game.players[game.currPlayer].atHireServer){
+        } else if(this.players[this.currPlayer].atHireServer){
             if(event.offsetX>=20 && event.offsetX<=120 && event.offsetY>=90 && event.offsetY<=140){ // boost
-                if(game.players[game.currPlayer].money>0){
+                if(this.players[this.currPlayer].money>0){
                     console.log("boost selected");
-                    if(game.players[game.currPlayer].atActionBoost){
-                        game.players[game.currPlayer].money++;
-                        game.players[game.currPlayer].atHireServerdiscount.at(-1)--;
-                        game.players[game.currPlayer].atActionBoost = false;
+                    if(this.players[this.currPlayer].atActionBoost){
+                        this.players[this.currPlayer].money++;
+                        this.players[this.currPlayer].atHireServerdiscount.at(-1)--;
+                        this.players[this.currPlayer].atActionBoost = false;
                     } else {
-                        game.players[game.currPlayer].money--;
-                        game.players[game.currPlayer].atHireServerdiscount.at(-1)++;
-                        game.players[game.currPlayer].atActionBoost = true;
+                        this.players[this.currPlayer].money--;
+                        this.players[this.currPlayer].atHireServerdiscount.at(-1)++;
+                        this.players[this.currPlayer].atActionBoost = true;
                     }
-                    game.players[game.currPlayer].updateAlertCanvas(alertContext, 4);
-                    game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
+                    this.players[this.currPlayer].updateAlertCanvas(alertContext, 4);
+                    this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                 }
             } else if(event.offsetX>=200 && event.offsetX<=300 && event.offsetY>=170 && event.offsetY<=210){ // confirm
                 alertCanvas.style.display = 'none';
-                game.players[game.currPlayer].atHireServer = false;
-                game.players[game.currPlayer].serverOnHandHighLightFlag = true;
-                game.players[game.currPlayer].hireFlag++;
-                game.players[game.currPlayer].highlightServerToHire(game.players[game.currPlayer].atHireServerdiscount.at(-1));
-                game.players[game.currPlayer].updateServerCanvas(serverContext);
-                game.players[game.currPlayer].atAction = false;
-                game.players[game.currPlayer].actionFlag = true;
-                game.players[game.currPlayer].atActionBoost = false;
-                game.players[game.currPlayer].checkOpStatus();
-                game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
+                this.players[this.currPlayer].atHireServer = false;
+                this.players[this.currPlayer].serverOnHandHighLightFlag = true;
+                this.players[this.currPlayer].hireFlag++;
+                this.players[this.currPlayer].highlightServerToHire(this.players[this.currPlayer].atHireServerdiscount.at(-1));
+                this.players[this.currPlayer].updateServerCanvas(serverContext);
+                this.players[this.currPlayer].atAction = false;
+                this.players[this.currPlayer].actionFlag = true;
+                this.players[this.currPlayer].atActionBoost = false;
+                this.players[this.currPlayer].checkOpStatus();
+                this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                 console.log("confirm selected");
             }
             
-        } else if(game.players[game.currPlayer].atTakeMirror){
+        } else if(this.players[this.currPlayer].atTakeMirror){
             if(event.offsetX>=225 && event.offsetX<=275 && event.offsetY>=90 && event.offsetY<=110){ // increase dice
-                if(game.players[game.currPlayer].atMirrorDice < 6){
-                    game.players[game.currPlayer].atMirrorDice++;
+                if(this.players[this.currPlayer].atMirrorDice < 6){
+                    this.players[this.currPlayer].atMirrorDice++;
                 }
-                game.players[game.currPlayer].updateAlertCanvas(alertContext, 5);
+                this.players[this.currPlayer].updateAlertCanvas(alertContext, 5);
                 console.log("brown increase selected");
             } else if(event.offsetX>=225 && event.offsetX<=275 && event.offsetY>=120 && event.offsetY<=140){ // decrease dice
-                if(game.players[game.currPlayer].atMirrorDice > 1){
-                    game.players[game.currPlayer].atMirrorDice--;
+                if(this.players[this.currPlayer].atMirrorDice > 1){
+                    this.players[this.currPlayer].atMirrorDice--;
                 }
-                game.players[game.currPlayer].updateAlertCanvas(alertContext, 5);
+                this.players[this.currPlayer].updateAlertCanvas(alertContext, 5);
                 console.log("brown decrease selected");
             } else if(event.offsetX>=200 && event.offsetX<=300 && event.offsetY>=170 && event.offsetY<=210){ // confirm
                 alertCanvas.style.display = 'none';
-                game.players[game.currPlayer].atTakeMirror = false;
-                switch(game.players[game.currPlayer].atMirrorDice){
-                    case 1: game.players[game.currPlayer].actionTakeBrownWhite(game.players[game.currPlayer].atMirrorStrength); break;
-                    case 2: game.players[game.currPlayer].actionTakeRedBlack(game.players[game.currPlayer].atMirrorStrength); break;
-                    case 3: game.players[game.currPlayer].actionPrepareRoom(game.players[game.currPlayer].atMirrorStrength); break;
-                    case 4: game.players[game.currPlayer].actionTakeRoyalMoney(game.players[game.currPlayer].atMirrorStrength); break;
-                    case 5: game.players[game.currPlayer].actionHireServer(game.players[game.currPlayer].atMirrorStrength); break;
+                this.players[this.currPlayer].atTakeMirror = false;
+                switch(this.players[this.currPlayer].atMirrorDice){
+                    case 1: this.players[this.currPlayer].actionTakeBrownWhite(this.players[this.currPlayer].atMirrorStrength); break;
+                    case 2: this.players[this.currPlayer].actionTakeRedBlack(this.players[this.currPlayer].atMirrorStrength); break;
+                    case 3: this.players[this.currPlayer].actionPrepareRoom(this.players[this.currPlayer].atMirrorStrength); break;
+                    case 4: this.players[this.currPlayer].actionTakeRoyalMoney(this.players[this.currPlayer].atMirrorStrength); break;
+                    case 5: this.players[this.currPlayer].actionHireServer(this.players[this.currPlayer].atMirrorStrength); break;
                 }
-                game.players[game.currPlayer].atAction = false;
-                game.players[game.currPlayer].atActionBoost = false;
-                game.players[game.currPlayer].checkOpStatus();
-                game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
+                this.players[this.currPlayer].atAction = false;
+                this.players[this.currPlayer].atActionBoost = false;
+                this.players[this.currPlayer].checkOpStatus();
+                this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                 console.log("confirm selected");
             }
         }
@@ -987,41 +940,41 @@ class Game{
     handleServerClick(event) {
         console.log("server canvas clicked");
         // left roll
-        if(event.offsetX>=0 && event.offsetX<=25 && event.offsetY>=80 && event.offsetY<=130 && game.players[game.currPlayer].serverOnHandCanvasIdx>0){
+        if(event.offsetX>=0 && event.offsetX<=25 && event.offsetY>=80 && event.offsetY<=130 && this.players[this.currPlayer].serverOnHandCanvasIdx>0){
             console.log("sever on hand left roll clicked");
-            game.players[game.currPlayer].serverOnHandCanvasIdx--;
-            game.players[game.currPlayer].updateServerCanvas(serverContext);
+            this.players[this.currPlayer].serverOnHandCanvasIdx--;
+            this.players[this.currPlayer].updateServerCanvas(serverContext);
         } // right roll
-        else if(event.offsetX>=615 && event.offsetX<=640 && event.offsetY>=80 && event.offsetY<=130 && game.players[game.currPlayer].serverOnHandCanvasIdx<(game.players[game.currPlayer].numServerOnHand-3)) {
+        else if(event.offsetX>=615 && event.offsetX<=640 && event.offsetY>=80 && event.offsetY<=130 && this.players[this.currPlayer].serverOnHandCanvasIdx<(this.players[this.currPlayer].numServerOnHand-3)) {
             console.log("sever on hand right roll clicked");
-            game.players[game.currPlayer].serverOnHandCanvasIdx++;
-            game.players[game.currPlayer].updateServerCanvas(serverContext);
+            this.players[this.currPlayer].serverOnHandCanvasIdx++;
+            this.players[this.currPlayer].updateServerCanvas(serverContext);
         } // server hire
         else{
             for(let i=0; i<3; i++){
-                if(game.players[game.currPlayer].serverOnHandCanvasIdx + i < game.players[game.currPlayer].numServerOnHand){
-                    const serverIdx = game.players[game.currPlayer].serverOnHandCanvasIdx + i;
+                if(this.players[this.currPlayer].serverOnHandCanvasIdx + i < this.players[this.currPlayer].numServerOnHand){
+                    const serverIdx = this.players[this.currPlayer].serverOnHandCanvasIdx + i;
                     if(event.offsetX>=(65+170*i) && event.offsetX<=(225+170*i) && event.offsetY>=35 && event.offsetY<=275 && 
-                        game.players[game.currPlayer].hireFlag && game.players[game.currPlayer].serverOnHandHighLight[serverIdx]){
+                        this.players[this.currPlayer].hireFlag && this.players[this.currPlayer].serverOnHandHighLight[serverIdx]){
                         console.log("hire server " + serverIdx);
-                        if(game.players[game.currPlayer].serverOnHand[serverIdx].serverCost > game.players[game.currPlayer].atHireServerdiscount.at(-1)) {
-                            game.players[game.currPlayer].money -= (game.players[game.currPlayer].serverOnHand[serverIdx].serverCost - game.players[game.currPlayer].atHireServerdiscount.at(-1));
-                            game.players[game.currPlayer].atHireServerdiscount.pop();
+                        if(this.players[this.currPlayer].serverOnHand[serverIdx].serverCost > this.players[this.currPlayer].atHireServerdiscount.at(-1)) {
+                            this.players[this.currPlayer].money -= (this.players[this.currPlayer].serverOnHand[serverIdx].serverCost - this.players[this.currPlayer].atHireServerdiscount.at(-1));
+                            this.players[this.currPlayer].atHireServerdiscount.pop();
                         }
-                        game.players[game.currPlayer].hireFlag--;
-                        game.players[game.currPlayer].hireServer(serverIdx);
-                        if(game.players[game.currPlayer].hireLimitLastThree){ // draw 3 hire 1 senario, put back the reset
-                            game.serverDeck.push(game.players[game.currPlayer].serverOnHand.pop());
-                            game.serverDeck.push(game.players[game.currPlayer].serverOnHand.pop());
-                            game.shuffleDeck(game.serverDeck);
+                        this.players[this.currPlayer].hireFlag--;
+                        this.players[this.currPlayer].hireServer(serverIdx);
+                        if(this.players[this.currPlayer].hireLimitLastThree){ // draw 3 hire 1 senario, put back the reset
+                            this.serverDeck.push(this.players[this.currPlayer].serverOnHand.pop());
+                            this.serverDeck.push(this.players[this.currPlayer].serverOnHand.pop());
+                            this.shuffleDeck(this.serverDeck);
                         }
-                        if(game.players[game.currPlayer].hireFlag==0){
-                            game.players[game.currPlayer].serverOnHandHighLightFlag = false;
-                            game.players[game.currPlayer].highlightServerToHire(game.players[game.currPlayer].atHireServerdiscount.at(-1));
+                        if(this.players[this.currPlayer].hireFlag==0){
+                            this.players[this.currPlayer].serverOnHandHighLightFlag = false;
+                            this.players[this.currPlayer].highlightServerToHire(this.players[this.currPlayer].atHireServerdiscount.at(-1));
                         }
-                        game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
-                        game.players[game.currPlayer].updateServerCanvas(serverContext);
-                        game.players[game.currPlayer].hotel.updateHotelCanvas(hotelContext);
+                        this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
+                        this.players[this.currPlayer].updateServerCanvas(serverContext);
+                        this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
                     }
                 }
             }
@@ -1032,7 +985,6 @@ class Game{
         // First guest invitation is special
         if(this.players[this.currPlayer].firstGuestTurn){
             this.players[this.currPlayer].firstGuestTurn = false;
-            this.players[this.currPlayer].turnFlag = false;
             this.players[this.currPlayer].inviteFlag = false;
             this.players[this.currPlayer].actionFlag = false;
             this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
@@ -1043,12 +995,10 @@ class Game{
             } else {
                 this.currPlayer++;
             }
-            this.players[this.currPlayer].turnFlag = true;
             this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
             this.players[this.currPlayer].updateServerCanvas(serverContext);
             this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
         } else { // normal mini round
-            this.players[this.currPlayer].turnFlag = false;
             this.players[this.currPlayer].inviteFlag = false;
             this.players[this.currPlayer].actionFlag = false;
             this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
@@ -1088,7 +1038,6 @@ class Game{
                 this.players[this.currPlayer].gainBlack(1);
             }
             // update all canvas
-            this.players[this.currPlayer].turnFlag = true;
             this.updateGuestCanvas(guestContext);
             this.players[this.currPlayer].checkOpStatus();
             this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);

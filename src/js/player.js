@@ -1,7 +1,8 @@
 // Player class definition
 class Player{
-    constructor(playerID, playerName, hotelID) {
+    constructor(game, playerID, playerName, hotelID) {
         // init player basic info
+        this.game = game;
         this.playerID = playerID;
         this.playerName = playerName;
         console.log("create new player " + this.playerID + " " + this.playerName);
@@ -11,7 +12,6 @@ class Player{
             case 2: this.canvas = player2Canvas; this.context = player2Context; this.markerColor = "yellow"; /*console.log("link to canvas 2");*/ break;
             case 3: this.canvas = player3Canvas; this.context = player3Context; this.markerColor = "grey";   /*console.log("link to canvas 3");*/ break;
         }
-        this.turnFlag = false; // assert when it's this player's turn
         this.endFlag = false; // game class wait for this flag to go to next turn
         this.miniTurn = [-1, -1];
         this.diceTaken = [-1, -1];
@@ -66,7 +66,7 @@ class Player{
         this.serverHiredCanvasIdx = 0;
         this.serverOnHandHighLightFlag = false;
         this.serverOnHandHighLight = [];
-        this.hotel = new Hotel(hotelID); // prepare hotel
+        this.hotel = new Hotel(this.game, hotelID); // prepare hotel
         // line canvas clicking
         // this.canvas.addEventListener("click", this.handlePlayerClick);
         // draw the player board
@@ -84,7 +84,13 @@ class Player{
                 this.disableAllOp();
                 this.atInvite = true;
                 this.updatePlayerCanvas(this.context);
-                return 1;
+                this.guestHighLightFlag = true;
+                if(this.firstGuestTurn){
+                    this.checkGuestInvite(10); // make sure all guest available at the first guest
+                } else {
+                    this.checkGuestInvite(this.money);
+                }
+                this.updateGuestCanvas(guestContext);
             }
         }
 
@@ -97,7 +103,13 @@ class Player{
                 this.atAction = true;
                 this.updatePlayerCanvas(this.context);
             }
-            return 2;
+            this.actionHighLightFlag = true;
+            for(let i=0; i<6; i++){
+                if(this.actionPoint[i]>0){
+                    this.actionHighLight[i] = 1;
+                }
+            }
+            this.updateActionCanvas(actionContext);
         }
 
         // check if this event is serve
@@ -113,7 +125,6 @@ class Player{
                 this.checkOpStatus();
                 this.updatePlayerCanvas(this.context);
             }
-            return 3;
         }
 
         // check if this event is checkout
@@ -127,7 +138,6 @@ class Player{
                 this.hotel.updateHotelCanvas(hotelContext);
                 this.updatePlayerCanvas(this.context);
             }
-            return 4;
         }
 
         // check if this event is end
@@ -136,11 +146,8 @@ class Player{
             if(this.opEnd){
                 this.endFlag = true;
             }
-            return 5;
+            this.nextMiniRound();
         }
-
-        // no button pressed
-        return 0;
     }
 
     checkOpStatus() {
@@ -293,11 +300,11 @@ class Player{
                 this.markCanvas(context, 80, 110, 90, 120, 100, 100);
             }
             context.drawImage(brownImg, 150, 100, 30, 30);
-            this.textCanvas(context, game.players[game.currPlayer].atTakeBrown.toString(), 200, 120);
+            this.textCanvas(context, this.atTakeBrown.toString(), 200, 120);
             this.triangleCanvas(context, 225, 110, 250, 90, 275, 110);
             this.triangleCanvas(context, 225, 120, 250, 140, 275, 120);
             context.drawImage(whiteImg, 300, 100, 30, 30);
-            this.textCanvas(context, game.players[game.currPlayer].atTakeWhite.toString(), 350, 120);
+            this.textCanvas(context, this.atTakeWhite.toString(), 350, 120);
             this.triangleCanvas(context, 375, 110, 400, 90, 425, 110);
             this.triangleCanvas(context, 375, 120, 400, 140, 425, 120);
             context.fillStyle = 'white';
@@ -313,11 +320,11 @@ class Player{
                 this.markCanvas(context, 80, 110, 90, 120, 100, 100);
             }
             context.drawImage(redImg, 150, 100, 30, 30);
-            this.textCanvas(context, game.players[game.currPlayer].atTakeRed.toString(), 200, 120);
+            this.textCanvas(context, this.atTakeRed.toString(), 200, 120);
             this.triangleCanvas(context, 225, 110, 250, 90, 275, 110);
             this.triangleCanvas(context, 225, 120, 250, 140, 275, 120);
             context.drawImage(blackImg, 300, 100, 30, 30);
-            this.textCanvas(context, game.players[game.currPlayer].atTakeBlack.toString(), 350, 120);
+            this.textCanvas(context, this.atTakeBlack.toString(), 350, 120);
             this.triangleCanvas(context, 375, 110, 400, 90, 425, 110);
             this.triangleCanvas(context, 375, 120, 400, 140, 425, 120);
             context.fillStyle = 'white';
@@ -333,7 +340,7 @@ class Player{
                 this.markCanvas(context, 80, 110, 90, 120, 100, 100);
             }
             context.drawImage(roomRedPreparedImg, 140, 90, 50, 50);
-            this.textCanvas(context, game.players[game.currPlayer].atRoomToPrepare.toString(), 200, 120);
+            this.textCanvas(context, this.atRoomToPrepare.toString(), 200, 120);
             this.triangleCanvas(context, 225, 110, 250, 90, 275, 110);
             this.triangleCanvas(context, 225, 120, 250, 140, 275, 120);
             context.fillStyle = 'white';
@@ -349,11 +356,11 @@ class Player{
                 this.markCanvas(context, 80, 110, 90, 120, 100, 100);
             }
             context.drawImage(royalTokenImg, 150, 95, 30, 40);
-            this.textCanvas(context, game.players[game.currPlayer].atRoyal.toString(), 200, 120);
+            this.textCanvas(context, this.atRoyal.toString(), 200, 120);
             this.triangleCanvas(context, 225, 110, 250, 90, 275, 110);
             this.triangleCanvas(context, 225, 120, 250, 140, 275, 120);
             context.drawImage(moneyImg, 300, 100, 30, 30);
-            this.textCanvas(context, game.players[game.currPlayer].atMoney.toString(), 350, 120);
+            this.textCanvas(context, this.atMoney.toString(), 350, 120);
             this.triangleCanvas(context, 375, 110, 400, 90, 425, 110);
             this.triangleCanvas(context, 375, 120, 400, 140, 425, 120);
             context.fillStyle = 'white';
@@ -395,19 +402,19 @@ class Player{
             break;
             case 6: // pick food to take
             context.drawImage(brownImg, 100, 25, 30, 30);
-            this.textCanvas(context, game.players[game.currPlayer].atTakeBrown.toString(), 150, 45);
+            this.textCanvas(context, this.atTakeBrown.toString(), 150, 45);
             this.triangleCanvas(context, 175, 35, 200, 15, 225, 35);
             this.triangleCanvas(context, 175, 45, 200, 65, 225, 45);
             context.drawImage(whiteImg, 250, 25, 30, 30);
-            this.textCanvas(context, game.players[game.currPlayer].atTakeWhite.toString(), 300, 45);
+            this.textCanvas(context, this.atTakeWhite.toString(), 300, 45);
             this.triangleCanvas(context, 325, 35, 350, 15, 375, 35);
             this.triangleCanvas(context, 325, 45, 350, 65, 375, 45);
             context.drawImage(redImg, 100, 100, 30, 30);
-            this.textCanvas(context, game.players[game.currPlayer].atTakeRed.toString(), 150, 120);
+            this.textCanvas(context, this.atTakeRed.toString(), 150, 120);
             this.triangleCanvas(context, 175, 110, 200, 90, 225, 110);
             this.triangleCanvas(context, 175, 120, 200, 140, 225, 120);
             context.drawImage(blackImg, 250, 100, 30, 30);
-            this.textCanvas(context, game.players[game.currPlayer].atTakeBlack.toString(), 300, 120);
+            this.textCanvas(context, this.atTakeBlack.toString(), 300, 120);
             this.triangleCanvas(context, 325, 110, 350, 90, 375, 110);
             this.triangleCanvas(context, 325, 120, 350, 140, 375, 120);
             context.fillStyle = 'white';
@@ -501,7 +508,7 @@ class Player{
         context.arc(markerXoffset, markerYoffset, markerRadius, 0, 2 * Math.PI);
         context.fill();
         // draw the check mark if it's this player's turn
-        if(this.turnFlag){
+        if(this.game.currPlayer == this.playerID){
             this.markCanvas(context, 15, 20, 25, 30, 35, 10);
             context.strokeStyle = "green";
             context.lineWidth = 5;
@@ -643,7 +650,7 @@ class Player{
         var   opYoffset = 10;
         const opWidth = 40;
         const opHeigh = 20;
-        if(this.turnFlag){
+        if(this.currPlayer == this.playerID){
             if(this.opInvite){
                 context.fillStyle = 'white';
             } else {
@@ -742,7 +749,7 @@ class Player{
         }
         // check major task A1
         // 积累10点皇室点数
-        if(game.majorTask0==1 && this.royalPoint >= 10){
+        if(this.majorTask0==1 && this.royalPoint >= 10){
             this.gainMajorTaskBonus(0);
         }
     }
@@ -827,7 +834,7 @@ class Player{
         this.money += value;
         // check major task A0
         // 积累20块钱
-        if(game.majorTask0==0 && this.money >= 20){
+        if(this.majorTask0==0 && this.money >= 20){
             this.gainMajorTaskBonus(0);
         }
     }
@@ -838,8 +845,8 @@ class Player{
 
     gainMajorTaskBonus(taskID) {
         for(let i=0; i<3; i++){
-            if(game.majorTaskComp[taskID][i]!=-1){
-                game.majorTaskComp[taskID][i] = this.playerID;
+            if(this.majorTaskComp[taskID][i]!=-1){
+                this.majorTaskComp[taskID][i] = this.playerID;
                 switch(i){
                     case 0: this.gainGamePoint(15); break;
                     case 1: this.gainGamePoint(10); break;
@@ -865,7 +872,7 @@ class Player{
 
         // check major task A2
         // 雇佣6名员工
-        if(game.majorTask0==2 && this.numServerHired >= 6){
+        if(this.majorTask0==2 && this.numServerHired >= 6){
             this.gainMajorTaskBonus(0);
         }
 
@@ -946,13 +953,13 @@ class Player{
         // the most special, handle first
         var orgHiredServerNum = this.serverHired.length;
         if(this.hasHiredServer(28)){ //最终结算时获得所有其他玩家的结算效果
-            for(let i=0; i<game.playerNumber; i++){
+            for(let i=0; i<this.playerNumber; i++){
                 if(i==this.playerID){
                     continue;
                 }
                 const finalServerID = [26, 27, 29, 30, 31, 33, 36, 39, 40, 45, 46, 47];
                 for(let j=0; j<finalServerID.length; j++){
-                    if(game.players[i].hasHiredServer(finalServerID[j])) {
+                    if(this.players[i].hasHiredServer(finalServerID[j])) {
                         this.serverHired.push(new Server(finalServerID[j]));
                     }
                 }
@@ -983,7 +990,7 @@ class Player{
         if(this.hasHiredServer(39)){ //最终结算时每个完成的全局任务获得5游戏点数
             for(let i=0; i<3; i++){
                 for(let j=0; j<3; j++){
-                    if(this.playerID == game.majorTaskComp[i][j]){
+                    if(this.playerID == this.majorTaskComp[i][j]){
                         this.playerID.gainGamePoint(5);
                     }
                 }
@@ -1075,14 +1082,14 @@ class Player{
         // server related
         switch(guestID){
             case 2: // 原价开1个房间并抽取1张员工到手牌
-            this.addServerToHand(game.serverDeck.at(-1));
-            game.serverDeck.pop();
+            this.addServerToHand(this.serverDeck.at(-1));
+            this.serverDeck.pop();
             break;
             case 7: // 抽取2张员工到手牌
-            this.addServerToHand(game.serverDeck.at(-1));
-            game.serverDeck.pop();
-            this.addServerToHand(game.serverDeck.at(-1));
-            game.serverDeck.pop();
+            this.addServerToHand(this.serverDeck.at(-1));
+            this.serverDeck.pop();
+            this.addServerToHand(this.serverDeck.at(-1));
+            this.serverDeck.pop();
             break;
             case 8: // 获得1个白蛋糕并减3费打出1张员工
             this.serverOnHandHighLightFlag = true;
@@ -1113,10 +1120,10 @@ class Player{
             this.updateServerCanvas(serverContext);
             break;
             case 19: // 抽取2张员工到手牌并获得2个皇室点数
-            this.addServerToHand(game.serverDeck.at(-1));
-            game.serverDeck.pop();
-            this.addServerToHand(game.serverDeck.at(-1));
-            game.serverDeck.pop();
+            this.addServerToHand(this.serverDeck.at(-1));
+            this.serverDeck.pop();
+            this.addServerToHand(this.serverDeck.at(-1));
+            this.serverDeck.pop();
             break;
             case 22: // 减1费打出1张员工并获得3个皇室点数
             this.serverOnHandHighLightFlag = true;
@@ -1136,12 +1143,12 @@ class Player{
             this.updateServerCanvas(serverContext);
             break;
             case 27: // 抽取3张员工，减3费打出其中1张，剩余放回牌堆底部
-            this.addServerToHand(game.serverDeck.at(-1));
-            game.serverDeck.pop();
-            this.addServerToHand(game.serverDeck.at(-1));
-            game.serverDeck.pop();
-            this.addServerToHand(game.serverDeck.at(-1));
-            game.serverDeck.pop();
+            this.addServerToHand(this.serverDeck.at(-1));
+            this.serverDeck.pop();
+            this.addServerToHand(this.serverDeck.at(-1));
+            this.serverDeck.pop();
+            this.addServerToHand(this.serverDeck.at(-1));
+            this.serverDeck.pop();
             this.serverOnHandHighLightFlag = true;
             this.hireFlag++;
             this.hireLimitLastThree = true;
@@ -1150,12 +1157,12 @@ class Player{
             this.updateServerCanvas(serverContext);
             break;
             case 28: // 抽取3张员工，免费打出其中1张，剩余放回牌堆底部
-            this.addServerToHand(game.serverDeck.at(-1));
-            game.serverDeck.pop();
-            this.addServerToHand(game.serverDeck.at(-1));
-            game.serverDeck.pop();
-            this.addServerToHand(game.serverDeck.at(-1));
-            game.serverDeck.pop();
+            this.addServerToHand(this.serverDeck.at(-1));
+            this.serverDeck.pop();
+            this.addServerToHand(this.serverDeck.at(-1));
+            this.serverDeck.pop();
+            this.addServerToHand(this.serverDeck.at(-1));
+            this.serverDeck.pop();
             this.serverOnHandHighLightFlag = true;
             this.hireFlag++;
             this.hireLimitLastThree = true;
@@ -1172,12 +1179,12 @@ class Player{
             this.updateServerCanvas(serverContext);
             break;
             case 44: // 抽取3张员工到手牌
-            this.addServerToHand(game.serverDeck.at(-1));
-            game.serverDeck.pop();
-            this.addServerToHand(game.serverDeck.at(-1));
-            game.serverDeck.pop();
-            this.addServerToHand(game.serverDeck.at(-1));
-            game.serverDeck.pop();
+            this.addServerToHand(this.serverDeck.at(-1));
+            this.serverDeck.pop();
+            this.addServerToHand(this.serverDeck.at(-1));
+            this.serverDeck.pop();
+            this.addServerToHand(this.serverDeck.at(-1));
+            this.serverDeck.pop();
             break;
             case 47: // 减1费打出1张员工
             this.serverOnHandHighLightFlag = true;
@@ -1196,14 +1203,14 @@ class Player{
             this.updateServerCanvas(serverContext);
             break;
             case 52: // 抽取1张员工到手牌并获得2个皇室点数
-            this.addServerToHand(game.serverDeck.at(-1));
-            game.serverDeck.pop();
+            this.addServerToHand(this.serverDeck.at(-1));
+            this.serverDeck.pop();
             break;
             case 56: // 抽取2张员工到手牌
-            this.addServerToHand(game.serverDeck.at(-1));
-            game.serverDeck.pop();
-            this.addServerToHand(game.serverDeck.at(-1));
-            game.serverDeck.pop();
+            this.addServerToHand(this.serverDeck.at(-1));
+            this.serverDeck.pop();
+            this.addServerToHand(this.serverDeck.at(-1));
+            this.serverDeck.pop();
             break;
             case 57: // 免费打出1张员工
             this.serverOnHandHighLightFlag = true;
@@ -1338,9 +1345,9 @@ class Player{
             case 54: this.freeInviteNum = 1; break;
             case 40: this.freeInviteNum = 2; break;
         }
-        game.guestHighLightFlag = true;
-        game.checkGuestInvite(10);
-        game.updateGuestCanvas(guestContext);
+        this.guestHighLightFlag = true;
+        this.checkGuestInvite(10);
+        this.updateGuestCanvas(guestContext);
         // special bonus
         if(guestID==50) { // 立即额外进行一个回合，不需要拿取骰子
             this.specialRound = true;
