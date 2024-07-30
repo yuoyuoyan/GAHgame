@@ -38,14 +38,16 @@ class Player{
         this.atRoomToPrepare = 0;
         this.atRoyal = 0;
         this.atMoney = 0;
-        this.atHireServerdiscount = 0;
+        this.atHireServerdiscount = [];
         this.atMirrorDice = 1;
         this.atActionBoost = false;
         this.freeInviteNum = 0;
         this.inviteFlag = false; // whether already invited this turn
         this.actionFlag = false; // whether already took dice this turn
-        this.hireFlag = false;
+        this.hireFlag = 0;
+        this.hireLimitLastThree = false; // only used at draw 3 and hire 1
         this.serveFoodNum = 0;
+        this.specialRound = false;
         this.gamePoint = 0;
         this.royalPoint = 0;
         this.hotelID = hotelID;
@@ -213,7 +215,7 @@ class Player{
         this.atHireServer = true;
         this.serverOnHandHighLightFlag = true;
         // default maximum discount
-        this.atHireServerdiscount = value;
+        this.atHireServerdiscount.push(value);
         this.updateAlertCanvas(alertContext, 4);
     }
 
@@ -228,7 +230,11 @@ class Player{
 
     highlightServerToHire(discount) {
         for(let i=0; i<this.serverOnHand.length; i++){
-            this.serverOnHandHighLight[i] = (this.money >= (discount + this.serverOnHand[i].serverCost)) ? 1 : 0;
+            if(this.highlightServerToHire) { // at draw 3 hire 1 senario
+                this.serverOnHandHighLight[i] = (i>=(this.serverOnHand.length-3) && this.money >= (discount + this.serverOnHand[i].serverCost)) ? 1 : 0;
+            } else {
+                this.serverOnHandHighLight[i] = (this.money >= (discount + this.serverOnHand[i].serverCost)) ? 1 : 0;
+            }
         }
     }
 
@@ -922,8 +928,13 @@ class Player{
             this.gainGamePoint(this.hotel.roomAreaClosedNum * 2);
         }
         if(this.hasHiredServer(39)){ //最终结算时每个完成的全局任务获得5游戏点数
-            // TODO
-            ;
+            for(let i=0; i<3; i++){
+                for(let j=0; j<3; j++){
+                    if(this.playerID == game.majorTaskComp[i][j]){
+                        this.playerID.gainGamePoint(5);
+                    }
+                }
+            }
         }
         if(this.hasHiredServer(40)){ //最终结算时每个剩余的皇室点数获得2游戏点数
             this.gainGamePoint(this.royalPoint * 2);
@@ -1009,60 +1020,234 @@ class Player{
             this.gainRoyal(1); break;
         }
         // server related
+        // TODO
         switch(guestID){
             case 2: // 原价开1个房间并抽取1张员工到手牌
-            this.addServerToHand(game.serverDeck[game.serverDeck.length-1]);
+            this.addServerToHand(game.serverDeck.at(-1));
             game.serverDeck.pop();
             break;
             case 7: // 抽取2张员工到手牌
-            this.addServerToHand(game.serverDeck[game.serverDeck.length-1]);
+            this.addServerToHand(game.serverDeck.at(-1));
             game.serverDeck.pop();
-            this.addServerToHand(game.serverDeck[game.serverDeck.length-1]);
+            this.addServerToHand(game.serverDeck.at(-1));
             game.serverDeck.pop();
             break;
             case 8: // 获得1个白蛋糕并减3费打出1张员工
+            this.serverOnHandHighLightFlag = true;
+            this.hireFlag++;
+            this.highlightServerToHire(3);
+            this.atHireServerdiscount.push(3);
+            this.updateServerCanvas(serverContext);
+            break;
             case 11: // 获得1个白蛋糕并减2费打出1张员工
+            this.serverOnHandHighLightFlag = true;
+            this.hireFlag++;
+            this.highlightServerToHire(2);
+            this.atHireServerdiscount.push(2);
+            this.updateServerCanvas(serverContext);
+            break;
             case 16: // 减1费打出1张员工
+            this.serverOnHandHighLightFlag = true;
+            this.hireFlag++;
+            this.highlightServerToHire(1);
+            this.atHireServerdiscount.push(1);
+            this.updateServerCanvas(serverContext);
+            break;
             case 18: // 减1费打出1张员工并原价开1个房间
+            this.serverOnHandHighLightFlag = true;
+            this.hireFlag++;
+            this.highlightServerToHire(1);
+            this.atHireServerdiscount.push(1);
+            this.updateServerCanvas(serverContext);
+            break;
             case 19: // 抽取2张员工到手牌并获得2个皇室点数
+            this.addServerToHand(game.serverDeck.at(-1));
+            game.serverDeck.pop();
+            this.addServerToHand(game.serverDeck.at(-1));
+            game.serverDeck.pop();
+            break;
             case 22: // 减1费打出1张员工并获得3个皇室点数
+            this.serverOnHandHighLightFlag = true;
+            this.hireFlag++;
+            this.highlightServerToHire(1);
+            this.atHireServerdiscount.push(1);
+            this.updateServerCanvas(serverContext);
+            break;
             case 25: // 分别减1费打出2张员工
+            this.serverOnHandHighLightFlag = true;
+            this.hireFlag++;
+            this.highlightServerToHire(1);
+            this.atHireServerdiscount.push(1);
+            this.hireFlag++;
+            this.highlightServerToHire(1);
+            this.atHireServerdiscount.push(1);
+            this.updateServerCanvas(serverContext);
+            break;
             case 27: // 抽取3张员工，减3费打出其中1张，剩余放回牌堆底部
+            this.addServerToHand(game.serverDeck.at(-1));
+            game.serverDeck.pop();
+            this.addServerToHand(game.serverDeck.at(-1));
+            game.serverDeck.pop();
+            this.addServerToHand(game.serverDeck.at(-1));
+            game.serverDeck.pop();
+            this.serverOnHandHighLightFlag = true;
+            this.hireFlag++;
+            this.hireLimitLastThree = true;
+            this.highlightServerToHire(1);
+            this.atHireServerdiscount.push(1);
+            this.updateServerCanvas(serverContext);
+            break;
             case 28: // 抽取3张员工，免费打出其中1张，剩余放回牌堆底部
+            this.addServerToHand(game.serverDeck.at(-1));
+            game.serverDeck.pop();
+            this.addServerToHand(game.serverDeck.at(-1));
+            game.serverDeck.pop();
+            this.addServerToHand(game.serverDeck.at(-1));
+            game.serverDeck.pop();
+            this.serverOnHandHighLightFlag = true;
+            this.hireFlag++;
+            this.hireLimitLastThree = true;
+            this.highlightServerToHire(10);
+            this.atHireServerdiscount.push(10);
+            this.updateServerCanvas(serverContext);
+            break;
             case 39: // 减3费打出1张员工
+            this.serverOnHandHighLightFlag = true;
+            this.hireFlag++;
+            this.hireLimitLastThree = true;
+            this.highlightServerToHire(3);
+            this.atHireServerdiscount.push(3);
+            this.updateServerCanvas(serverContext);
+            break;
             case 44: // 抽取3张员工到手牌
-            this.addServerToHand(game.serverDeck[game.serverDeck.length-1]);
+            this.addServerToHand(game.serverDeck.at(-1));
             game.serverDeck.pop();
-            this.addServerToHand(game.serverDeck[game.serverDeck.length-1]);
+            this.addServerToHand(game.serverDeck.at(-1));
             game.serverDeck.pop();
-            this.addServerToHand(game.serverDeck[game.serverDeck.length-1]);
+            this.addServerToHand(game.serverDeck.at(-1));
             game.serverDeck.pop();
             break;
             case 47: // 减1费打出1张员工
+            this.serverOnHandHighLightFlag = true;
+            this.hireFlag++;
+            this.hireLimitLastThree = true;
+            this.highlightServerToHire(1);
+            this.atHireServerdiscount.push(1);
+            this.updateServerCanvas(serverContext);
+            break;
             case 49: // 减3费打出1张员工
+            this.serverOnHandHighLightFlag = true;
+            this.hireFlag++;
+            this.hireLimitLastThree = true;
+            this.highlightServerToHire(3);
+            this.atHireServerdiscount.push(3);
+            this.updateServerCanvas(serverContext);
+            break;
             case 52: // 抽取1张员工到手牌并获得2个皇室点数
-            case 56: // 抽取2张员工到手牌
-            this.addServerToHand(game.serverDeck[game.serverDeck.length-1]);
+            this.addServerToHand(game.serverDeck.at(-1));
             game.serverDeck.pop();
-            this.addServerToHand(game.serverDeck[game.serverDeck.length-1]);
+            break;
+            case 56: // 抽取2张员工到手牌
+            this.addServerToHand(game.serverDeck.at(-1));
+            game.serverDeck.pop();
+            this.addServerToHand(game.serverDeck.at(-1));
             game.serverDeck.pop();
             break;
             case 57: // 免费打出1张员工
+            this.serverOnHandHighLightFlag = true;
+            this.hireFlag++;
+            this.hireLimitLastThree = true;
+            this.highlightServerToHire(10);
+            this.atHireServerdiscount.push(10);
+            this.updateServerCanvas(serverContext);
+            break;
         }
         // room related
         switch(guestID) {
             case 1: // 免费开1间1层或2层房间
+            this.hotel.roomToPrepare = 1;
+            this.hotel.roomHighLightFlag = true;
+            this.hotel.roomToPrepareDiscount.push(5); // free
+            this.hotel.highlightRoomToPrepare(this.players[this.currPlayer].money, 1);
+            this.hotel.updateHotelCanvas(hotelContext);
+            break;
             case 2: // 原价开1个房间并抽取1张员工到手牌
+            this.hotel.roomToPrepare = 1;
+            this.hotel.roomHighLightFlag = true;
+            this.hotel.highlightRoomToPrepare(this.players[this.currPlayer].money);
+            this.hotel.updateHotelCanvas(hotelContext);
+            break;
             case 9: // 分别减1费开2个房间
+            this.hotel.roomToPrepare = 2;
+            this.hotel.roomHighLightFlag = true;
+            this.hotel.roomToPrepareDiscount.push(1);
+            this.hotel.roomToPrepareDiscount.push(1);
+            this.hotel.highlightRoomToPrepare(this.players[this.currPlayer].money);
+            this.hotel.updateHotelCanvas(hotelContext);
+            break;
             case 10: // 额外关闭1个房间
+            this.hotel.roomToClose = 1;
+            this.hotel.roomCloseBonus = true;
+            this.hotel.highlightRoomToCheckout(4);
+            this.hotel.roomHighLightFlag = true;
+            this.hotel.updateHotelCanvas(hotelContext);
+            break;
             case 13: // 减1费开1个房间并原价开1个房间
+            this.hotel.roomToPrepare = 2;
+            this.hotel.roomHighLightFlag = true;
+            this.hotel.roomToPrepareDiscount.push(1);
+            this.hotel.highlightRoomToPrepare(this.players[this.currPlayer].money);
+            this.hotel.updateHotelCanvas(hotelContext);
+            break;
             case 18: // 减1费打出1张员工并原价开1个房间
+            this.hotel.roomToPrepare = 1;
+            this.hotel.roomHighLightFlag = true;
+            this.hotel.highlightRoomToPrepare(this.players[this.currPlayer].money);
+            this.hotel.updateHotelCanvas(hotelContext);
+            break;
             case 23: // 免费开1个房间
+            this.hotel.roomToPrepare = 1;
+            this.hotel.roomHighLightFlag = true;
+            this.hotel.roomToPrepareDiscount.push(5); // free
+            this.hotel.highlightRoomToPrepare(this.players[this.currPlayer].money, 1);
+            this.hotel.updateHotelCanvas(hotelContext);
+            break;
             case 24: // 额外关闭1个房间
+            this.hotel.roomToClose = 1;
+            this.hotel.roomCloseBonus = true;
+            this.hotel.highlightRoomToCheckout(4);
+            this.hotel.roomHighLightFlag = true;
+            this.hotel.updateHotelCanvas(hotelContext);
+            break;
             case 35: // 额外关闭1个房间
+            this.hotel.roomToClose = 1;
+            this.hotel.roomCloseBonus = true;
+            this.hotel.highlightRoomToCheckout(4);
+            this.hotel.roomHighLightFlag = true;
+            this.hotel.updateHotelCanvas(hotelContext);
+            break;
             case 41: // 免费开2个房间
+            this.hotel.roomToPrepare = 2;
+            this.hotel.roomHighLightFlag = true;
+            this.hotel.roomToPrepareDiscount.push(5);
+            this.hotel.roomToPrepareDiscount.push(5);
+            this.hotel.highlightRoomToPrepare(this.players[this.currPlayer].money);
+            this.hotel.updateHotelCanvas(hotelContext);
+            break;
             case 53: // 额外关闭1个房间并获得3个皇室点数
+            this.hotel.roomToClose = 1;
+            this.hotel.roomCloseBonus = true;
+            this.hotel.highlightRoomToCheckout(4);
+            this.hotel.roomHighLightFlag = true;
+            this.hotel.updateHotelCanvas(hotelContext);
+            break;
             case 55: // 额外关闭1个房间并获得1个皇室点数
+            this.hotel.roomToClose = 1;
+            this.hotel.roomCloseBonus = true;
+            this.hotel.highlightRoomToCheckout(4);
+            this.hotel.roomHighLightFlag = true;
+            this.hotel.updateHotelCanvas(hotelContext);
+            break;
         }
         // food related
         switch(guestID) {
@@ -1102,7 +1287,7 @@ class Player{
         game.updateGuestCanvas(guestContext);
         // special bonus
         if(guestID==50) { // 立即额外进行一个回合，不需要拿取骰子
-            ;
+            this.specialRound = true;
         }
     }
 }

@@ -29,6 +29,7 @@ function gameOn() {
         }
         game.currPlayer = 0;
         if(debugState) {
+            // test room closure and bonus
             // game.players[game.currPlayer].hotel.roomPrepare(0,3);
             // game.players[game.currPlayer].hotel.roomPrepare(0,4);
             // game.players[game.currPlayer].hotel.roomPrepare(1,4);
@@ -45,13 +46,16 @@ function gameOn() {
             // game.players[game.currPlayer].hotel.roomPrepare(1,3);
             // game.players[game.currPlayer].hotel.roomPrepare(2,3);
             // game.players[game.currPlayer].hotel.roomPrepare(3,3);
+            // test server effect
             // const finalServerID = [26, 27, 28, 29, 30, 31, 33, 36, 39, 40, 45, 46, 47];
             // game.players[1].serverHired.push(new Server(45));
             // game.players[2].serverHired.push(new Server(46));
             // game.players[game.currPlayer].serverHired.push(new Server(32));
             // game.players[game.currPlayer].numServerHired = 1;
             // game.players[game.currPlayer].calculateFinalGamePoint();
-            // game.players[game.currPlayer].hotel.addGuestToTable(40);
+            // test guest bonus
+            game.players[game.currPlayer].hotel.addGuestToTable(25);
+            game.players[game.currPlayer].hotel.satisfyGuest(1);
         }
     }
     

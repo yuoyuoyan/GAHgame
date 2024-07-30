@@ -13,9 +13,7 @@ class Game{
         // console.log("major task 2: " + majorTaskDescription[1][this.majorTask1]);
         this.majorTask2 = Math.floor(Math.random() * 4);
         // console.log("major task 3: " + majorTaskDescription[2][this.majorTask2]);
-        this.majorTask0Comp = [-1, -1, -1];
-        this.majorTask1Comp = [-1, -1, -1];
-        this.majorTask2Comp = [-1, -1, -1];
+        this.majorTaskComp = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]];
         this.royalTask0 = Math.floor(Math.random() * 4);
         // console.log("royal task 1: " + royalTaskDescription[0][this.royalTask0]);
         this.royalTask1 = Math.floor(Math.random() * 4);
@@ -40,7 +38,7 @@ class Game{
         // take first 5 guests in queue
         this.guestInQueue = [];
         for(let i=0; i<5; i++){
-            this.guestInQueue.push(this.guestDeck[this.guestDeck.length-1]);
+            this.guestInQueue.push(this.guestDeck.at(-1));
             // console.log("guest " + i + " in queue: " + guestNameByID[this.guestInQueue[i]]);
             // console.log("bonus: " + guestDescriptionByID[this.guestInQueue[i]]);
             this.guestDeck.pop();
@@ -89,8 +87,8 @@ class Game{
         }
         for(let k=0; k<6; k++) { // draw first 6 servers
             for(let i=0; i<playerNumber; i++) {
-                this.players[i].addServerToHand(this.serverDeck[this.serverDeck.length-1]);
-                // console.log("player " + playerName[i] + " draw a server ID: " + this.serverDeck[this.serverDeck.length-1]);
+                this.players[i].addServerToHand(this.serverDeck.at(-1));
+                // console.log("player " + playerName[i] + " draw a server ID: " + this.serverDeck.at(-1));
                 this.serverDeck.pop();
             }
         }
@@ -484,7 +482,12 @@ class Game{
                             (game.players[game.currPlayer].hasHiredServer(9) && game.players[game.currPlayer].hotel.roomColor[floor][col]==0) ||  //免费准备红色房间
                             (game.players[game.currPlayer].hasHiredServer(10) && game.players[game.currPlayer].hotel.roomColor[floor][col]==1))     //免费准备黄色房间
                         ){ // exceptions to pay preparation fee
-                            game.players[game.currPlayer].loseMoney(floor);
+                            if(game.players[game.currPlayer].hotel.roomToPrepareDiscount.length > 0){
+                                game.players[game.currPlayer].loseMoney( Math.min(floor-game.players[game.currPlayer].hotel.roomToPrepareDiscount.at(-1), 0) );
+                            } else {
+                                game.players[game.currPlayer].loseMoney(floor);
+                            }
+                            game.players[game.currPlayer].hotel.roomToPrepareDiscount.pop();
                         }
                         if(game.players[game.currPlayer].hotel.roomToPrepare == 1){ // finished rooms
                             game.players[game.currPlayer].hotel.roomHighLightFlag = false;
@@ -498,10 +501,14 @@ class Game{
                         console.log("checkout room at floor " + floor + " col " + col);
                         // close selected room, take guest bonus if any
                         game.players[game.currPlayer].hotel.roomClose(floor, col);
-                        game.checkoutServerBonus(game.players[game.currPlayer].hotel.roomToCloseGuestTableID);
-                        game.players[game.currPlayer].guestBonus(game.players[game.currPlayer].hotel.roomToCloseGuestID);
-                        // remove guest from table (to coffin lmao)
-                        game.players[game.currPlayer].hotel.removeGuestFromTable(game.players[game.currPlayer].hotel.roomToCloseGuestTableID);
+                        if(!game.players[game.currPlayer].hotel.roomCloseBonus) {
+                            game.checkoutServerBonus(game.players[game.currPlayer].hotel.roomToCloseGuestTableID);
+                            game.players[game.currPlayer].guestBonus(game.players[game.currPlayer].hotel.roomToCloseGuestID);
+                            // remove guest from table (to coffin lmao)
+                            game.players[game.currPlayer].hotel.removeGuestFromTable(game.players[game.currPlayer].hotel.roomToCloseGuestTableID);
+                        } else {
+                            game.players[game.currPlayer].hotel.roomCloseBonus = false;
+                        }
                         game.players[game.currPlayer].hotel.roomToClose--;
                         if(game.players[game.currPlayer].hotel.roomToClose == 0){
                             game.players[game.currPlayer].hotel.roomHighLightFlag = false;
@@ -859,11 +866,11 @@ class Game{
                     console.log("boost selected");
                     if(game.players[game.currPlayer].atActionBoost){
                         game.players[game.currPlayer].money++;
-                        game.players[game.currPlayer].atHireServerdiscount--;
+                        game.players[game.currPlayer].atHireServerdiscount.at(-1)--;
                         game.players[game.currPlayer].atActionBoost = false;
                     } else {
                         game.players[game.currPlayer].money--;
-                        game.players[game.currPlayer].atHireServerdiscount++;
+                        game.players[game.currPlayer].atHireServerdiscount.at(-1)++;
                         game.players[game.currPlayer].atActionBoost = true;
                     }
                     game.players[game.currPlayer].updateAlertCanvas(alertContext, 4);
@@ -873,8 +880,8 @@ class Game{
                 alertCanvas.style.display = 'none';
                 game.players[game.currPlayer].atHireServer = false;
                 game.players[game.currPlayer].serverOnHandHighLightFlag = true;
-                game.players[game.currPlayer].hireFlag = true;
-                game.players[game.currPlayer].highlightServerToHire(game.players[game.currPlayer].atHireServerdiscount);
+                game.players[game.currPlayer].hireFlag++;
+                game.players[game.currPlayer].highlightServerToHire(game.players[game.currPlayer].atHireServerdiscount.at(-1));
                 game.players[game.currPlayer].updateServerCanvas(serverContext);
                 game.players[game.currPlayer].atAction = false;
                 game.players[game.currPlayer].actionFlag = true;
@@ -936,12 +943,21 @@ class Game{
                     if(event.offsetX>=(65+170*i) && event.offsetX<=(225+170*i) && event.offsetY>=35 && event.offsetY<=275 && 
                         game.players[game.currPlayer].hireFlag && game.players[game.currPlayer].serverOnHandHighLight[serverIdx]){
                         console.log("hire server " + serverIdx);
-                        if(game.players[game.currPlayer].serverOnHand[serverIdx].serverCost > game.players[game.currPlayer].atHireServerdiscount) {
-                            game.players[game.currPlayer].money -= (game.players[game.currPlayer].serverOnHand[serverIdx].serverCost - game.players[game.currPlayer].atHireServerdiscount);
+                        if(game.players[game.currPlayer].serverOnHand[serverIdx].serverCost > game.players[game.currPlayer].atHireServerdiscount.at(-1)) {
+                            game.players[game.currPlayer].money -= (game.players[game.currPlayer].serverOnHand[serverIdx].serverCost - game.players[game.currPlayer].atHireServerdiscount.at(-1));
+                            game.players[game.currPlayer].atHireServerdiscount.pop();
                         }
-                        game.players[game.currPlayer].hireFlag = false;
+                        game.players[game.currPlayer].hireFlag--;
                         game.players[game.currPlayer].hireServer(serverIdx);
-                        game.players[game.currPlayer].serverOnHandHighLightFlag = false;
+                        if(game.players[game.currPlayer].hireLimitLastThree){ // draw 3 hire 1 senario, put back the reset
+                            game.serverDeck.push(game.players[game.currPlayer].serverOnHand.pop());
+                            game.serverDeck.push(game.players[game.currPlayer].serverOnHand.pop());
+                            game.shuffleDeck(game.serverDeck);
+                        }
+                        if(game.players[game.currPlayer].hireFlag==0){
+                            game.players[game.currPlayer].serverOnHandHighLightFlag = false;
+                            game.players[game.currPlayer].highlightServerToHire(game.players[game.currPlayer].atHireServerdiscount.at(-1));
+                        }
                         game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
                         game.players[game.currPlayer].updateServerCanvas(serverContext);
                         game.players[game.currPlayer].hotel.updateHotelCanvas(hotelContext);
@@ -975,6 +991,9 @@ class Game{
             this.players[this.currPlayer].inviteFlag = false;
             this.players[this.currPlayer].actionFlag = false;
             this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
+            if(this.specialRound){ // special round from guest
+                return;
+            }
             if(this.miniRound == (2*this.playerNumber-1)) { // end of main round
                 if(this.mainRound == 6) { // end of entire game
                     this.gameEnd();
@@ -1061,7 +1080,7 @@ class Game{
         }
         if(this.players[this.currPlayer].hasHiredServer(21) && value==2) {//使用色子3时可以雇佣一位员工
             this.players[this.currPlayer].serverOnHandHighLightFlag = true;
-            this.players[this.currPlayer].hireFlag = true;
+            this.players[this.currPlayer].hireFlag++;
             this.players[this.currPlayer].highlightServerToHire(0);
             this.players[this.currPlayer].updateServerCanvas(serverContext);
         }
@@ -1092,13 +1111,15 @@ class Game{
             this.players[this.currPlayer].actionTakeMirror(this.actionPoint[5] + serverBonus);
             break;
         }
-        this.actionPoint[value]--;
+        if(!this.specialRound){ // in special bonus round, no dice is taken
+            this.actionPoint[value]--;
+        }
     }
 
     takeOneGuestFromQueue(guestSelected) {
         console.log("remove guest " + guestNameByID[this.guestInQueue[guestSelected]] + " from queue");
         this.guestInQueue.splice(guestSelected, 1); // remove this guest from queue
-        this.guestInQueue.unshift(this.guestDeck[this.guestDeck.length-1]);
+        this.guestInQueue.unshift(this.guestDeck.at(-1));
         this.guestDeck.pop();
         console.log("add guest " + guestNameByID[this.guestInQueue[0]] + " to queue");
     }
@@ -1117,6 +1138,9 @@ class Game{
     }
 
     checkoutServerBonus(guestTableID) {
+        if(guestTableID == -1){ // invalid guest ID
+            return;
+        }
         if(this.players[this.currPlayer].hasHiredServer(4)) { //满足红色客人时获得2块钱
             if(this.players[this.currPlayer].hotel.guestOnTable[guestTableID].guestColor==0){
                 this.players[this.currPlayer].gainMoney(2);
