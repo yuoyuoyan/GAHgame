@@ -45,7 +45,7 @@ class Player{
         this.freeInviteNum = 0;
         this.inviteFlag = false; // whether already invited this turn
         this.actionFlag = false; // whether already took dice this turn
-        this.hireFlag = 0;
+        this.hireNum = 0;
         this.hireLimitLastThree = false; // only used at draw 3 and hire 1
         this.serveFoodNum = 0;
         this.specialRound = false;
@@ -227,7 +227,7 @@ class Player{
 
     highlightServerToHire(discount, hireLimitLastThree=false) {
         this.serverOnHandHighLightFlag = true;
-        this.hireFlag++;
+        this.hireNum++;
         this.atHireServerdiscount.push(discount);
         this.hireLimitLastThree = hireLimitLastThree;
         if(this.hireLimitLastThree) { // draw 3 servers
@@ -898,13 +898,7 @@ class Player{
                 this.gainBlack(1);
                 break;
                 case 34: //一次性将两个准备好的房间入住
-                this.hotel.highlightRoomToCheckout(4);
-                this.hotel.roomHighLightFlag = true;
-                this.hotel.roomToClose = 2;
-                this.hotel.roomToCloseColor = 4;
-                this.hotel.roomToCloseGuestID = -1;
-                this.hotel.roomToCloseGuestTableID = -1;
-                break;
+                this.hotel.highlightRoomToCheckout(true, 2); break;
                 case 35: //一次性获得4份红酒
                 this.gainRed(4);
                 break;
@@ -1122,77 +1116,35 @@ class Player{
         // room related
         switch(guestID) {
             case 1: // 免费开1间1层或2层房间
-            this.hotel.roomToPrepare = 1;
-            this.hotel.roomHighLightFlag = true;
-            this.hotel.roomToPrepareDiscount.push(5); // free
-            this.hotel.highlightRoomToPrepare(5, 1);
-            break;
+            this.hotel.highlightRoomToPrepare(this.money, 5, 1); break;
             case 2: // 原价开1个房间并抽取1张员工到手牌
-            this.hotel.roomToPrepare = 1;
-            this.hotel.roomHighLightFlag = true;
-            this.hotel.highlightRoomToPrepare(this.money);
-            break;
+            this.hotel.highlightRoomToPrepare(this.money); break;
             case 9: // 分别减1费开2个房间
-            this.hotel.roomToPrepare = 2;
-            this.hotel.roomHighLightFlag = true;
-            this.hotel.roomToPrepareDiscount.push(1);
-            this.hotel.roomToPrepareDiscount.push(1);
-            this.hotel.highlightRoomToPrepare(this.money-1);
+            this.hotel.highlightRoomToPrepare(this.money, 1);
+            this.hotel.highlightRoomToPrepare(this.money, 1);
             break;
             case 10: // 额外关闭1个房间
-            this.hotel.roomToClose = 1;
-            this.hotel.roomCloseBonus = true;
-            this.hotel.highlightRoomToCheckout(4);
-            this.hotel.roomHighLightFlag = true;
-            break;
+            this.hotel.highlightRoomToCheckout(true, 1); break;
             case 13: // 减1费开1个房间并原价开1个房间
-            this.hotel.roomToPrepare = 2;
-            this.hotel.roomHighLightFlag = true;
-            this.hotel.roomToPrepareDiscount.push(1);
-            this.hotel.highlightRoomToPrepare(this.money-1);
+            this.hotel.highlightRoomToPrepare(this.money, 1);
+            this.hotel.highlightRoomToPrepare(this.money, 0);
             break;
             case 18: // 减1费打出1张员工并原价开1个房间
-            this.hotel.roomToPrepare = 1;
-            this.hotel.roomHighLightFlag = true;
-            this.hotel.highlightRoomToPrepare(this.money);
-            break;
+            this.hotel.highlightRoomToPrepare(this.money); break;
             case 23: // 免费开1个房间
-            this.hotel.roomToPrepare = 1;
-            this.hotel.roomHighLightFlag = true;
-            this.hotel.roomToPrepareDiscount.push(5); // free
-            this.hotel.highlightRoomToPrepare(5);
-            break;
+            this.hotel.highlightRoomToPrepare(this.money, 5); break;
             case 24: // 额外关闭1个房间
-            this.hotel.roomToClose = 1;
-            this.hotel.roomCloseBonus = true;
-            this.hotel.highlightRoomToCheckout(4);
-            this.hotel.roomHighLightFlag = true;
-            break;
+            this.hotel.highlightRoomToCheckout(true, 1); break;
             case 35: // 额外关闭1个房间
-            this.hotel.roomToClose = 1;
-            this.hotel.roomCloseBonus = true;
-            this.hotel.highlightRoomToCheckout(4);
-            this.hotel.roomHighLightFlag = true;
-            break;
+            this.hotel.highlightRoomToCheckout(true, 1); break;
             case 41: // 免费开2个房间
-            this.hotel.roomToPrepare = 2;
-            this.hotel.roomHighLightFlag = true;
-            this.hotel.roomToPrepareDiscount.push(5);
-            this.hotel.roomToPrepareDiscount.push(5);
-            this.hotel.highlightRoomToPrepare(5);
+            this.hotel.highlightRoomToPrepare(this.money, 5);
+            this.hotel.highlightRoomToPrepare(this.money, 5);
             break;
             case 53: // 额外关闭1个房间并获得3个皇室点数
-            this.hotel.roomToClose = 1;
-            this.hotel.roomCloseBonus = true;
-            this.hotel.highlightRoomToCheckout(4);
-            this.hotel.roomHighLightFlag = true;
-            break;
+            this.hotel.highlightRoomToCheckout(true, 1); break;
             case 55: // 额外关闭1个房间并获得1个皇室点数
-            this.hotel.roomToClose = 1;
-            this.hotel.roomCloseBonus = true;
-            this.hotel.highlightRoomToCheckout(4);
-            this.hotel.roomHighLightFlag = true;
-            break;
+            this.hotel.highlightRoomToCheckout(true, 1); break;
         }
         // food related
         switch(guestID) {

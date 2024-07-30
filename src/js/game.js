@@ -216,8 +216,7 @@ class Game{
                     case 2: 
                         switch(this.royalTask0){
                             case 0: // 获得3块钱/失去3块钱或5游戏点数 
-                            this.players[i].gainMoney(3);
-                            break; 
+                            this.players[i].gainMoney(3); break; 
                             case 1: // 获得2份任意食物/失去厨房全部食物
                             alertCanvas.style.display = 'block';
                             this.players[i].atSelectFood = 2;
@@ -227,11 +226,7 @@ class Game{
                             case 2: // 抽3员工打1减3费返还剩余/丢弃2张员工手牌或失去5游戏点数
                             this.players[i].highlightServerToHire(3, true); break; 
                             case 3: // 免费准备1个房间/失去最高的准备好的房间或失去5游戏点数
-                            this.hotel.roomToPrepare = 1;
-                            this.hotel.roomHighLightFlag = true;
-                            this.hotel.roomToPrepareDiscount.push(5); // free
-                            this.hotel.highlightRoomToPrepare(this.players[i].money);
-                            break; 
+                            this.hotel.highlightRoomToPrepare(this.players[i].money, 5); break; 
                         }
                         break;
                     case 4:
@@ -276,9 +271,7 @@ class Game{
             serverBonus = 1;
         }
         if(this.players[this.currPlayer].hasHiredServer(13) && (value==0 || value==1)) {//使用色子1或2时可以准备一个房间
-            this.players[this.currPlayer].hotel.roomToPrepare = 1;
-            this.players[this.currPlayer].hotel.roomHighLightFlag = true;
-            this.players[this.currPlayer].hotel.highlightRoomToPrepare(this.players[this.currPlayer].money);
+            this.players[this.currPlayer].hotel.highlightRoomToPrepare(this.players[this.currPlayer].money, 0);
         }
         if(this.players[this.currPlayer].hasHiredServer(15) && value==3) {//使用色子4时可以获得4游戏点数
             this.players[this.currPlayer].gainGamePoint(4);
@@ -735,7 +728,7 @@ class Game{
                             this.players[this.currPlayer].hotel.roomHighLightFlag = false;
                             this.players[this.currPlayer].hotel.firstThreeRoom = false;
                         }
-                        this.players[this.currPlayer].hotel.highlightRoomToPrepare(10);
+                        this.players[this.currPlayer].hotel.highlightRoomToPrepare(10, 10, 3, true);
                     } else if(this.players[this.currPlayer].hotel.roomToPrepare>0 && this.players[this.currPlayer].hotel.roomHighLight[floor][col]){
                         console.log("prepare room at floor " + floor + " col " + col);
                         // prepare selected room, check money
@@ -749,12 +742,12 @@ class Game{
                             } else {
                                 this.players[this.currPlayer].loseMoney(floor);
                             }
-                            this.players[this.currPlayer].hotel.roomToPrepareDiscount.pop();
                         }
                         if(this.players[this.currPlayer].hotel.roomToPrepare == 1){ // finished rooms
                             this.players[this.currPlayer].hotel.roomHighLightFlag = false;
                         }
-                        this.players[this.currPlayer].hotel.highlightRoomToPrepare(this.players[this.currPlayer].money);
+                        this.players[this.currPlayer].hotel.roomToPrepareDiscount.pop();
+                        this.players[this.currPlayer].hotel.highlightRoomToPrepare(this.players[this.currPlayer].money, this.players[this.currPlayer].hotel.roomToPrepareDiscount.at(-1),3,true);
                         this.players[this.currPlayer].hotel.roomToPrepare--;
                     } else if(this.players[this.currPlayer].hotel.roomToClose>0 && this.players[this.currPlayer].hotel.roomHighLight[floor][col]){
                         console.log("checkout room at floor " + floor + " col " + col);
@@ -789,12 +782,10 @@ class Game{
                     console.log("satisfied guest " + i + " is clicked");
                     // start picking the room to close
                     this.players[this.currPlayer].hotel.atSelectSatisfiedGuest = false;
-                    this.players[this.currPlayer].hotel.highlightRoomToCheckout(this.players[this.currPlayer].hotel.guestOnTable[i].guestColor);
-                    this.players[this.currPlayer].hotel.roomHighLightFlag = true;
-                    this.players[this.currPlayer].hotel.roomToClose = 1;
-                    this.players[this.currPlayer].hotel.roomToCloseColor = this.players[this.currPlayer].hotel.guestOnTable[i].guestColor;
-                    this.players[this.currPlayer].hotel.roomToCloseGuestID = this.players[this.currPlayer].hotel.guestOnTable[i].guestID;
-                    this.players[this.currPlayer].hotel.roomToCloseGuestTableID = this.players[this.currPlayer].hotel.guestOnTable[i].guestTableID;
+                    this.players[this.currPlayer].hotel.highlightRoomToCheckout(false, 1, 
+                        this.players[this.currPlayer].hotel.guestOnTable[i].guestColor, 
+                        this.players[this.currPlayer].hotel.guestOnTable[i].guestID, 
+                        this.players[this.currPlayer].hotel.guestOnTable[i].guestTableID);
                 } else if(this.players[this.currPlayer].hotel.atSelectUnSatisfiedGuest &&
                     !this.players[this.currPlayer].hotel.guestOnTable[i].guestSatisfied){
                     this.players[this.currPlayer].hotel.atSelectUnSatisfiedGuest = false;
@@ -1062,9 +1053,9 @@ class Game{
             } else if(event.offsetX>=200 && event.offsetX<=300 && event.offsetY>=170 && event.offsetY<=210){ // confirm
                 alertCanvas.style.display = 'none';
                 this.players[this.currPlayer].atPrepareRoom = false;
-                this.players[this.currPlayer].hotel.roomToPrepare = this.players[this.currPlayer].atRoomToPrepare;
-                this.players[this.currPlayer].hotel.roomHighLightFlag = true;
-                this.players[this.currPlayer].hotel.highlightRoomToPrepare(this.players[this.currPlayer].money);
+                for(let i=0; i<this.players[this.currPlayer].atRoomToPrepare; i++){
+                    this.players[this.currPlayer].hotel.highlightRoomToPrepare(this.players[this.currPlayer].money, 0);
+                }
                 this.players[this.currPlayer].atAction = false;
                 this.players[this.currPlayer].actionFlag = true;
                 this.players[this.currPlayer].atActionBoost = false;

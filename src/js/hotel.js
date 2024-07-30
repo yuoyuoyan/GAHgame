@@ -31,8 +31,6 @@ class Hotel{
         this.roomCloseBonus = false;
         this.atSelectSatisfiedGuest = false; // assert it to select satisfied guest from table
         this.atSelectUnSatisfiedGuest = false; // assert it to select unsatisfied guest from table
-        // highlight the room to be prepared at first stage
-        // this.highlightRoomToPrepare(10);
     }
 
     updateHotelCanvas(context) {
@@ -154,7 +152,12 @@ class Hotel{
         }
     }
 
-    highlightRoomToPrepare(value, maxLevel = 3) {
+    highlightRoomToPrepare(money, discount=0, maxLevel=3, updateOnly=false) {
+        if(!updateOnly){ // click handle need to update highlight without increase number
+            this.roomToPrepare++;
+            this.roomHighLightFlag = true;
+            this.roomToPrepareDiscount.push(discount); // free
+        }
         for(let floor=0; floor<4; floor++){
             for(let col=0; col<5; col++){
                 if((this.roomStatus[floor][col] == -1) && // not prepared
@@ -164,7 +167,7 @@ class Hotel{
                      (col<4 && this.roomStatus[floor][col+1]>=0) || // room right is prepared
                      (floor==0 && col==0 && this.roomStatus[floor][col]==-1)) // room at left bottom corner must be the first to prepare
                     ) {
-                        this.roomHighLight[floor][col] = (value >= floor && floor <= maxLevel) ? 1 : 0;
+                        this.roomHighLight[floor][col] = (money >= (floor-discount) && floor <= maxLevel) ? 1 : 0;
                 } else {
                     this.roomHighLight[floor][col] = 0;
                 }
@@ -172,7 +175,20 @@ class Hotel{
         }
     }
 
-    highlightRoomToCheckout(color) {
+    highlightRoomToCheckout(isBonus=false, roomNum=1, color=4, guestID=-1, tableID=-1) {
+        this.roomHighLightFlag = true;
+        if(isBonus){ // guest or server bonus
+            this.roomToCloseColor = 4;
+            this.roomToCloseGuestID = -1;
+            this.roomToCloseGuestTableID = -1;
+            this.roomToClose = roomNum;
+        } else { // normal guest checkout
+            this.roomToCloseColor = color;
+            this.roomToCloseGuestID = guestID;
+            this.roomToCloseGuestTableID = tableID;
+            this.roomToClose = 1;
+        }
+        
         for(let floor=0; floor<4; floor++){
             for(let col=0; col<5; col++){
                 if (this.roomStatus[floor][col] == 0 && // prepared
