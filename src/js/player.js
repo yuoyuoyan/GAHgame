@@ -69,76 +69,6 @@ class Player{
         this.hotel = new Hotel(this.game, hotelID); // prepare hotel
     }
 
-    handlePlayerClick(event) {
-        // check if this event is invite
-        if(event.offsetX >= 712 && event.offsetX <= 752 && event.offsetY >= 10 && event.offsetY <= 30){
-            console.log("Invite button pressed");
-            if(this.opInvite){
-                // disable all 
-                this.disableAllOp();
-                this.atInvite = true;
-                this.guestHighLightFlag = true;
-                if(this.firstGuestTurn){
-                    this.checkGuestInvite(10); // make sure all guest available at the first guest
-                } else {
-                    this.checkGuestInvite(this.money);
-                }
-            }
-        }
-
-        // check if this event is action
-        if(event.offsetX >= 757 && event.offsetX <= 797 && event.offsetY >= 10 && event.offsetY <= 30){
-            console.log("Action button pressed");
-            if(this.opAction){
-                // disable all
-                this.disableAllOp();
-                this.atAction = true;
-            }
-            this.actionHighLightFlag = true;
-            for(let i=0; i<6; i++){
-                if(this.actionPoint[i]>0){
-                    this.actionHighLight[i] = 1;
-                }
-            }
-        }
-
-        // check if this event is serve
-        if(event.offsetX >= 802 && event.offsetX <= 842 && event.offsetY >= 10 && event.offsetY <= 30){
-            console.log("Serve button pressed");
-            if(this.opServe){
-                // no need to disable other options
-                if(!this.hasHiredServer(23)){ // exception to pay serve fee
-                    this.money--;
-                }
-                this.atServe = true;
-                this.serveFoodNum = 3;
-            }
-        }
-
-        // check if this event is checkout
-        if(event.offsetX >= 847 && event.offsetX <= 887 && event.offsetY >= 10 && event.offsetY <= 30){
-            console.log("Checkout button pressed");
-            if(this.opCheckout){
-                // disable all
-                this.disableAllOp();
-                this.atCheckout = true;
-                this.hotel.atSelectSatisfiedGuest = true;
-            }
-        }
-
-        // check if this event is end
-        if(event.offsetX >= 892 && event.offsetX <= 932 && event.offsetY >= 10 && event.offsetY <= 30){
-            console.log("End button pressed");
-            if(this.opEnd){
-                this.endFlag = true;
-            }
-            this.nextMiniRound();
-        }
-        
-        // update canvas
-        this.game.updateAllCanvas();
-    }
-
     checkOpStatus() {
         // check operation availability based on player status
         // No op other than invite available at the first guest picking round
@@ -239,477 +169,6 @@ class Player{
             } else {
                 this.serverOnHandHighLight[i] = (this.money >= (discount + this.serverOnHand[i].serverCost)) ? 1 : 0;
             }
-        }
-    }
-
-    textCanvas(context, string, offsetX, offsetY, font) {
-        if (font === undefined || font === null){
-            context.font="20px verdana";
-        } else {
-            context.font=font;
-        }
-        context.shadowColor="white";
-        context.shadowBlur=2;
-        context.lineWidth=2;
-        context.strokeStyle = "white";
-        context.strokeText(string, offsetX, offsetY);
-        context.shadowBlur=0;
-        context.fillStyle="black";
-        context.fillText(string, offsetX, offsetY);
-    }
-
-    triangleCanvas(context, X0, Y0, X1, Y1, X2, Y2){
-        context.beginPath();
-        context.moveTo(X0,Y0);
-        context.lineTo(X1,Y1);
-        context.lineTo(X2,Y2);
-        context.fillStyle='black';
-        context.fill();
-        context.beginPath();
-        context.moveTo(X0,Y0);
-        context.lineTo(X1,Y1);
-        context.lineTo(X2,Y2);
-        context.lineTo(X0,Y0);
-        context.strokeStyle='white';
-        context.stroke();
-    }
-
-    markCanvas(context, X0, Y0, X1, Y1, X2, Y2){
-        context.lineWidth = 5;
-        context.beginPath();
-        context.moveTo(X0, Y0);
-        context.lineTo(X1, Y1);
-        context.lineTo(X2, Y2);
-        context.strokeStyle = 'green';
-        context.stroke();
-    }
-
-    updateAlertCanvas(context){
-        // clear canvas first
-        context.clearRect(0, 0, 480, 240);
-        // different types of alert
-        switch(this.game.alertType){
-            case 0: // take brown or white
-            context.drawImage(moneyImg, 20, 100, 30, 30);
-            this.textCanvas(context, "Boost", 60, 120);
-            if(this.atActionBoost){ // draw a mark if boost is selected
-                this.markCanvas(context, 80, 110, 90, 120, 100, 100);
-            }
-            context.drawImage(brownImg, 150, 100, 30, 30);
-            this.textCanvas(context, this.atTakeBrown.toString(), 200, 120);
-            this.triangleCanvas(context, 225, 110, 250, 90, 275, 110);
-            this.triangleCanvas(context, 225, 120, 250, 140, 275, 120);
-            context.drawImage(whiteImg, 300, 100, 30, 30);
-            this.textCanvas(context, this.atTakeWhite.toString(), 350, 120);
-            this.triangleCanvas(context, 375, 110, 400, 90, 425, 110);
-            this.triangleCanvas(context, 375, 120, 400, 140, 425, 120);
-            context.fillStyle = 'white';
-            context.strokeStyle = 'black';
-            context.strokeRect(200, 170, 100, 40);
-            context.fillRect(200, 170, 100, 40);
-            this.textCanvas(context, "确定", 228, 200);
-            break;
-            case 1: // take red or black
-            context.drawImage(moneyImg, 20, 100, 30, 30);
-            this.textCanvas(context, "Boost", 60, 120);
-            if(this.atActionBoost){ // draw a mark if boost is selected
-                this.markCanvas(context, 80, 110, 90, 120, 100, 100);
-            }
-            context.drawImage(redImg, 150, 100, 30, 30);
-            this.textCanvas(context, this.atTakeRed.toString(), 200, 120);
-            this.triangleCanvas(context, 225, 110, 250, 90, 275, 110);
-            this.triangleCanvas(context, 225, 120, 250, 140, 275, 120);
-            context.drawImage(blackImg, 300, 100, 30, 30);
-            this.textCanvas(context, this.atTakeBlack.toString(), 350, 120);
-            this.triangleCanvas(context, 375, 110, 400, 90, 425, 110);
-            this.triangleCanvas(context, 375, 120, 400, 140, 425, 120);
-            context.fillStyle = 'white';
-            context.strokeStyle = 'black';
-            context.strokeRect(200, 170, 100, 40);
-            context.fillRect(200, 170, 100, 40);
-            this.textCanvas(context, "确定", 228, 200);
-            break;
-            case 2: // prepare rooms
-            context.drawImage(moneyImg, 20, 100, 30, 30);
-            this.textCanvas(context, "Boost", 60, 120);
-            if(this.atActionBoost){ // draw a mark if boost is selected
-                this.markCanvas(context, 80, 110, 90, 120, 100, 100);
-            }
-            context.drawImage(roomRedPreparedImg, 140, 90, 50, 50);
-            this.textCanvas(context, this.atRoomToPrepare.toString(), 200, 120);
-            this.triangleCanvas(context, 225, 110, 250, 90, 275, 110);
-            this.triangleCanvas(context, 225, 120, 250, 140, 275, 120);
-            context.fillStyle = 'white';
-            context.strokeStyle = 'black';
-            context.strokeRect(200, 170, 100, 40);
-            context.fillRect(200, 170, 100, 40);
-            this.textCanvas(context, "确定", 228, 200);
-            break;
-            case 3: // take royal points or money
-            context.drawImage(moneyImg, 20, 100, 30, 30);
-            this.textCanvas(context, "Boost", 60, 120);
-            if(this.atActionBoost){ // draw a mark if boost is selected
-                this.markCanvas(context, 80, 110, 90, 120, 100, 100);
-            }
-            context.drawImage(royalTokenImg, 150, 95, 30, 40);
-            this.textCanvas(context, this.atRoyal.toString(), 200, 120);
-            this.triangleCanvas(context, 225, 110, 250, 90, 275, 110);
-            this.triangleCanvas(context, 225, 120, 250, 140, 275, 120);
-            context.drawImage(moneyImg, 300, 100, 30, 30);
-            this.textCanvas(context, this.atMoney.toString(), 350, 120);
-            this.triangleCanvas(context, 375, 110, 400, 90, 425, 110);
-            this.triangleCanvas(context, 375, 120, 400, 140, 425, 120);
-            context.fillStyle = 'white';
-            context.strokeStyle = 'black';
-            context.strokeRect(200, 170, 100, 40);
-            context.fillRect(200, 170, 100, 40);
-            this.textCanvas(context, "确定", 228, 200);
-            break;
-            case 4: // hire servers
-            context.drawImage(moneyImg, 20, 100, 30, 30);
-            this.textCanvas(context, "Boost", 60, 120);
-            if(this.atActionBoost){ // draw a mark if boost is selected
-                this.markCanvas(context, 80, 110, 90, 120, 100, 100);
-            }
-            context.drawImage(serverImg[0], 140, 90, 50, 50);
-            context.fillStyle = 'white';
-            context.strokeStyle = 'black';
-            context.strokeRect(200, 170, 100, 40);
-            context.fillRect(200, 170, 100, 40);
-            this.textCanvas(context, "确定", 228, 200);
-            break;
-            case 5: // take mirrors
-            var diceImg = dice1Img;
-            switch(this.atMirrorDice){
-                case 1: diceImg = dice1Img; break;
-                case 2: diceImg = dice2Img; break;
-                case 3: diceImg = dice3Img; break;
-                case 4: diceImg = dice4Img; break;
-                case 5: diceImg = dice5Img; break;
-            }
-            context.drawImage(diceImg, 150, 100, 30, 30);
-            this.triangleCanvas(context, 225, 110, 250, 90, 275, 110);
-            this.triangleCanvas(context, 225, 120, 250, 140, 275, 120);
-            context.fillStyle = 'white';
-            context.strokeStyle = 'black';
-            context.strokeRect(200, 170, 100, 40);
-            context.fillRect(200, 170, 100, 40);
-            this.textCanvas(context, "确定", 228, 200);
-            break;
-            case 6: // pick food to take
-            context.drawImage(brownImg, 100, 25, 30, 30);
-            this.textCanvas(context, this.atTakeBrown.toString(), 150, 45);
-            this.triangleCanvas(context, 175, 35, 200, 15, 225, 35);
-            this.triangleCanvas(context, 175, 45, 200, 65, 225, 45);
-            context.drawImage(whiteImg, 250, 25, 30, 30);
-            this.textCanvas(context, this.atTakeWhite.toString(), 300, 45);
-            this.triangleCanvas(context, 325, 35, 350, 15, 375, 35);
-            this.triangleCanvas(context, 325, 45, 350, 65, 375, 45);
-            context.drawImage(redImg, 100, 100, 30, 30);
-            this.textCanvas(context, this.atTakeRed.toString(), 150, 120);
-            this.triangleCanvas(context, 175, 110, 200, 90, 225, 110);
-            this.triangleCanvas(context, 175, 120, 200, 140, 225, 120);
-            context.drawImage(blackImg, 250, 100, 30, 30);
-            this.textCanvas(context, this.atTakeBlack.toString(), 300, 120);
-            this.triangleCanvas(context, 325, 110, 350, 90, 375, 110);
-            this.triangleCanvas(context, 325, 120, 350, 140, 375, 120);
-            context.fillStyle = 'white';
-            context.strokeStyle = 'black';
-            context.strokeRect(200, 170, 100, 40);
-            context.fillRect(200, 170, 100, 40);
-            this.textCanvas(context, "确定", 228, 200);
-        }
-    }
-
-    updateServerCanvas(context) {
-        // clear canvas first
-        context.clearRect(0, 0, 640, 560);
-
-        // Server on hands
-        this.textCanvas(context, "员工手牌", 25, 25);
-
-        // draw the remaining of prev card if any
-        var   serverXoffset = -105;
-        var   serverYoffset = 35;
-        const serverWidth = 160;
-        const serverHeight = 240;
-        if(this.serverOnHandCanvasIdx>0 && this.numServerOnHand>0) { 
-            context.drawImage(serverImg[this.serverOnHand[this.serverOnHandCanvasIdx-1].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
-            // draw the left triangle to indicate
-            this.triangleCanvas(context, 0, 105, 25, 130, 25, 80);
-        }
-        
-        // draw 3 server cards if any
-        for(let i=0; i<3; i++){
-            if((this.serverOnHandCanvasIdx + i) < this.numServerOnHand){
-                serverXoffset+=170;
-                context.drawImage(serverImg[this.serverOnHand[this.serverOnHandCanvasIdx+i].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
-                // hightlight block if needed
-                if(this.serverOnHandHighLightFlag && this.serverOnHandHighLight[this.serverOnHandCanvasIdx+i]) {
-                    context.strokeStyle = "red";
-                    context.lineWidth = 5;
-                    context.strokeRect(serverXoffset, serverYoffset, serverWidth, serverHeight);
-                }
-            }
-        }
-
-        // draw the remaining of next card if any
-        if(this.serverOnHandCanvasIdx + 3 < this.numServerOnHand) {
-            serverXoffset+=170;
-            context.drawImage(serverImg[this.serverOnHand[this.serverOnHandCanvasIdx+3].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
-            // draw the right triangle to indicate
-            this.triangleCanvas(context, 640, 105, 615, 130, 615, 80);
-        }
-
-        // Server hired
-        this.textCanvas(context, "已雇佣员工", 25, 300);
-
-        // draw the remaining of prev card if any
-        serverXoffset = -105;
-        serverYoffset += 275;
-        // console.log("num server hired: " + this.numServerHired);
-        if(this.serverHiredCanvasIdx>0 && this.numServerHired>0) { 
-            context.drawImage(serverImg[this.serverHired[this.serverHiredCanvasIdx-1].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
-            // draw the left triangle to indicate
-            this.triangleCanvas(context, 0, 380, 25, 405, 25, 355);
-        }
-        
-        // draw 3 server cards if any
-        for(let i=0; i<3; i++){
-            if(this.serverHiredCanvasIdx + i < this.numServerHired){
-                serverXoffset+=170;
-                context.drawImage(serverImg[this.serverHired[this.serverHiredCanvasIdx+i].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
-            }
-        }
-
-        // draw the remaining of next card if any
-        if(this.serverHiredCanvasIdx + 3 < this.numServerHired) {
-            serverXoffset+=170;
-            context.drawImage(serverImg[this.serverHired[this.serverHiredCanvasIdx+3].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
-            // draw the right triangle to indicate
-            this.triangleCanvas(context, 640, 380, 615, 405, 615, 355);
-        }
-    }
-
-    updatePlayerCanvas(context) {
-        // clear canvas first
-        context.clearRect(0, 0, 960, 50);
-
-        // markers first
-        const markerXoffset = 25;
-        const markerYoffset = 25;
-        const markerRadius = 10;
-        context.fillStyle = this.markerColor;
-        context.beginPath();
-        context.arc(markerXoffset, markerYoffset, markerRadius, 0, 2 * Math.PI);
-        context.fill();
-        // draw the check mark if it's this player's turn
-        if(this.game.currPlayer == this.playerID){
-            this.markCanvas(context, 15, 20, 25, 30, 35, 10);
-            context.strokeStyle = "green";
-            context.lineWidth = 5;
-            context.strokeRect(0, 0, 960, 50);
-        }
-
-        // player name
-        const nameXoffset = 50;
-        const nameYoffset = 30;
-        this.textCanvas(context, this.playerName.substring(0, 16), nameXoffset, nameYoffset)
-
-        // mini round status
-        var   miniRoundXoffset = nameXoffset+100;
-        var   miniRoundYoffset = 5;
-        var   miniRoundWidth = 80;
-        var   miniRoundHeight = 40;
-        context.fillStyle = '#446516';
-        context.strokeStyle = 'black';
-        context.strokeRect(miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
-        context.fillRect(miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
-        
-        var   miniRoundXoffset = nameXoffset+102;
-        var   miniRoundYoffset = 8;
-        var   miniRoundWidth = 34;
-        var   miniRoundHeight = 34;
-        if(this.diceTaken[0] != -1){ // draw the dice
-            var diceImg = dice1Img;
-            switch(this.diceTaken[0]){
-                case 1: diceImg = dice1Img; break;
-                case 2: diceImg = dice2Img; break;
-                case 3: diceImg = dice3Img; break;
-                case 4: diceImg = dice4Img; break;
-                case 5: diceImg = dice5Img; break;
-                case 6: diceImg = dice6Img; break;
-            }
-            context.drawImage(diceImg, miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
-        } else { // draw the mini turn number
-            context.fillStyle = '#446516';
-            context.strokeStyle = 'black';
-            context.lineWidth=2;
-            context.strokeRect(miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
-            context.fillRect(miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
-
-            this.textCanvas(context, this.miniTurn[0], miniRoundXoffset+13, miniRoundYoffset+22);
-        }
-
-        var   miniRoundXoffset = nameXoffset+142;
-        var   miniRoundYoffset = 8;
-        var   miniRoundWidth = 34;
-        var   miniRoundHeight = 34;
-        if(this.diceTaken[1] != -1){ // draw the dice
-            var diceImg = dice1Img;
-            switch(this.diceTaken[1]){
-                case 1: diceImg = dice1Img; break;
-                case 2: diceImg = dice2Img; break;
-                case 3: diceImg = dice3Img; break;
-                case 4: diceImg = dice4Img; break;
-                case 5: diceImg = dice5Img; break;
-                case 6: diceImg = dice6Img; break;
-            }
-            context.drawImage(diceImg, miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
-        } else { // draw the mini turn number
-            context.fillStyle = '#446516';
-            context.strokeStyle = 'black';
-            context.lineWidth=2;
-            context.strokeRect(miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
-            context.fillRect(miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
-
-            this.textCanvas(context, this.miniTurn[1], miniRoundXoffset+13, miniRoundYoffset+22);
-        }
-
-        // game point
-        var   gamePointXoffset = miniRoundXoffset+50;
-        var   gamePointYoffset = 5;
-        const gamePointWidth = 30;
-        const gamePointHeigh = 40;
-        context.drawImage(gamePointTokenImg, gamePointXoffset, gamePointYoffset, gamePointWidth, gamePointHeigh);
-        gamePointXoffset += 40;
-        gamePointYoffset = 30;
-        this.textCanvas(context, this.gamePoint, gamePointXoffset, gamePointYoffset);
-
-        // royal point
-        var   royalPointXoffset = gamePointXoffset+20;
-        var   royalPointYoffset = 5;
-        const royalPointWidth = 30;
-        const royalPointHeigh = 40;
-        context.drawImage(royalTokenImg, royalPointXoffset, royalPointYoffset, royalPointWidth, royalPointHeigh);
-        royalPointXoffset += 40;
-        royalPointYoffset = 30;
-        this.textCanvas(context, this.royalPoint, royalPointXoffset, royalPointYoffset);
-
-        // money
-        var   moneyXoffset = royalPointXoffset+20;
-        var   moneyYoffset = 5;
-        const moneyWidth = 30;
-        const moneyHeigh = 40;
-        context.drawImage(moneyImg, moneyXoffset, moneyYoffset, moneyWidth, moneyHeigh);
-        moneyXoffset += 40;
-        moneyYoffset = 30;
-        this.textCanvas(context, this.money, moneyXoffset, moneyYoffset);
-
-        // kichen status
-        // brown
-        var   foodXoffset = moneyXoffset+30;
-        var   foodYoffset = 5;
-        const foodWidth = 30;
-        const foodHeigh = 30;
-        context.drawImage(brownImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
-        foodXoffset += 40;
-        foodYoffset = 30;
-        this.textCanvas(context, this.brown, foodXoffset, foodYoffset);
-
-        // white
-        foodXoffset += 30;
-        foodYoffset = 5;
-        context.drawImage(whiteImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
-        foodXoffset += 40;
-        foodYoffset = 30;
-        this.textCanvas(context, this.white, foodXoffset, foodYoffset);
-
-        // red
-        foodXoffset += 30;
-        foodYoffset = 5;
-        context.drawImage(redImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
-        foodXoffset += 40;
-        foodYoffset = 30;
-        this.textCanvas(context, this.red, foodXoffset, foodYoffset);
-
-        // black
-        foodXoffset += 30;
-        foodYoffset = 5;
-        context.drawImage(blackImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
-        foodXoffset += 40;
-        foodYoffset = 30;
-        this.textCanvas(context, this.black, foodXoffset, foodYoffset);
-
-        // operation if it's this player's turn, including invite, action, serve, and checkout
-        var   opXoffset = foodXoffset+30;
-        var   opYoffset = 10;
-        const opWidth = 40;
-        const opHeigh = 20;
-        if(this.currPlayer == this.playerID){
-            if(this.opInvite){
-                context.fillStyle = 'white';
-            } else {
-                context.fillStyle = 'grey';
-            }
-            context.strokeStyle = 'black';
-            context.strokeRect(opXoffset, opYoffset, opWidth, opHeigh);
-            context.fillRect(opXoffset, opYoffset, opWidth, opHeigh);
-            context.font="15px Arial";
-            context.fillStyle="black";
-            context.fillText("邀请", opXoffset+6, opYoffset+15);
-
-            opXoffset += 45;
-            if(this.opAction){
-                context.fillStyle = 'white';
-            } else {
-                context.fillStyle = 'grey';
-            }
-            context.strokeStyle = 'black';
-            context.strokeRect(opXoffset, opYoffset, opWidth, opHeigh);
-            context.fillRect(opXoffset, opYoffset, opWidth, opHeigh);
-            context.font="15px Arial";
-            context.fillStyle="black";
-            context.fillText("取骰", opXoffset+6, opYoffset+15);
-
-            opXoffset += 45;
-            if(this.opServe){
-                context.fillStyle = 'white';
-            } else {
-                context.fillStyle = 'grey';
-            }
-            context.strokeStyle = 'black';
-            context.strokeRect(opXoffset, opYoffset, opWidth, opHeigh);
-            context.fillRect(opXoffset, opYoffset, opWidth, opHeigh);
-            context.font="15px Arial";
-            context.fillStyle="black";
-            context.fillText("上菜", opXoffset+6, opYoffset+15);
-
-            opXoffset += 45;
-            if(this.opCheckout){
-                context.fillStyle = 'white';
-            } else {
-                context.fillStyle = 'grey';
-            }
-            context.strokeStyle = 'black';
-            context.strokeRect(opXoffset, opYoffset, opWidth, opHeigh);
-            context.fillRect(opXoffset, opYoffset, opWidth, opHeigh);
-            context.font="15px Arial";
-            context.fillStyle="black";
-            context.fillText("结算", opXoffset+6, opYoffset+15);
-
-            opXoffset += 45;
-            if(this.opEnd){
-                context.fillStyle = 'white';
-            } else {
-                context.fillStyle = 'grey';
-            }
-            context.strokeStyle = 'black';
-            context.strokeRect(opXoffset, opYoffset, opWidth, opHeigh);
-            context.fillRect(opXoffset, opYoffset, opWidth, opHeigh);
-            context.font="15px Arial";
-            context.fillStyle="black";
-            context.fillText("结束", opXoffset+6, opYoffset+15);
         }
     }
 
@@ -1184,11 +643,557 @@ class Player{
             case 40: this.freeInviteNum = 2; break;
         }
         this.guestHighLightFlag = true;
-        this.checkGuestInvite(10);
+        this.game.checkGuestInvite(10);
         // special bonus
         if(guestID==50) { // 立即额外进行一个回合，不需要拿取骰子
             this.specialRound = true;
         }
         this.game.updateAllCanvas();
     }
+
+    // ========================================canvas==============================================
+    textCanvas(context, string, offsetX, offsetY, font) {
+        if (font === undefined || font === null){
+            context.font="20px verdana";
+        } else {
+            context.font=font;
+        }
+        context.shadowColor="white";
+        context.shadowBlur=2;
+        context.lineWidth=2;
+        context.strokeStyle = "white";
+        context.strokeText(string, offsetX, offsetY);
+        context.shadowBlur=0;
+        context.fillStyle="black";
+        context.fillText(string, offsetX, offsetY);
+    }
+
+    triangleCanvas(context, X0, Y0, X1, Y1, X2, Y2){
+        context.beginPath();
+        context.moveTo(X0,Y0);
+        context.lineTo(X1,Y1);
+        context.lineTo(X2,Y2);
+        context.fillStyle='black';
+        context.fill();
+        context.beginPath();
+        context.moveTo(X0,Y0);
+        context.lineTo(X1,Y1);
+        context.lineTo(X2,Y2);
+        context.lineTo(X0,Y0);
+        context.strokeStyle='white';
+        context.stroke();
+    }
+
+    markCanvas(context, X0, Y0, X1, Y1, X2, Y2){
+        context.lineWidth = 5;
+        context.beginPath();
+        context.moveTo(X0, Y0);
+        context.lineTo(X1, Y1);
+        context.lineTo(X2, Y2);
+        context.strokeStyle = 'green';
+        context.stroke();
+    }
+
+    updateAlertCanvas(context){
+        // clear canvas first
+        context.clearRect(0, 0, 480, 240);
+        // different types of alert
+        switch(this.game.alertType){
+            case 0: // take brown or white
+            context.drawImage(moneyImg, 20, 100, 30, 30);
+            this.textCanvas(context, "Boost", 60, 120);
+            if(this.atActionBoost){ // draw a mark if boost is selected
+                this.markCanvas(context, 80, 110, 90, 120, 100, 100);
+            }
+            context.drawImage(brownImg, 150, 100, 30, 30);
+            this.textCanvas(context, this.atTakeBrown.toString(), 200, 120);
+            this.triangleCanvas(context, 225, 110, 250, 90, 275, 110);
+            this.triangleCanvas(context, 225, 120, 250, 140, 275, 120);
+            context.drawImage(whiteImg, 300, 100, 30, 30);
+            this.textCanvas(context, this.atTakeWhite.toString(), 350, 120);
+            this.triangleCanvas(context, 375, 110, 400, 90, 425, 110);
+            this.triangleCanvas(context, 375, 120, 400, 140, 425, 120);
+            context.fillStyle = 'white';
+            context.strokeStyle = 'black';
+            context.strokeRect(200, 170, 100, 40);
+            context.fillRect(200, 170, 100, 40);
+            this.textCanvas(context, "确定", 228, 200);
+            break;
+            case 1: // take red or black
+            context.drawImage(moneyImg, 20, 100, 30, 30);
+            this.textCanvas(context, "Boost", 60, 120);
+            if(this.atActionBoost){ // draw a mark if boost is selected
+                this.markCanvas(context, 80, 110, 90, 120, 100, 100);
+            }
+            context.drawImage(redImg, 150, 100, 30, 30);
+            this.textCanvas(context, this.atTakeRed.toString(), 200, 120);
+            this.triangleCanvas(context, 225, 110, 250, 90, 275, 110);
+            this.triangleCanvas(context, 225, 120, 250, 140, 275, 120);
+            context.drawImage(blackImg, 300, 100, 30, 30);
+            this.textCanvas(context, this.atTakeBlack.toString(), 350, 120);
+            this.triangleCanvas(context, 375, 110, 400, 90, 425, 110);
+            this.triangleCanvas(context, 375, 120, 400, 140, 425, 120);
+            context.fillStyle = 'white';
+            context.strokeStyle = 'black';
+            context.strokeRect(200, 170, 100, 40);
+            context.fillRect(200, 170, 100, 40);
+            this.textCanvas(context, "确定", 228, 200);
+            break;
+            case 2: // prepare rooms
+            context.drawImage(moneyImg, 20, 100, 30, 30);
+            this.textCanvas(context, "Boost", 60, 120);
+            if(this.atActionBoost){ // draw a mark if boost is selected
+                this.markCanvas(context, 80, 110, 90, 120, 100, 100);
+            }
+            context.drawImage(roomRedPreparedImg, 140, 90, 50, 50);
+            this.textCanvas(context, this.atRoomToPrepare.toString(), 200, 120);
+            this.triangleCanvas(context, 225, 110, 250, 90, 275, 110);
+            this.triangleCanvas(context, 225, 120, 250, 140, 275, 120);
+            context.fillStyle = 'white';
+            context.strokeStyle = 'black';
+            context.strokeRect(200, 170, 100, 40);
+            context.fillRect(200, 170, 100, 40);
+            this.textCanvas(context, "确定", 228, 200);
+            break;
+            case 3: // take royal points or money
+            context.drawImage(moneyImg, 20, 100, 30, 30);
+            this.textCanvas(context, "Boost", 60, 120);
+            if(this.atActionBoost){ // draw a mark if boost is selected
+                this.markCanvas(context, 80, 110, 90, 120, 100, 100);
+            }
+            context.drawImage(royalTokenImg, 150, 95, 30, 40);
+            this.textCanvas(context, this.atRoyal.toString(), 200, 120);
+            this.triangleCanvas(context, 225, 110, 250, 90, 275, 110);
+            this.triangleCanvas(context, 225, 120, 250, 140, 275, 120);
+            context.drawImage(moneyImg, 300, 100, 30, 30);
+            this.textCanvas(context, this.atMoney.toString(), 350, 120);
+            this.triangleCanvas(context, 375, 110, 400, 90, 425, 110);
+            this.triangleCanvas(context, 375, 120, 400, 140, 425, 120);
+            context.fillStyle = 'white';
+            context.strokeStyle = 'black';
+            context.strokeRect(200, 170, 100, 40);
+            context.fillRect(200, 170, 100, 40);
+            this.textCanvas(context, "确定", 228, 200);
+            break;
+            case 4: // hire servers
+            context.drawImage(moneyImg, 20, 100, 30, 30);
+            this.textCanvas(context, "Boost", 60, 120);
+            if(this.atActionBoost){ // draw a mark if boost is selected
+                this.markCanvas(context, 80, 110, 90, 120, 100, 100);
+            }
+            context.drawImage(serverImg[0], 140, 90, 50, 50);
+            context.fillStyle = 'white';
+            context.strokeStyle = 'black';
+            context.strokeRect(200, 170, 100, 40);
+            context.fillRect(200, 170, 100, 40);
+            this.textCanvas(context, "确定", 228, 200);
+            break;
+            case 5: // take mirrors
+            var diceImg = dice1Img;
+            switch(this.atMirrorDice){
+                case 1: diceImg = dice1Img; break;
+                case 2: diceImg = dice2Img; break;
+                case 3: diceImg = dice3Img; break;
+                case 4: diceImg = dice4Img; break;
+                case 5: diceImg = dice5Img; break;
+            }
+            context.drawImage(diceImg, 150, 100, 30, 30);
+            this.triangleCanvas(context, 225, 110, 250, 90, 275, 110);
+            this.triangleCanvas(context, 225, 120, 250, 140, 275, 120);
+            context.fillStyle = 'white';
+            context.strokeStyle = 'black';
+            context.strokeRect(200, 170, 100, 40);
+            context.fillRect(200, 170, 100, 40);
+            this.textCanvas(context, "确定", 228, 200);
+            break;
+            case 6: // pick food to take
+            context.drawImage(brownImg, 100, 25, 30, 30);
+            this.textCanvas(context, this.atTakeBrown.toString(), 150, 45);
+            this.triangleCanvas(context, 175, 35, 200, 15, 225, 35);
+            this.triangleCanvas(context, 175, 45, 200, 65, 225, 45);
+            context.drawImage(whiteImg, 250, 25, 30, 30);
+            this.textCanvas(context, this.atTakeWhite.toString(), 300, 45);
+            this.triangleCanvas(context, 325, 35, 350, 15, 375, 35);
+            this.triangleCanvas(context, 325, 45, 350, 65, 375, 45);
+            context.drawImage(redImg, 100, 100, 30, 30);
+            this.textCanvas(context, this.atTakeRed.toString(), 150, 120);
+            this.triangleCanvas(context, 175, 110, 200, 90, 225, 110);
+            this.triangleCanvas(context, 175, 120, 200, 140, 225, 120);
+            context.drawImage(blackImg, 250, 100, 30, 30);
+            this.textCanvas(context, this.atTakeBlack.toString(), 300, 120);
+            this.triangleCanvas(context, 325, 110, 350, 90, 375, 110);
+            this.triangleCanvas(context, 325, 120, 350, 140, 375, 120);
+            context.fillStyle = 'white';
+            context.strokeStyle = 'black';
+            context.strokeRect(200, 170, 100, 40);
+            context.fillRect(200, 170, 100, 40);
+            this.textCanvas(context, "确定", 228, 200);
+        }
+    }
+
+    updateServerCanvas(context) {
+        // clear canvas first
+        context.clearRect(0, 0, 640, 560);
+
+        // Server on hands
+        this.textCanvas(context, "员工手牌", 25, 25);
+
+        // draw the remaining of prev card if any
+        var   serverXoffset = -105;
+        var   serverYoffset = 35;
+        const serverWidth = 160;
+        const serverHeight = 240;
+        if(this.serverOnHandCanvasIdx>0 && this.numServerOnHand>0) { 
+            context.drawImage(serverImg[this.serverOnHand[this.serverOnHandCanvasIdx-1].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+            // draw the left triangle to indicate
+            this.triangleCanvas(context, 0, 105, 25, 130, 25, 80);
+        }
+        
+        // draw 3 server cards if any
+        for(let i=0; i<3; i++){
+            if((this.serverOnHandCanvasIdx + i) < this.numServerOnHand){
+                serverXoffset+=170;
+                context.drawImage(serverImg[this.serverOnHand[this.serverOnHandCanvasIdx+i].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+                // hightlight block if needed
+                if(this.serverOnHandHighLightFlag && this.serverOnHandHighLight[this.serverOnHandCanvasIdx+i]) {
+                    context.strokeStyle = "red";
+                    context.lineWidth = 5;
+                    context.strokeRect(serverXoffset, serverYoffset, serverWidth, serverHeight);
+                }
+            }
+        }
+
+        // draw the remaining of next card if any
+        if(this.serverOnHandCanvasIdx + 3 < this.numServerOnHand) {
+            serverXoffset+=170;
+            context.drawImage(serverImg[this.serverOnHand[this.serverOnHandCanvasIdx+3].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+            // draw the right triangle to indicate
+            this.triangleCanvas(context, 640, 105, 615, 130, 615, 80);
+        }
+
+        // Server hired
+        this.textCanvas(context, "已雇佣员工", 25, 300);
+
+        // draw the remaining of prev card if any
+        serverXoffset = -105;
+        serverYoffset += 275;
+        // console.log("num server hired: " + this.numServerHired);
+        if(this.serverHiredCanvasIdx>0 && this.numServerHired>0) { 
+            context.drawImage(serverImg[this.serverHired[this.serverHiredCanvasIdx-1].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+            // draw the left triangle to indicate
+            this.triangleCanvas(context, 0, 380, 25, 405, 25, 355);
+        }
+        
+        // draw 3 server cards if any
+        for(let i=0; i<3; i++){
+            if(this.serverHiredCanvasIdx + i < this.numServerHired){
+                serverXoffset+=170;
+                context.drawImage(serverImg[this.serverHired[this.serverHiredCanvasIdx+i].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+            }
+        }
+
+        // draw the remaining of next card if any
+        if(this.serverHiredCanvasIdx + 3 < this.numServerHired) {
+            serverXoffset+=170;
+            context.drawImage(serverImg[this.serverHired[this.serverHiredCanvasIdx+3].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+            // draw the right triangle to indicate
+            this.triangleCanvas(context, 640, 380, 615, 405, 615, 355);
+        }
+    }
+
+    updatePlayerCanvas(context) {
+        // clear canvas first
+        context.clearRect(0, 0, 960, 50);
+
+        // markers first
+        const markerXoffset = 25;
+        const markerYoffset = 25;
+        const markerRadius = 10;
+        context.fillStyle = this.markerColor;
+        context.beginPath();
+        context.arc(markerXoffset, markerYoffset, markerRadius, 0, 2 * Math.PI);
+        context.fill();
+        // draw the check mark if it's this player's turn
+        if(this.game.currPlayer == this.playerID){
+            this.markCanvas(context, 15, 20, 25, 30, 35, 10);
+            context.strokeStyle = "green";
+            context.lineWidth = 5;
+            context.strokeRect(0, 0, 960, 50);
+        }
+
+        // player name
+        const nameXoffset = 50;
+        const nameYoffset = 30;
+        this.textCanvas(context, this.playerName.substring(0, 16), nameXoffset, nameYoffset)
+
+        // mini round status
+        var   miniRoundXoffset = nameXoffset+100;
+        var   miniRoundYoffset = 5;
+        var   miniRoundWidth = 80;
+        var   miniRoundHeight = 40;
+        context.fillStyle = '#446516';
+        context.strokeStyle = 'black';
+        context.strokeRect(miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
+        context.fillRect(miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
+        
+        var   miniRoundXoffset = nameXoffset+102;
+        var   miniRoundYoffset = 8;
+        var   miniRoundWidth = 34;
+        var   miniRoundHeight = 34;
+        if(this.diceTaken[0] != -1){ // draw the dice
+            var diceImg = dice1Img;
+            switch(this.diceTaken[0]){
+                case 1: diceImg = dice1Img; break;
+                case 2: diceImg = dice2Img; break;
+                case 3: diceImg = dice3Img; break;
+                case 4: diceImg = dice4Img; break;
+                case 5: diceImg = dice5Img; break;
+                case 6: diceImg = dice6Img; break;
+            }
+            context.drawImage(diceImg, miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
+        } else { // draw the mini turn number
+            context.fillStyle = '#446516';
+            context.strokeStyle = 'black';
+            context.lineWidth=2;
+            context.strokeRect(miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
+            context.fillRect(miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
+
+            this.textCanvas(context, this.miniTurn[0], miniRoundXoffset+13, miniRoundYoffset+22);
+        }
+
+        var   miniRoundXoffset = nameXoffset+142;
+        var   miniRoundYoffset = 8;
+        var   miniRoundWidth = 34;
+        var   miniRoundHeight = 34;
+        if(this.diceTaken[1] != -1){ // draw the dice
+            var diceImg = dice1Img;
+            switch(this.diceTaken[1]){
+                case 1: diceImg = dice1Img; break;
+                case 2: diceImg = dice2Img; break;
+                case 3: diceImg = dice3Img; break;
+                case 4: diceImg = dice4Img; break;
+                case 5: diceImg = dice5Img; break;
+                case 6: diceImg = dice6Img; break;
+            }
+            context.drawImage(diceImg, miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
+        } else { // draw the mini turn number
+            context.fillStyle = '#446516';
+            context.strokeStyle = 'black';
+            context.lineWidth=2;
+            context.strokeRect(miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
+            context.fillRect(miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
+
+            this.textCanvas(context, this.miniTurn[1], miniRoundXoffset+13, miniRoundYoffset+22);
+        }
+
+        // game point
+        var   gamePointXoffset = miniRoundXoffset+50;
+        var   gamePointYoffset = 5;
+        const gamePointWidth = 30;
+        const gamePointHeigh = 40;
+        context.drawImage(gamePointTokenImg, gamePointXoffset, gamePointYoffset, gamePointWidth, gamePointHeigh);
+        gamePointXoffset += 40;
+        gamePointYoffset = 30;
+        this.textCanvas(context, this.gamePoint, gamePointXoffset, gamePointYoffset);
+
+        // royal point
+        var   royalPointXoffset = gamePointXoffset+20;
+        var   royalPointYoffset = 5;
+        const royalPointWidth = 30;
+        const royalPointHeigh = 40;
+        context.drawImage(royalTokenImg, royalPointXoffset, royalPointYoffset, royalPointWidth, royalPointHeigh);
+        royalPointXoffset += 40;
+        royalPointYoffset = 30;
+        this.textCanvas(context, this.royalPoint, royalPointXoffset, royalPointYoffset);
+
+        // money
+        var   moneyXoffset = royalPointXoffset+20;
+        var   moneyYoffset = 5;
+        const moneyWidth = 30;
+        const moneyHeigh = 40;
+        context.drawImage(moneyImg, moneyXoffset, moneyYoffset, moneyWidth, moneyHeigh);
+        moneyXoffset += 40;
+        moneyYoffset = 30;
+        this.textCanvas(context, this.money, moneyXoffset, moneyYoffset);
+
+        // kichen status
+        // brown
+        var   foodXoffset = moneyXoffset+30;
+        var   foodYoffset = 5;
+        const foodWidth = 30;
+        const foodHeigh = 30;
+        context.drawImage(brownImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
+        foodXoffset += 40;
+        foodYoffset = 30;
+        this.textCanvas(context, this.brown, foodXoffset, foodYoffset);
+
+        // white
+        foodXoffset += 30;
+        foodYoffset = 5;
+        context.drawImage(whiteImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
+        foodXoffset += 40;
+        foodYoffset = 30;
+        this.textCanvas(context, this.white, foodXoffset, foodYoffset);
+
+        // red
+        foodXoffset += 30;
+        foodYoffset = 5;
+        context.drawImage(redImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
+        foodXoffset += 40;
+        foodYoffset = 30;
+        this.textCanvas(context, this.red, foodXoffset, foodYoffset);
+
+        // black
+        foodXoffset += 30;
+        foodYoffset = 5;
+        context.drawImage(blackImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
+        foodXoffset += 40;
+        foodYoffset = 30;
+        this.textCanvas(context, this.black, foodXoffset, foodYoffset);
+
+        // operation if it's this player's turn, including invite, action, serve, and checkout
+        var   opXoffset = foodXoffset+30;
+        var   opYoffset = 10;
+        const opWidth = 40;
+        const opHeigh = 20;
+        if(this.game.currPlayer == this.playerID){
+            if(this.opInvite){
+                context.fillStyle = 'white';
+            } else {
+                context.fillStyle = 'grey';
+            }
+            context.strokeStyle = 'black';
+            context.strokeRect(opXoffset, opYoffset, opWidth, opHeigh);
+            context.fillRect(opXoffset, opYoffset, opWidth, opHeigh);
+            context.font="15px Arial";
+            context.fillStyle="black";
+            context.fillText("邀请", opXoffset+6, opYoffset+15);
+
+            opXoffset += 45;
+            if(this.opAction){
+                context.fillStyle = 'white';
+            } else {
+                context.fillStyle = 'grey';
+            }
+            context.strokeStyle = 'black';
+            context.strokeRect(opXoffset, opYoffset, opWidth, opHeigh);
+            context.fillRect(opXoffset, opYoffset, opWidth, opHeigh);
+            context.font="15px Arial";
+            context.fillStyle="black";
+            context.fillText("取骰", opXoffset+6, opYoffset+15);
+
+            opXoffset += 45;
+            if(this.opServe){
+                context.fillStyle = 'white';
+            } else {
+                context.fillStyle = 'grey';
+            }
+            context.strokeStyle = 'black';
+            context.strokeRect(opXoffset, opYoffset, opWidth, opHeigh);
+            context.fillRect(opXoffset, opYoffset, opWidth, opHeigh);
+            context.font="15px Arial";
+            context.fillStyle="black";
+            context.fillText("上菜", opXoffset+6, opYoffset+15);
+
+            opXoffset += 45;
+            if(this.opCheckout){
+                context.fillStyle = 'white';
+            } else {
+                context.fillStyle = 'grey';
+            }
+            context.strokeStyle = 'black';
+            context.strokeRect(opXoffset, opYoffset, opWidth, opHeigh);
+            context.fillRect(opXoffset, opYoffset, opWidth, opHeigh);
+            context.font="15px Arial";
+            context.fillStyle="black";
+            context.fillText("结算", opXoffset+6, opYoffset+15);
+
+            opXoffset += 45;
+            if(this.opEnd){
+                context.fillStyle = 'white';
+            } else {
+                context.fillStyle = 'grey';
+            }
+            context.strokeStyle = 'black';
+            context.strokeRect(opXoffset, opYoffset, opWidth, opHeigh);
+            context.fillRect(opXoffset, opYoffset, opWidth, opHeigh);
+            context.font="15px Arial";
+            context.fillStyle="black";
+            context.fillText("结束", opXoffset+6, opYoffset+15);
+        }
+    }
+    // ========================================canvas==============================================
+
+
+    // ========================================click handle==============================================
+    handlePlayerClick(event) {
+        // check if this event is invite
+        if(event.offsetX >= 712 && event.offsetX <= 752 && event.offsetY >= 10 && event.offsetY <= 30){
+            console.log("Invite button pressed");
+            if(this.opInvite){
+                // disable all 
+                this.disableAllOp();
+                this.atInvite = true;
+                this.game.guestHighLightFlag = true;
+                if(this.firstGuestTurn){
+                    this.game.checkGuestInvite(10); // make sure all guest available at the first guest
+                } else {
+                    this.game.checkGuestInvite(this.money);
+                }
+            }
+        }
+
+        // check if this event is action
+        if(event.offsetX >= 757 && event.offsetX <= 797 && event.offsetY >= 10 && event.offsetY <= 30){
+            console.log("Action button pressed");
+            if(this.opAction){
+                // disable all
+                this.disableAllOp();
+                this.atAction = true;
+            }
+            this.actionHighLightFlag = true;
+            for(let i=0; i<6; i++){
+                if(this.actionPoint[i]>0){
+                    this.actionHighLight[i] = 1;
+                }
+            }
+        }
+
+        // check if this event is serve
+        if(event.offsetX >= 802 && event.offsetX <= 842 && event.offsetY >= 10 && event.offsetY <= 30){
+            console.log("Serve button pressed");
+            if(this.opServe){
+                // no need to disable other options
+                if(!this.hasHiredServer(23)){ // exception to pay serve fee
+                    this.money--;
+                }
+                this.atServe = true;
+                this.serveFoodNum = 3;
+            }
+        }
+
+        // check if this event is checkout
+        if(event.offsetX >= 847 && event.offsetX <= 887 && event.offsetY >= 10 && event.offsetY <= 30){
+            console.log("Checkout button pressed");
+            if(this.opCheckout){
+                // disable all
+                this.disableAllOp();
+                this.atCheckout = true;
+                this.hotel.atSelectSatisfiedGuest = true;
+            }
+        }
+
+        // check if this event is end
+        if(event.offsetX >= 892 && event.offsetX <= 932 && event.offsetY >= 10 && event.offsetY <= 30){
+            console.log("End button pressed");
+            if(this.opEnd){
+                this.endFlag = true;
+            }
+            this.nextMiniRound();
+        }
+        
+        // update canvas
+        this.game.updateAllCanvas();
+    }
+    // ========================================click handle==============================================
 }
