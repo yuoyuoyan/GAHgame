@@ -218,7 +218,7 @@ class Hotel{
         this.roomStatus[floor][col] = 1; // close room
         this.roomAreaRoom[this.roomArea[floor][col]]--; // area room counter
         if(this.roomAreaRoom[this.roomArea[floor][col]]==0){ // trigger the area bonus
-            ;
+            this.areaBonus(floor, col);
         }
         this.roomClosedNum++;
         this.roomPreparedNum--;
@@ -262,9 +262,39 @@ class Hotel{
         }
     }
 
-    areaBonus() {
-        // TODO
-        ;
+    areaBonus(floor, col) {
+        var color = this.roomColor[floor][col];
+        var roomNum = roomAreaRoomByID[this.hotelID][this.roomArea[floor][col]];
+        switch(roomNum) {
+            case 1: 
+                switch(color) {
+                    case 0: game.players[game.currPlayer].gainMoney(1); break;
+                    case 1: game.players[game.currPlayer].gainRoyal(1); break;
+                    case 2: game.players[game.currPlayer].gainGamePoint(2); break;
+                }
+                break;
+            case 2:
+                switch(color) {
+                    case 0: game.players[game.currPlayer].gainMoney(3); break;
+                    case 1: game.players[game.currPlayer].gainRoyal(3); break;
+                    case 2: game.players[game.currPlayer].gainGamePoint(5); break;
+                }
+                break;
+            case 3:
+                switch(color) {
+                    case 0: game.players[game.currPlayer].gainMoney(6); break;
+                    case 1: game.players[game.currPlayer].gainRoyal(6); break;
+                    case 2: game.players[game.currPlayer].gainGamePoint(9); break;
+                }
+                break;
+            case 4:
+                switch(color) {
+                    case 0: game.players[game.currPlayer].gainMoney(10); break;
+                    case 1: game.players[game.currPlayer].gainRoyal(10); break;
+                    case 2: game.players[game.currPlayer].gainGamePoint(15); break;
+                }
+                break;
+        }
     }
 
     addGuestToTable(guestID){

@@ -31,6 +31,7 @@ class Player{
         this.atRoyalMoney = false;
         this.atHireServer = false;
         this.atTakeMirror = false;
+        this.atSelectFood = 0;
         this.atTakeBrown = 0;
         this.atTakeWhite = 0;
         this.atTakeRed = 0;
@@ -392,6 +393,28 @@ class Player{
             context.fillRect(200, 170, 100, 40);
             this.textCanvas(context, "确定", 228, 200);
             break;
+            case 6: // pick food to take
+            context.drawImage(brownImg, 100, 25, 30, 30);
+            this.textCanvas(context, game.players[game.currPlayer].atTakeBrown.toString(), 150, 45);
+            this.triangleCanvas(context, 175, 35, 200, 15, 225, 35);
+            this.triangleCanvas(context, 175, 45, 200, 65, 225, 45);
+            context.drawImage(whiteImg, 250, 25, 30, 30);
+            this.textCanvas(context, game.players[game.currPlayer].atTakeWhite.toString(), 300, 45);
+            this.triangleCanvas(context, 325, 35, 350, 15, 375, 35);
+            this.triangleCanvas(context, 325, 45, 350, 65, 375, 45);
+            context.drawImage(redImg, 100, 100, 30, 30);
+            this.textCanvas(context, game.players[game.currPlayer].atTakeRed.toString(), 150, 120);
+            this.triangleCanvas(context, 175, 110, 200, 90, 225, 110);
+            this.triangleCanvas(context, 175, 120, 200, 140, 225, 120);
+            context.drawImage(blackImg, 250, 100, 30, 30);
+            this.textCanvas(context, game.players[game.currPlayer].atTakeBlack.toString(), 300, 120);
+            this.triangleCanvas(context, 325, 110, 350, 90, 375, 110);
+            this.triangleCanvas(context, 325, 120, 350, 140, 375, 120);
+            context.fillStyle = 'white';
+            context.strokeStyle = 'black';
+            context.strokeRect(200, 170, 100, 40);
+            context.fillRect(200, 170, 100, 40);
+            this.textCanvas(context, "确定", 228, 200);
         }
     }
 
@@ -1258,7 +1281,11 @@ class Player{
             case 5: // 获得1个黑咖啡和2个皇室点数
             this.gainBlack(1); break;
             case 6: // 获得1个任意食物资源和2块钱
-            // TODO
+            alertCanvas.style.display = 'block';
+            this.atSelectFood = 1;
+            this.atTakeBrown = 1; // default to brown
+            this.updateAlertCanvas(alertContext, 6);
+            break;
             case 8: // 获得1个白蛋糕并减3费打出1张员工
             this.gainWhite(1); break;
             case 11: // 获得1个白蛋糕并减2费打出1张员工

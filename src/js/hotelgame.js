@@ -56,6 +56,9 @@ function gameOn() {
             // test guest bonus
             game.players[game.currPlayer].hotel.addGuestToTable(25);
             game.players[game.currPlayer].hotel.satisfyGuest(1);
+            // test alert canvas
+            // game.players[game.currPlayer].atSelectFood = 2;
+            // game.players[game.currPlayer].updateAlertCanvas(alertContext, 6);
         }
     }
     

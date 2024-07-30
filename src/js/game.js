@@ -622,9 +622,70 @@ class Game{
 
     handleAlertClick(event) {
         console.log("alert canvas clicked");
-        if(game.players[game.currPlayer].atServe) {
-            // TODO
-            ;
+        if(game.players[game.currPlayer].atSelectFood>0) { // pick any kinds of food
+            if(event.offsetX>=175 && event.offsetX<=225 && event.offsetY>=15 && event.offsetY<=35){ // increase brown
+                if( (game.players[game.currPlayer].atTakeBrown + game.players[game.currPlayer].atTakeWhite + 
+                    game.players[game.currPlayer].atTakeRed + game.players[game.currPlayer].atTakeBlack) < game.players[game.currPlayer].atSelectFood){
+                    game.players[game.currPlayer].atTakeBrown++;
+                }
+                game.players[game.currPlayer].updateAlertCanvas(alertContext, 6);
+                console.log("brown increase selected");
+            } else if(event.offsetX>=175 && event.offsetX<=225 && event.offsetY>=45 && event.offsetY<=65){ // decrease brown
+                if(game.players[game.currPlayer].atTakeBrown > 0){
+                    game.players[game.currPlayer].atTakeBrown--;
+                }
+                game.players[game.currPlayer].updateAlertCanvas(alertContext, 6);
+                console.log("brown decrease selected");
+            } else if(event.offsetX>=325 && event.offsetX<=375 && event.offsetY>=15 && event.offsetY<=35){ // increase white
+                if( (game.players[game.currPlayer].atTakeBrown + game.players[game.currPlayer].atTakeWhite + 
+                    game.players[game.currPlayer].atTakeRed + game.players[game.currPlayer].atTakeBlack) < game.players[game.currPlayer].atSelectFood){
+                    game.players[game.currPlayer].atTakeWhite++;
+                }
+                game.players[game.currPlayer].updateAlertCanvas(alertContext, 6);
+                console.log("brown increase selected");
+            } else if(event.offsetX>=325 && event.offsetX<=375 && event.offsetY>=45 && event.offsetY<=65){ // decrease white
+                if(game.players[game.currPlayer].atTakeWhite > 0){
+                    game.players[game.currPlayer].atTakeWhite--;
+                }
+                game.players[game.currPlayer].updateAlertCanvas(alertContext, 6);
+                console.log("brown decrease selected");
+            } else if(event.offsetX>=175 && event.offsetX<=225 && event.offsetY>=90 && event.offsetY<=110){ // increase red
+                if( (game.players[game.currPlayer].atTakeBrown + game.players[game.currPlayer].atTakeWhite + 
+                    game.players[game.currPlayer].atTakeRed + game.players[game.currPlayer].atTakeBlack) < game.players[game.currPlayer].atSelectFood){
+                    game.players[game.currPlayer].atTakeRed++;
+                }
+                game.players[game.currPlayer].updateAlertCanvas(alertContext, 6);
+                console.log("brown increase selected");
+            } else if(event.offsetX>=175 && event.offsetX<=225 && event.offsetY>=120 && event.offsetY<=140){ // decrease red
+                if(game.players[game.currPlayer].atTakeRed > 0){
+                    game.players[game.currPlayer].atTakeRed--;
+                }
+                game.players[game.currPlayer].updateAlertCanvas(alertContext, 6);
+                console.log("brown decrease selected");
+            } else if(event.offsetX>=325 && event.offsetX<=375 && event.offsetY>=90 && event.offsetY<=110){ // increase black
+                if( (game.players[game.currPlayer].atTakeBrown + game.players[game.currPlayer].atTakeWhite + 
+                    game.players[game.currPlayer].atTakeRed + game.players[game.currPlayer].atTakeBlack) < game.players[game.currPlayer].atSelectFood){
+                    game.players[game.currPlayer].atTakeBlack++;
+                }
+                game.players[game.currPlayer].updateAlertCanvas(alertContext, 6);
+                console.log("brown increase selected");
+            } else if(event.offsetX>=325 && event.offsetX<=375 && event.offsetY>=120 && event.offsetY<=140){ // decrease black
+                if(game.players[game.currPlayer].atTakeBlack > 0){
+                    game.players[game.currPlayer].atTakeBlack--;
+                }
+                game.players[game.currPlayer].updateAlertCanvas(alertContext, 6);
+                console.log("brown decrease selected");
+            } else if(event.offsetX>=200 && event.offsetX<=300 && event.offsetY>=170 && event.offsetY<=210){ // confirm
+                alertCanvas.style.display = 'none';
+                game.players[game.currPlayer].atSelectFood = 0;
+                game.players[game.currPlayer].gainBrown(game.players[game.currPlayer].atTakeBrown);
+                game.players[game.currPlayer].gainWhite(game.players[game.currPlayer].atTakeWhite);
+                game.players[game.currPlayer].gainRed(game.players[game.currPlayer].atTakeRed);
+                game.players[game.currPlayer].gainBlack(game.players[game.currPlayer].atTakeBlack);
+                game.players[game.currPlayer].checkOpStatus();
+                game.players[game.currPlayer].updatePlayerCanvas(game.players[game.currPlayer].context);
+                console.log("confirm selected");
+            }
         } else if(game.players[game.currPlayer].atTakeBrownWhite){
             if(event.offsetX>=20 && event.offsetX<=120 && event.offsetY>=90 && event.offsetY<=140){ // boost
                 if(game.players[game.currPlayer].money>0){
@@ -1122,10 +1183,6 @@ class Game{
         this.guestInQueue.unshift(this.guestDeck.at(-1));
         this.guestDeck.pop();
         console.log("add guest " + guestNameByID[this.guestInQueue[0]] + " to queue");
-    }
-
-    drawServer(playerID) {
-        ;
     }
 
     rollDice() {
