@@ -75,12 +75,9 @@ class Game{
             this.players[3].miniTurn = [4, 5];
             break;
         }
-        for(let k=0; k<6; k++) { // draw first 6 servers
-            for(let i=0; i<this.playerNumber; i++) {
-                this.players[i].addServerToHand(this.serverDeck.at(-1));
-                // console.log("player " + playerName[i] + " draw a server ID: " + this.serverDeck.at(-1));
-                this.serverDeck.pop();
-            }
+        for(let i=0; i<this.playerNumber; i++) { // draw 6 servers
+            this.players[i].addServerToHand(6);
+            // console.log("player " + playerName[i] + " draw a server ID: " + this.serverDeck.at(-1));
         }
         
         // place the first player to start
@@ -212,6 +209,9 @@ class Game{
                         break;
                 }
             } else if(this.players[i].royalPoint > 2) { // reward
+                if(this.players[i].hasHiredServer(41)){ //在获得皇室任务奖励时可以获得5游戏点数
+                    this.players[i].gainGamePoint(5);
+                }
                 switch(this.mainRound){
                     case 2: 
                         switch(this.royalTask0){
@@ -225,18 +225,7 @@ class Game{
                             this.players[i].updateAlertCanvas(alertContext, 6);
                             break;
                             case 2: // 抽3员工打1减3费返还剩余/丢弃2张员工手牌或失去5游戏点数
-                            this.players[i].addServerToHand(this.serverDeck.at(-1));
-                            this.serverDeck.pop();
-                            this.players[i].addServerToHand(this.serverDeck.at(-1));
-                            this.serverDeck.pop();
-                            this.players[i].addServerToHand(this.serverDeck.at(-1));
-                            this.serverDeck.pop();
-                            this.players[i].serverOnHandHighLightFlag = true;
-                            this.players[i].hireFlag++;
-                            this.players[i].hireLimitLastThree = true;
-                            this.players[i].highlightServerToHire(3);
-                            this.players[i].atHireServerdiscount.push(3);
-                            break; 
+                            this.players[i].highlightServerToHire(3, true); break; 
                             case 3: // 免费准备1个房间/失去最高的准备好的房间或失去5游戏点数
                             this.hotel.roomToPrepare = 1;
                             this.hotel.roomHighLightFlag = true;
@@ -290,7 +279,6 @@ class Game{
             this.players[this.currPlayer].hotel.roomToPrepare = 1;
             this.players[this.currPlayer].hotel.roomHighLightFlag = true;
             this.players[this.currPlayer].hotel.highlightRoomToPrepare(this.players[this.currPlayer].money);
-            this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
         }
         if(this.players[this.currPlayer].hasHiredServer(15) && value==3) {//使用色子4时可以获得4游戏点数
             this.players[this.currPlayer].gainGamePoint(4);
@@ -305,10 +293,7 @@ class Game{
             this.players[this.currPlayer].gainRoyal(2);
         }
         if(this.players[this.currPlayer].hasHiredServer(21) && value==2) {//使用色子3时可以雇佣一位员工
-            this.players[this.currPlayer].serverOnHandHighLightFlag = true;
-            this.players[this.currPlayer].hireFlag++;
             this.players[this.currPlayer].highlightServerToHire(0);
-            this.players[this.currPlayer].updateServerCanvas(serverContext);
         }
         
         switch(value){
@@ -333,7 +318,6 @@ class Game{
             } else {
                 serverBonus = 1;
             }
-            this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
             this.players[this.currPlayer].actionTakeMirror(this.actionPoint[5] + serverBonus);
             break;
         }
@@ -698,12 +682,9 @@ class Game{
                     this.players[this.currPlayer].inviteFlag = false;
                     this.players[this.currPlayer].freeInviteNum = 0;
                 }
-                this.players[this.currPlayer].checkOpStatus();
-                this.updateGuestCanvas(guestContext);
-                this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
-                this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
             }
         }
+        this.updateAllCanvas();
     }
 
     handleActionClick(event) {
@@ -729,15 +710,13 @@ class Game{
                     for(let i=0; i<6; i++){
                         this.actionHighLight[i] = 0;
                     }
-                    this.updateActionCanvas(actionContext);
                     this.players[this.currPlayer].atAction = false;
-                    this.players[this.currPlayer].checkOpStatus();
-                    this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                     break;
                 }
                 blockXoffset += 159;
             }
         }
+        this.updateAllCanvas();
     }
 
     handleHotelClick(event) {
@@ -757,9 +736,6 @@ class Game{
                             this.players[this.currPlayer].hotel.firstThreeRoom = false;
                         }
                         this.players[this.currPlayer].hotel.highlightRoomToPrepare(10);
-                        this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
-                        this.players[this.currPlayer].checkOpStatus();
-                        this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                     } else if(this.players[this.currPlayer].hotel.roomToPrepare>0 && this.players[this.currPlayer].hotel.roomHighLight[floor][col]){
                         console.log("prepare room at floor " + floor + " col " + col);
                         // prepare selected room, check money
@@ -779,9 +755,6 @@ class Game{
                             this.players[this.currPlayer].hotel.roomHighLightFlag = false;
                         }
                         this.players[this.currPlayer].hotel.highlightRoomToPrepare(this.players[this.currPlayer].money);
-                        this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
-                        this.players[this.currPlayer].checkOpStatus();
-                        this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                         this.players[this.currPlayer].hotel.roomToPrepare--;
                     } else if(this.players[this.currPlayer].hotel.roomToClose>0 && this.players[this.currPlayer].hotel.roomHighLight[floor][col]){
                         console.log("checkout room at floor " + floor + " col " + col);
@@ -799,9 +772,6 @@ class Game{
                         if(this.players[this.currPlayer].hotel.roomToClose == 0){
                             this.players[this.currPlayer].hotel.roomHighLightFlag = false;
                         }
-                        this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
-                        this.players[this.currPlayer].checkOpStatus();
-                        this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                     }
                 }
             }
@@ -825,14 +795,10 @@ class Game{
                     this.players[this.currPlayer].hotel.roomToCloseColor = this.players[this.currPlayer].hotel.guestOnTable[i].guestColor;
                     this.players[this.currPlayer].hotel.roomToCloseGuestID = this.players[this.currPlayer].hotel.guestOnTable[i].guestID;
                     this.players[this.currPlayer].hotel.roomToCloseGuestTableID = this.players[this.currPlayer].hotel.guestOnTable[i].guestTableID;
-                    this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
                 } else if(this.players[this.currPlayer].hotel.atSelectUnSatisfiedGuest &&
                     !this.players[this.currPlayer].hotel.guestOnTable[i].guestSatisfied){
                     this.players[this.currPlayer].hotel.atSelectUnSatisfiedGuest = false;
                     this.players[this.currPlayer].hotel.satisfyGuest(i);
-                    this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
-                    this.players[this.currPlayer].checkOpStatus();
-                    this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                 }
                 
                 
@@ -894,9 +860,6 @@ class Game{
                             }
                             this.players[this.currPlayer].checkOpStatus();
                         }
-
-                        this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
-                        this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
                     }
                     foodYoffset += 28;
                 }
@@ -904,6 +867,7 @@ class Game{
             foodXoffset += 182;
             foodYoffset = 618;
         }
+        this.updateAllCanvas();
     }
 
     handleAlertClick(event) {
@@ -915,53 +879,45 @@ class Game{
                     this.players[this.currPlayer].atTakeBrown++;
                 }
                 this.alertType = 6;
-                this.players[this.currPlayer].updateAlertCanvas(alertContext, 6);
                 console.log("brown increase selected");
             } else if(event.offsetX>=175 && event.offsetX<=225 && event.offsetY>=45 && event.offsetY<=65){ // decrease brown
                 if(this.players[this.currPlayer].atTakeBrown > 0){
                     this.players[this.currPlayer].atTakeBrown--;
                 }
                 this.alertType = 6;
-                this.players[this.currPlayer].updateAlertCanvas(alertContext, 6);
                 console.log("brown decrease selected");
             } else if(event.offsetX>=325 && event.offsetX<=375 && event.offsetY>=15 && event.offsetY<=35){ // increase white
                 if( (this.players[this.currPlayer].atTakeBrown + this.players[this.currPlayer].atTakeWhite + 
                     this.players[this.currPlayer].atTakeRed + this.players[this.currPlayer].atTakeBlack) < this.players[this.currPlayer].atSelectFood){
                     this.players[this.currPlayer].atTakeWhite++;
                 }
-                this.players[this.currPlayer].updateAlertCanvas(alertContext, 6);
                 console.log("brown increase selected");
             } else if(event.offsetX>=325 && event.offsetX<=375 && event.offsetY>=45 && event.offsetY<=65){ // decrease white
                 if(this.players[this.currPlayer].atTakeWhite > 0){
                     this.players[this.currPlayer].atTakeWhite--;
                 }
-                this.players[this.currPlayer].updateAlertCanvas(alertContext, 6);
                 console.log("brown decrease selected");
             } else if(event.offsetX>=175 && event.offsetX<=225 && event.offsetY>=90 && event.offsetY<=110){ // increase red
                 if( (this.players[this.currPlayer].atTakeBrown + this.players[this.currPlayer].atTakeWhite + 
                     this.players[this.currPlayer].atTakeRed + this.players[this.currPlayer].atTakeBlack) < this.players[this.currPlayer].atSelectFood){
                     this.players[this.currPlayer].atTakeRed++;
                 }
-                this.players[this.currPlayer].updateAlertCanvas(alertContext, 6);
                 console.log("brown increase selected");
             } else if(event.offsetX>=175 && event.offsetX<=225 && event.offsetY>=120 && event.offsetY<=140){ // decrease red
                 if(this.players[this.currPlayer].atTakeRed > 0){
                     this.players[this.currPlayer].atTakeRed--;
                 }
-                this.players[this.currPlayer].updateAlertCanvas(alertContext, 6);
                 console.log("brown decrease selected");
             } else if(event.offsetX>=325 && event.offsetX<=375 && event.offsetY>=90 && event.offsetY<=110){ // increase black
                 if( (this.players[this.currPlayer].atTakeBrown + this.players[this.currPlayer].atTakeWhite + 
                     this.players[this.currPlayer].atTakeRed + this.players[this.currPlayer].atTakeBlack) < this.players[this.currPlayer].atSelectFood){
                     this.players[this.currPlayer].atTakeBlack++;
                 }
-                this.players[this.currPlayer].updateAlertCanvas(alertContext, 6);
                 console.log("brown increase selected");
             } else if(event.offsetX>=325 && event.offsetX<=375 && event.offsetY>=120 && event.offsetY<=140){ // decrease black
                 if(this.players[this.currPlayer].atTakeBlack > 0){
                     this.players[this.currPlayer].atTakeBlack--;
                 }
-                this.players[this.currPlayer].updateAlertCanvas(alertContext, 6);
                 console.log("brown decrease selected");
             } else if(event.offsetX>=200 && event.offsetX<=300 && event.offsetY>=170 && event.offsetY<=210){ // confirm
                 alertCanvas.style.display = 'none';
@@ -970,8 +926,6 @@ class Game{
                 this.players[this.currPlayer].gainWhite(this.players[this.currPlayer].atTakeWhite);
                 this.players[this.currPlayer].gainRed(this.players[this.currPlayer].atTakeRed);
                 this.players[this.currPlayer].gainBlack(this.players[this.currPlayer].atTakeBlack);
-                this.players[this.currPlayer].checkOpStatus();
-                this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                 console.log("confirm selected");
             }
         } else if(this.players[this.currPlayer].atTakeBrownWhite){
@@ -991,36 +945,30 @@ class Game{
                         this.players[this.currPlayer].atTakeBrown++;
                         this.players[this.currPlayer].atActionBoost = true;
                     }
-                    this.players[this.currPlayer].updateAlertCanvas(alertContext, 0);
-                    this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                 }
             } else if(event.offsetX>=225 && event.offsetX<=275 && event.offsetY>=90 && event.offsetY<=110){ // increase brown
                 if(this.players[this.currPlayer].atTakeWhite > 0){
                     this.players[this.currPlayer].atTakeBrown++;
                     this.players[this.currPlayer].atTakeWhite--;
                 }
-                this.players[this.currPlayer].updateAlertCanvas(alertContext, 0);
                 console.log("brown increase selected");
             } else if(event.offsetX>=225 && event.offsetX<=275 && event.offsetY>=120 && event.offsetY<=140){ // decrease brown
                 if(this.players[this.currPlayer].atTakeBrown > 0 && this.players[this.currPlayer].atTakeBrown > this.players[this.currPlayer].atTakeWhite + 1){
                     this.players[this.currPlayer].atTakeBrown--;
                     this.players[this.currPlayer].atTakeWhite++;
                 }
-                this.players[this.currPlayer].updateAlertCanvas(alertContext, 0);
                 console.log("brown decrease selected");
             } else if(event.offsetX>=375 && event.offsetX<=425 && event.offsetY>=90 && event.offsetY<=110){ // increase white
                 if(this.players[this.currPlayer].atTakeBrown > 0 && this.players[this.currPlayer].atTakeBrown > this.players[this.currPlayer].atTakeWhite + 1){
                     this.players[this.currPlayer].atTakeBrown--;
                     this.players[this.currPlayer].atTakeWhite++;
                 }
-                this.players[this.currPlayer].updateAlertCanvas(alertContext, 0);
                 console.log("white increase selected");
             } else if(event.offsetX>=375 && event.offsetX<=425 && event.offsetY>=120 && event.offsetY<=140){ // decrease white
                 if(this.players[this.currPlayer].atTakeWhite > 0){
                     this.players[this.currPlayer].atTakeBrown++;
                     this.players[this.currPlayer].atTakeWhite--;
                 }
-                this.players[this.currPlayer].updateAlertCanvas(alertContext, 0);
                 console.log("white decrease selected");
             } else if(event.offsetX>=200 && event.offsetX<=300 && event.offsetY>=170 && event.offsetY<=210){ // confirm
                 alertCanvas.style.display = 'none';
@@ -1030,8 +978,6 @@ class Game{
                 this.players[this.currPlayer].atAction = false;
                 this.players[this.currPlayer].actionFlag = true;
                 this.players[this.currPlayer].atActionBoost = false;
-                this.players[this.currPlayer].checkOpStatus();
-                this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                 console.log("confirm selected");
             }
         } else if(this.players[this.currPlayer].atTakeRedBlack){
@@ -1051,36 +997,30 @@ class Game{
                         this.players[this.currPlayer].atTakeRed++;
                         this.players[this.currPlayer].atActionBoost = true;
                     }
-                    this.players[this.currPlayer].updateAlertCanvas(alertContext, 1);
-                    this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                 }
             } else if(event.offsetX>=225 && event.offsetX<=275 && event.offsetY>=90 && event.offsetY<=110){ // increase red
                 if(this.players[this.currPlayer].atTakeBlack > 0){
                     this.players[this.currPlayer].atTakeRed++;
                     this.players[this.currPlayer].atTakeBlack--;
                 }
-                this.players[this.currPlayer].updateAlertCanvas(alertContext, 1);
                 console.log("red increase selected");
             } else if(event.offsetX>=225 && event.offsetX<=275 && event.offsetY>=120 && event.offsetY<=140){ // decrease red
                 if(this.players[this.currPlayer].atTakeRed > 0 && this.players[this.currPlayer].atTakeRed > this.players[this.currPlayer].atTakeBlack + 1){
                     this.players[this.currPlayer].atTakeRed--;
                     this.players[this.currPlayer].atTakeBlack++;
                 }
-                this.players[this.currPlayer].updateAlertCanvas(alertContext, 1);
                 console.log("red decrease selected");
             } else if(event.offsetX>=375 && event.offsetX<=425 && event.offsetY>=90 && event.offsetY<=110){ // increase black
                 if(this.players[this.currPlayer].atTakeRed > 0 && this.players[this.currPlayer].atTakeRed > this.players[this.currPlayer].atTakeBlack + 1){
                     this.players[this.currPlayer].atTakeRed--;
                     this.players[this.currPlayer].atTakeBlack++;
                 }
-                this.players[this.currPlayer].updateAlertCanvas(alertContext, 1);
                 console.log("black increase selected");
             } else if(event.offsetX>=375 && event.offsetX<=425 && event.offsetY>=120 && event.offsetY<=140){ // decrease black
                 if(this.players[this.currPlayer].atTakeBlack > 0){
                     this.players[this.currPlayer].atTakeRed++;
                     this.players[this.currPlayer].atTakeBlack--;
                 }
-                this.players[this.currPlayer].updateAlertCanvas(alertContext, 1);
                 console.log("black decrease selected");
             } else if(event.offsetX>=200 && event.offsetX<=300 && event.offsetY>=170 && event.offsetY<=210){ // confirm
                 alertCanvas.style.display = 'none';
@@ -1090,8 +1030,6 @@ class Game{
                 this.players[this.currPlayer].atAction = false;
                 this.players[this.currPlayer].actionFlag = true;
                 this.players[this.currPlayer].atActionBoost = false;
-                this.players[this.currPlayer].checkOpStatus();
-                this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                 console.log("confirm selected");
             }
         } else if(this.players[this.currPlayer].atPrepareRoom){
@@ -1110,20 +1048,16 @@ class Game{
                         roomTmp++;
                         this.players[this.currPlayer].atActionBoost = true;
                     }
-                    this.players[this.currPlayer].updateAlertCanvas(alertContext, 2);
-                    this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                 }
             } else if(event.offsetX>=225 && event.offsetX<=275 && event.offsetY>=90 && event.offsetY<=110){ // increase room number
                 if(this.players[this.currPlayer].atRoomToPrepare < roomTmp){
                     this.players[this.currPlayer].atRoomToPrepare++;
                 }
-                this.players[this.currPlayer].updateAlertCanvas(alertContext, 2);
                 console.log("room increase selected");
             } else if(event.offsetX>=225 && event.offsetX<=275 && event.offsetY>=120 && event.offsetY<=140){ // decrease room number
                 if(this.players[this.currPlayer].atRoomToPrepare > 0){
                     this.players[this.currPlayer].atRoomToPrepare--;
                 }
-                this.players[this.currPlayer].updateAlertCanvas(alertContext, 2);
                 console.log("room decrease selected");
             } else if(event.offsetX>=200 && event.offsetX<=300 && event.offsetY>=170 && event.offsetY<=210){ // confirm
                 alertCanvas.style.display = 'none';
@@ -1131,12 +1065,9 @@ class Game{
                 this.players[this.currPlayer].hotel.roomToPrepare = this.players[this.currPlayer].atRoomToPrepare;
                 this.players[this.currPlayer].hotel.roomHighLightFlag = true;
                 this.players[this.currPlayer].hotel.highlightRoomToPrepare(this.players[this.currPlayer].money);
-                this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
                 this.players[this.currPlayer].atAction = false;
                 this.players[this.currPlayer].actionFlag = true;
                 this.players[this.currPlayer].atActionBoost = false;
-                this.players[this.currPlayer].checkOpStatus();
-                this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                 console.log("confirm selected");
             }
         } else if(this.players[this.currPlayer].atRoyalMoney){
@@ -1166,36 +1097,30 @@ class Game{
                         }
                         this.players[this.currPlayer].atActionBoost = true;
                     }
-                    this.players[this.currPlayer].updateAlertCanvas(alertContext, 3);
-                    this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                 }
             } else if(event.offsetX>=225 && event.offsetX<=275 && event.offsetY>=90 && event.offsetY<=110){ // increase royal
                 if(this.players[this.currPlayer].atMoney > 0 && !this.players[this.currPlayer].hasHiredServer(14)){
                     this.players[this.currPlayer].atRoyal++;
                     this.players[this.currPlayer].atMoney--;
                 }
-                this.players[this.currPlayer].updateAlertCanvas(alertContext, 3);
                 console.log("royal increase selected");
             } else if(event.offsetX>=225 && event.offsetX<=275 && event.offsetY>=120 && event.offsetY<=140){ // decrease royal
                 if(this.players[this.currPlayer].atRoyal > 0 && !this.players[this.currPlayer].hasHiredServer(14)){
                     this.players[this.currPlayer].atRoyal--;
                     this.players[this.currPlayer].atMoney++;
                 }
-                this.players[this.currPlayer].updateAlertCanvas(alertContext, 3);
                 console.log("royal decrease selected");
             } else if(event.offsetX>=375 && event.offsetX<=425 && event.offsetY>=90 && event.offsetY<=110){ // increase money
                 if(this.players[this.currPlayer].atRoyal > 0 && !this.players[this.currPlayer].hasHiredServer(14)){
                     this.players[this.currPlayer].atRoyal--;
                     this.players[this.currPlayer].atMoney++;
                 }
-                this.players[this.currPlayer].updateAlertCanvas(alertContext, 3);
                 console.log("money increase selected");
             } else if(event.offsetX>=375 && event.offsetX<=425 && event.offsetY>=120 && event.offsetY<=140){ // decrease money
                 if(this.players[this.currPlayer].atMoney > 0 && !this.players[this.currPlayer].hasHiredServer(14)){
                     this.players[this.currPlayer].atRoyal++;
                     this.players[this.currPlayer].atMoney--;
                 }
-                this.players[this.currPlayer].updateAlertCanvas(alertContext, 3);
                 console.log("money decrease selected");
             } else if(event.offsetX>=200 && event.offsetX<=300 && event.offsetY>=170 && event.offsetY<=210){ // confirm
                 alertCanvas.style.display = 'none';
@@ -1205,8 +1130,6 @@ class Game{
                 this.players[this.currPlayer].atAction = false;
                 this.players[this.currPlayer].actionFlag = true;
                 this.players[this.currPlayer].atActionBoost = false;
-                this.players[this.currPlayer].checkOpStatus();
-                this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                 console.log("confirm selected");
             }
         } else if(this.players[this.currPlayer].atHireServer){
@@ -1222,21 +1145,14 @@ class Game{
                         this.players[this.currPlayer].atHireServerdiscount.at(-1)++;
                         this.players[this.currPlayer].atActionBoost = true;
                     }
-                    this.players[this.currPlayer].updateAlertCanvas(alertContext, 4);
-                    this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                 }
             } else if(event.offsetX>=200 && event.offsetX<=300 && event.offsetY>=170 && event.offsetY<=210){ // confirm
                 alertCanvas.style.display = 'none';
                 this.players[this.currPlayer].atHireServer = false;
-                this.players[this.currPlayer].serverOnHandHighLightFlag = true;
-                this.players[this.currPlayer].hireFlag++;
                 this.players[this.currPlayer].highlightServerToHire(this.players[this.currPlayer].atHireServerdiscount.at(-1));
-                this.players[this.currPlayer].updateServerCanvas(serverContext);
                 this.players[this.currPlayer].atAction = false;
                 this.players[this.currPlayer].actionFlag = true;
                 this.players[this.currPlayer].atActionBoost = false;
-                this.players[this.currPlayer].checkOpStatus();
-                this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                 console.log("confirm selected");
             }
             
@@ -1245,13 +1161,11 @@ class Game{
                 if(this.players[this.currPlayer].atMirrorDice < 6){
                     this.players[this.currPlayer].atMirrorDice++;
                 }
-                this.players[this.currPlayer].updateAlertCanvas(alertContext, 5);
                 console.log("brown increase selected");
             } else if(event.offsetX>=225 && event.offsetX<=275 && event.offsetY>=120 && event.offsetY<=140){ // decrease dice
                 if(this.players[this.currPlayer].atMirrorDice > 1){
                     this.players[this.currPlayer].atMirrorDice--;
                 }
-                this.players[this.currPlayer].updateAlertCanvas(alertContext, 5);
                 console.log("brown decrease selected");
             } else if(event.offsetX>=200 && event.offsetX<=300 && event.offsetY>=170 && event.offsetY<=210){ // confirm
                 alertCanvas.style.display = 'none';
@@ -1265,11 +1179,10 @@ class Game{
                 }
                 this.players[this.currPlayer].atAction = false;
                 this.players[this.currPlayer].atActionBoost = false;
-                this.players[this.currPlayer].checkOpStatus();
-                this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
                 console.log("confirm selected");
             }
         }
+        this.updateAllCanvas();
     }
 
     handleServerClick(event) {
@@ -1278,42 +1191,37 @@ class Game{
         if(event.offsetX>=0 && event.offsetX<=25 && event.offsetY>=80 && event.offsetY<=130 && this.players[this.currPlayer].serverOnHandCanvasIdx>0){
             console.log("sever on hand left roll clicked");
             this.players[this.currPlayer].serverOnHandCanvasIdx--;
-            this.players[this.currPlayer].updateServerCanvas(serverContext);
         } // right roll
         else if(event.offsetX>=615 && event.offsetX<=640 && event.offsetY>=80 && event.offsetY<=130 && this.players[this.currPlayer].serverOnHandCanvasIdx<(this.players[this.currPlayer].numServerOnHand-3)) {
             console.log("sever on hand right roll clicked");
             this.players[this.currPlayer].serverOnHandCanvasIdx++;
-            this.players[this.currPlayer].updateServerCanvas(serverContext);
         } // server hire
         else{
             for(let i=0; i<3; i++){
                 if(this.players[this.currPlayer].serverOnHandCanvasIdx + i < this.players[this.currPlayer].numServerOnHand){
                     const serverIdx = this.players[this.currPlayer].serverOnHandCanvasIdx + i;
                     if(event.offsetX>=(65+170*i) && event.offsetX<=(225+170*i) && event.offsetY>=35 && event.offsetY<=275 && 
-                        this.players[this.currPlayer].hireFlag && this.players[this.currPlayer].serverOnHandHighLight[serverIdx]){
+                        this.players[this.currPlayer].hireNum && this.players[this.currPlayer].serverOnHandHighLight[serverIdx]){
                         console.log("hire server " + serverIdx);
                         if(this.players[this.currPlayer].serverOnHand[serverIdx].serverCost > this.players[this.currPlayer].atHireServerdiscount.at(-1)) {
                             this.players[this.currPlayer].money -= (this.players[this.currPlayer].serverOnHand[serverIdx].serverCost - this.players[this.currPlayer].atHireServerdiscount.at(-1));
                             this.players[this.currPlayer].atHireServerdiscount.pop();
                         }
-                        this.players[this.currPlayer].hireFlag--;
+                        this.players[this.currPlayer].hireNum--;
                         this.players[this.currPlayer].hireServer(serverIdx);
                         if(this.players[this.currPlayer].hireLimitLastThree){ // draw 3 hire 1 senario, put back the reset
                             this.serverDeck.push(this.players[this.currPlayer].serverOnHand.pop());
                             this.serverDeck.push(this.players[this.currPlayer].serverOnHand.pop());
                             this.shuffleDeck(this.serverDeck);
                         }
-                        if(this.players[this.currPlayer].hireFlag==0){
+                        if(this.players[this.currPlayer].hireNum==0){
                             this.players[this.currPlayer].serverOnHandHighLightFlag = false;
-                            this.players[this.currPlayer].highlightServerToHire(this.players[this.currPlayer].atHireServerdiscount.at(-1));
                         }
-                        this.players[this.currPlayer].updatePlayerCanvas(this.players[this.currPlayer].context);
-                        this.players[this.currPlayer].updateServerCanvas(serverContext);
-                        this.players[this.currPlayer].hotel.updateHotelCanvas(hotelContext);
                     }
                 }
             }
         }
+        this.updateAllCanvas();
     }
     // ========================================click handle==============================================
 }

@@ -410,7 +410,7 @@ const serverCostByID = [
 ];
 
 // TODO
-// [25, 41]
+// [25]
 // onwork: 
 const serverTypeByID = [
     0, 0, 0, 0, 2,

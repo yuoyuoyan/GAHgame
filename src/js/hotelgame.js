@@ -19,7 +19,8 @@ player3Canvas.addEventListener("click", handlePlayer3ClickWrap);
 
 function gameOn() {
     // debug
-    // game.players[0].updateAlertCanvas(alertContext, 4);
+    // game.alertType = 4;
+    // game.players[0].updateAlertCanvas(alertContext);
     // skip the first guest round
     if(skipPrepare) {
         for(let i=0; i<4; i++){
@@ -33,8 +34,6 @@ function gameOn() {
             game.players[game.currPlayer].hotel.firstThreeRoom = false;
             game.players[game.currPlayer].hotel.roomHighLightFlag = false;
             game.players[game.currPlayer].checkOpStatus();
-            // add something special
-            // game.players[game.currPlayer].addServerToHand(26);
         }
         game.rollDice();
         game.currPlayer = 0;
@@ -68,7 +67,8 @@ function gameOn() {
             game.players[game.currPlayer].hotel.satisfyGuest(1);
             // test alert canvas
             // game.players[game.currPlayer].atSelectFood = 2;
-            // game.players[game.currPlayer].updateAlertCanvas(alertContext, 6);
+            // game.alertType = 6;
+            // game.players[game.currPlayer].updateAlertCanvas(alertContext);
         }
     }
     
