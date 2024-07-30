@@ -35,14 +35,14 @@ class Hotel{
         this.atSelectUnSatisfiedGuest = false; // assert it to select unsatisfied guest from table
     }
 
-    highlightRoomToLose(isMaxLevel=false, isNextMaxLevel=false, updateOnly=false) {
+    highlightRoomToLose(isMaxLevel=false, isNextMaxLevel=false, updateOnly=false, occupiedRoom=true) {
         if(!updateOnly){ // click handle need to update highlight without increase number
             this.roomToLose++;
             this.roomHighLightFlag = true;
         }
         for(let floor=0; floor<4; floor++){
             for(let col=0; col<5; col++){
-                if((this.roomStatus[floor][col] == 1) && // occupied room
+                if((this.roomStatus[floor][col] == (occupiedRoom ? 1 : 0)) && // occupied room or prepared room
                     (isMaxLevel && floor==this.maxLevel) || // room at max level
                     (isNextMaxLevel && floor==Math.max(0,this.maxLevel-1)) ) {
                     this.roomHighLight[floor][col] = 1;
@@ -120,6 +120,12 @@ class Hotel{
         }
         this.roomStatus[floor][col] = 0;
         this.roomPreparedNum++;
+        // bonus game point at the upright corner
+        if(floor==2 && col>=3){
+            this.game.players[this.game.currPlayer].gainGamePoint(1);
+        } else if(floor==3 && col>=2){
+            this.game.players[this.game.currPlayer].gainGamePoint(2);
+        }
         // check major task A3
         // 准备/入住12个房间
         if(this.game.majorTask0==3 && (this.roomPreparedNum + this.roomClosedNum) >= 12){

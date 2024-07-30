@@ -13,8 +13,9 @@ class Player{
             case 3: this.canvas = player3Canvas; this.context = player3Context; this.markerColor = "grey";   /*console.log("link to canvas 3");*/ break;
         }
         this.endFlag = false; // game class wait for this flag to go to next turn
-        this.royalResult = [-1, -1, -1]; // punish 0 reward 1 notyet -1
+        this.royalResult = -1; // punish 0 reward 1 nothing 2 notyet -1
         this.royalResultPending = false;
+        this.royalResultFinish = false;
         this.miniTurn = [-1, -1];
         this.diceTaken = [-1, -1];
         this.firstGuestTurn = true; // whether at the first-guest-picking turn
@@ -49,6 +50,7 @@ class Player{
         this.actionFlag = false; // whether already took dice this turn
         this.hireNum = 0;
         this.hireLimitLastThree = false; // only used at draw 3 and hire 1
+        this.royalPunishSelection = 0;
         this.loseServerNum = 0;
         this.serveFoodNum = 0;
         this.specialRound = false;
@@ -90,7 +92,7 @@ class Player{
         if(this.game.royalRound) this.opCheckout = false;
         // first guest round, need to invite a guest and prepare 3 rooms
         if(this.game.royalRound) {
-            this.opEnd = !this.royalResultPending;
+            this.opEnd = this.royalResultFinish;
         } else {
             this.opEnd = this.firstGuestTurn ? (this.inviteFlag && (this.hotel.roomPreparedNum == 3)) : this.actionFlag;
         }
@@ -187,6 +189,88 @@ class Player{
                 this.serverOnHandHighLight[i] = (this.money >= (discount + this.serverOnHand[i].serverCost)) ? 1 : 0;
             }
         }
+    }
+
+    royalResultExecute() { // execute royal task result after selection, only happens to punishment
+        if(this.royalPunishSelection == 2) { // Pay 1 to neglicate the punishment
+            this.loseMoney(1);
+        } else if(this.players[i].royalResult==0) { // punishment
+            switch(this.game.mainRound){
+                case 2: 
+                    switch(this.game.royalTask0){
+                        case 0:
+                        if(this.royalPunishSelection==0) {
+                            this.loseMoney(3);
+                        } else if(this.royalPunishSelection==1) {
+                            this.loseGamePoint(5);
+                        }
+                        break; // 失去3块钱或5游戏点数
+                        case 1: this.clearKitchen(); 
+                        break; // 失去厨房全部食物
+                        case 2:
+                        if(this.royalPunishSelection==0) {
+                            this.highlightServerToLose(2);
+                        } else if(this.royalPunishSelection==1) {
+                            this.loseGamePoint(5);
+                        }
+                        break; // 丢弃2张员工手牌或失去5游戏点数
+                        case 3:
+                        if(this.royalPunishSelection==0) {
+                            this.highlightRoomToLose(true, false, false, false);
+                        } else if(this.royalPunishSelection==1) {
+                            this.loseGamePoint(5);
+                        }
+                        break; // 失去最高的准备好的房间或失去5游戏点数
+                    }
+                    break;
+                case 4:
+                    switch(this.game.royalTask1){
+                        case 0: this.players[i].clearGuestTable(); this.players[i].clearKitchen(); 
+                        break; // 失去厨房和客桌上的全部食物
+                        case 1:
+                        if(this.royalPunishSelection==0) {
+                            this.loseMoney(5);
+                        } else if(this.royalPunishSelection==1) {
+                            this.loseGamePoint(7);
+                        }
+                        break; // 失去5块钱或失去7游戏点数
+                        case 2:
+                        if(this.royalPunishSelection==0) {
+                            this.highlightServerToLose(3);
+                        } else if(this.royalPunishSelection==1) {
+                            this.loseGamePoint(7);
+                        }
+                        break; // 丢弃3张员工手牌或失去7游戏点数
+                        case 3:
+                        if(this.royalPunishSelection==0) {
+                            this.highlightRoomToLose(true, false, false, false); this.highlightRoomToLose(true, false, false, false);
+                        } else if(this.royalPunishSelection==1) {
+                            this.loseGamePoint(7);
+                        }
+                        break; // 失去最高的准备好的2个房间或失去7游戏点数
+                    }
+                    break;
+                case 6:
+                    switch(this.game.royalTask2){
+                        case 0: this.players[i].loseGamePoint(8);
+                        break; // 失去8游戏点数
+                        case 1: this.players[i].hotel.highlightRoomToLose(true, false, false); this.players[i].hotel.highlightRoomToLose(true, false, false);
+                        break; // 失去最高层和次高层各1个已入住房间
+                        case 2: this.players[i].loseGamePoint(2*this.players[i].numServerHired);
+                        break; // 每个已雇佣员工失去2游戏点数
+                        case 3:
+                        if(this.royalPunishSelection==0) {
+                            // TODO
+                            this.highlightHiredServerToLose(1);
+                        } else if(this.royalPunishSelection==1) {
+                            this.loseGamePoint(10);
+                        }
+                        break; // 失去1位已雇佣员工（终局结算优先）或失去10游戏点数
+                    }
+                    break;
+            }
+        }
+        // this.royalResultFinish = true;
     }
 
     setMiniTurn(turn0, turn1) {
@@ -774,7 +858,7 @@ class Player{
             if(this.atActionBoost){ // draw a mark if boost is selected
                 this.markCanvas(context, 80, 110, 90, 120, 100, 100);
             }
-            context.drawImage(roomRedPreparedImg, 140, 90, 50, 50);
+            context.drawImage(roomPreparedTokenImg, 140, 90, 50, 50);
             this.textCanvas(context, this.atRoomToPrepare.toString(), 200, 120);
             this.triangleCanvas(context, 225, 110, 250, 90, 275, 110);
             this.triangleCanvas(context, 225, 120, 250, 140, 275, 120);
@@ -859,18 +943,45 @@ class Player{
             this.textCanvas(context, "确定", 228, 200);
             break;
             case 7: // pick royal task result
-            // TODO
-            var img0, img1;
-            if(this.game.mainRound==2 && this.game.royalTask0==0 && this.royalResult[0]==0) { //失去3块钱或5游戏点数
-                img0 = moneyImg; img1 = gamePointTokenImg;
-            } else if(this.game.mainRound==2 && this.game.royalTask0==3 && this.royalResult[0]==0) { //失去最高的准备好的房间或失去5游戏点数
-                img0 = roomRedPreparedImg; img1 = gamePointTokenImg;
-            } else if(this.game.mainRound==4 && this.game.royalTask0==1 && this.royalResult[0]==0) { //失去5块钱或失去7游戏点数
-                ;
+            var img0, img1, text0, text1;
+            if(this.game.mainRound==2 && this.royalResult[0]==0) {
+                switch(this.game.royalTask0){
+                    case 0: img0 = moneyImg; img1 = gamePointTokenImg; text0 = "失去3块钱"; text1 = "失去5游戏点数"; break;
+                    case 1: img0 = brownImg; img1 = null; text0 = "失去厨房全部食物"; text1 = null; break;
+                    case 2: img0 = serverTokenImg; img1 = gamePointTokenImg; text0 = "丢弃2张员工手牌"; text1 = "失去5游戏点数"; break;
+                    case 3: img0 = roomPreparedTokenImg; img1 = gamePointTokenImg; text0 = "失去最高的准备好的房间"; text1 = "失去5游戏点数"; break
+                }
+            } else if(this.game.mainRound==4 && this.royalResult[1]==0) {
+                switch(this.game.royalTask1){
+                    case 0: img0 = brownImg; img1 = null; text0 = "失去厨房和客桌上的全部食物"; text1 = null; break;
+                    case 1: img0 = moneyImg; img1 = gamePointTokenImg; text0 = "失去5块钱"; text1 = "失去7游戏点数"; break;
+                    case 2: img0 = serverTokenImg; img1 = gamePointTokenImg; text0 = "丢弃3张员工手牌"; text1 = "失去7游戏点数"; break;
+                    case 3: img0 = roomClosedTokenImg; img1 = gamePointTokenImg; text0 = "失去最高和次高的已入住的2个房间"; text1 = "失去7游戏点数"; break;
+                }
+            } else if(this.game.mainRound==6 && this.royalResult[2]==0) {
+                switch(this.game.royalTask2){
+                    case 0: img0 = gamePointTokenImg; img1 = null; text0 = "失去8游戏点数"; text1 = null; break;
+                    case 1: img0 = roomClosedTokenImg; img1 = null; text0 = "失去最高层和次高层各1个已入住房间"; text1 = null; break;
+                    case 2: img0 = serverTokenImg; img1 = null; text0 = "每个已雇佣员工失去2游戏点数"; text1 = null; break;
+                    case 3: img0 = serverTokenImg; img1 = gamePointTokenImg; text0 = "失去1位已雇佣员工（终局结算优先）"; text1 = "失去10游戏点数"; break;
+                }
             }
-            //丢弃3张员工手牌或失去7游戏点数
-            //失去最高的已入住的2个房间或失去7游戏点数
-            context.drawImage(brownImg, 100, 25, 30, 30);
+            context.drawImage(img0, 50, 30, 50, 40);
+            this.textCanvas(context, text0, 150, 60);
+            if(img1!=null){
+                context.drawImage(img1, 50, 100, 40, 50);
+                this.textCanvas(context, text1, 150, 130);
+            }
+            if(this.hasHiredServer(25)){
+                context.drawImage(moneyImg, 50, 170, 50, 40);
+                this.textCanvas(context, "支付1块钱替代皇家任务惩罚", 150, 200);
+            }
+            this.markCanvas(context, 70, 40+70*this.royalPunishSelection, 90, 60+70*this.royalPunishSelection, 110, 20+70*this.royalPunishSelection);
+            context.fillStyle = 'white';
+            context.strokeStyle = 'black';
+            context.strokeRect(350, 100, 100, 40);
+            context.fillRect(350, 100, 100, 40);
+            this.textCanvas(context, "确定", 378, 130);
             break;
         }
     }

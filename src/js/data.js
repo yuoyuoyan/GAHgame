@@ -177,6 +177,9 @@ const roomBluePreparedImg = document.getElementById("roomBluePreparedImg");
 const roomBlueClosedImg = document.getElementById("roomBlueClosedImg");
 const roomYellowPreparedImg = document.getElementById("roomYellowPreparedImg");
 const roomYellowClosedImg = document.getElementById("roomYellowClosedImg");
+const roomPreparedTokenImg = document.getElementById("roomPreparedTokenImg");
+const roomClosedTokenImg = document.getElementById("roomClosedTokenImg");
+const serverTokenImg = document.getElementById("serverTokenImg");
 const tableImg = document.getElementById("tableImg");
 
 // major task data
@@ -203,7 +206,7 @@ const royalTaskDescription = [
     ["获得4种食物各1份/失去厨房和客桌上的全部食物", 
     "获得5块钱/失去5块钱或失去7游戏点数", 
     "抽3员工打1免费返还剩余/丢弃3张员工手牌或失去7游戏点数", 
-    "2层以内免费准备2个房间/失去最高的已入住的2个房间或失去7游戏点数"],
+    "2层以内免费准备2个房间/失去最高的准备好的2个房间或失去7游戏点数"],
     ["获得8游戏点数/失去8游戏点数", 
     "免费准备1个房间并入住/失去最高层和次高层各1个已入住房间", 
     "每个已雇佣员工获得2游戏点数/每个已雇佣员工失去2游戏点数", 

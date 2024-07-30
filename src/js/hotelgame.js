@@ -1,6 +1,6 @@
 var playerNames = JSON.parse(decodeURIComponent(document.cookie));
 const skipPrepare = 1;
-const debugState = 0;
+const debugState = 1;
 
 // init game info and draw background
 window.onload = gameOn;
@@ -59,16 +59,24 @@ function gameOn() {
             // const finalServerID = [26, 27, 28, 29, 30, 31, 33, 36, 39, 40, 45, 46, 47];
             // game.players[1].serverHired.push(new Server(45));
             // game.players[2].serverHired.push(new Server(46));
-            // game.players[game.currPlayer].serverHired.push(new Server(32));
-            // game.players[game.currPlayer].numServerHired = 1;
+            game.players[game.currPlayer].serverHired.push(new Server(25));
+            game.players[game.currPlayer].numServerHired = 1;
             // game.players[game.currPlayer].calculateFinalGamePoint();
             // test guest bonus
-            game.players[game.currPlayer].hotel.addGuestToTable(25);
-            game.players[game.currPlayer].hotel.satisfyGuest(1);
+            // game.players[game.currPlayer].hotel.addGuestToTable(25);
+            // game.players[game.currPlayer].hotel.satisfyGuest(1);
             // test alert canvas
             // game.players[game.currPlayer].atSelectFood = 2;
-            // game.alertType = 6;
+            // game.alertType = 7;
             // game.players[game.currPlayer].updateAlertCanvas(alertContext);
+            // test royal task
+            game.alertType = 7;
+            game.mainRound = 6;
+            game.royalTask0 = 1;
+            game.royalTask1 = 3;
+            game.royalTask2 = 3;
+            game.players[game.currPlayer].royalResult = 0;
+            game.players[game.currPlayer].updateAlertCanvas(alertContext);
         }
     }
     

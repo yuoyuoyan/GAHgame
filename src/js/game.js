@@ -194,7 +194,6 @@ class Game{
     }
 
     royalResult() { // handle royal tasks
-        // TODO
         // some reward and punishment need selection
         // set flag to show alert canvas when needed, and return it
         const i = this.currPlayer;
@@ -296,6 +295,9 @@ class Game{
                     break;
             }
         }
+        // no reward or punishment
+        this.players[i].royalResult = 2;
+        return false;
     }
 
     gameEnd() {
@@ -1218,6 +1220,25 @@ class Game{
                 this.players[this.currPlayer].atActionBoost = false;
                 console.log("confirm selected");
             }
+        } else if(this.players[this.currPlayer].royalResultPending){ // royal punishment selection
+            if(event.offsetX>=50 && event.offsetX<=100 && event.offsetY>=30 && event.offsetY<=70){
+                this.players[this.currPlayer].royalPunishSelection = 0;
+            } else if(event.offsetX>=50 && event.offsetX<=100 && event.offsetY>=100 && event.offsetY<=150){
+                if( (this.mainRound==2 && this.royalTask0==1) || (this.mainRound==4 && this.royalTask1==0 ) || (this.mainRound==6 && (this.royalTask2==0 || this.royalTask2==1 || this.royalTask2==2)) ){
+                    console.log("No this option in this royal task");
+                } else {
+                    this.players[this.currPlayer].royalPunishSelection = 1;
+                }
+            } else if(event.offsetX>=50 && event.offsetX<=100 && event.offsetY>=170 && event.offsetY<=210){
+                if(this.players[this.currPlayer].hasHiredServer(25) && this.players[this.currPlayer].hasMoney(1)){
+                    this.players[this.currPlayer].royalPunishSelection = 2;
+                }
+            } else if(event.offsetX>=350 && event.offsetX<=450 && event.offsetY>=100 && event.offsetY<=140){
+                alertCanvas.style.display = 'none';
+                this.players[this.currPlayer].royalResultPending = false;
+                this.players[this.currPlayer].royalResultExecute();
+                console.log("confirm selected");
+            }
         }
         this.updateAllCanvas();
     }
@@ -1232,7 +1253,7 @@ class Game{
         else if(event.offsetX>=615 && event.offsetX<=640 && event.offsetY>=80 && event.offsetY<=130 && this.players[this.currPlayer].serverOnHandCanvasIdx<(this.players[this.currPlayer].numServerOnHand-3)) {
             console.log("sever on hand right roll clicked");
             this.players[this.currPlayer].serverOnHandCanvasIdx++;
-        } // server hire
+        } // server hire or lose
         else{
             for(let i=0; i<3; i++){
                 if(this.players[this.currPlayer].serverOnHandCanvasIdx + i < this.players[this.currPlayer].numServerOnHand){
