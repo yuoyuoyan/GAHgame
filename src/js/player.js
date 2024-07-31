@@ -1238,7 +1238,7 @@ class Player{
         context.drawImage(gamePointTokenImg, gamePointXoffset, gamePointYoffset, gamePointWidth, gamePointHeigh);
         gamePointXoffset += 30;
         gamePointYoffset = 30;
-        var gamePointText = this.gamePoint + " (" + (this.gamePoint+this.calculateFinalGamePoint()) + ")";
+        var gamePointText = this.gamePoint + " (" + (this.gamePoint+(this.game.gameOver?0:this.calculateFinalGamePoint())) + ")";
         this.textCanvas(context, gamePointText, gamePointXoffset, gamePointYoffset);
 
         // royal point
@@ -1393,7 +1393,7 @@ class Player{
     // ========================================click handle==============================================
     handlePlayerClick(event) {
         // check if this event is invite
-        if(event.offsetX >= 702 && event.offsetX <= 742 && event.offsetY >= 10 && event.offsetY <= 30){
+        if(event.offsetX >= 712 && event.offsetX <= 752 && event.offsetY >= 10 && event.offsetY <= 30){
             console.log("Invite button pressed");
             if(this.opInvite){
                 // disable all 
@@ -1409,7 +1409,7 @@ class Player{
         }
 
         // check if this event is action
-        if(event.offsetX >= 747 && event.offsetX <= 787 && event.offsetY >= 10 && event.offsetY <= 30){
+        if(event.offsetX >= 757 && event.offsetX <= 797 && event.offsetY >= 10 && event.offsetY <= 30){
             console.log("Action button pressed");
             if(this.opAction){
                 // disable all
@@ -1425,7 +1425,7 @@ class Player{
         }
 
         // check if this event is serve
-        if(event.offsetX >= 792 && event.offsetX <= 832 && event.offsetY >= 10 && event.offsetY <= 30){
+        if(event.offsetX >= 802 && event.offsetX <= 842 && event.offsetY >= 10 && event.offsetY <= 30){
             console.log("Serve button pressed");
             if(this.opServe){
                 // no need to disable other options
@@ -1438,7 +1438,7 @@ class Player{
         }
 
         // check if this event is checkout
-        if(event.offsetX >= 837 && event.offsetX <= 877 && event.offsetY >= 10 && event.offsetY <= 30){
+        if(event.offsetX >= 847 && event.offsetX <= 887 && event.offsetY >= 10 && event.offsetY <= 30){
             console.log("Checkout button pressed");
             if(this.opCheckout){
                 // disable all
@@ -1449,7 +1449,7 @@ class Player{
         }
 
         // check if this event is end
-        if(event.offsetX >= 882 && event.offsetX <= 922 && event.offsetY >= 10 && event.offsetY <= 30){
+        if(event.offsetX >= 892 && event.offsetX <= 932 && event.offsetY >= 10 && event.offsetY <= 30){
             console.log("End button pressed");
             if(this.opEnd){
                 this.endFlag = true;

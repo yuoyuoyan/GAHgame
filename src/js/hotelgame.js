@@ -29,7 +29,7 @@ player3Canvas.addEventListener("click", handlePlayer3ClickWrap);
 function gameOn() {
     // skip the first guest round
     if(skipPrepare) {
-        for(let i=0; i<4; i++){
+        for(let i=0; i<game.playerNumber; i++){
             game.currPlayer = i;
             game.players[game.currPlayer].firstGuestTurn = false;
             game.players[game.currPlayer].hotel.addGuestToTable(game.guestInQueue[4]);
@@ -50,25 +50,25 @@ function gameOn() {
             // game.majorTask1 = 0;
             // game.majorTask2 = 0;
             // test royal task
-            game.mainRound = 2;
-            game.miniRound = 7;
+            game.mainRound = 6;
+            game.miniRound = 2*game.playerNumber-1;
             game.currPlayer = 0;
-            game.royalTask0 = 3;
+            game.royalTask0 = 0;
             game.royalTask1 = 0;
-            game.royalTask2 = 0;
-            game.players[game.currPlayer].royalPoint = 3;
+            game.royalTask2 = 3;
+            game.players[game.currPlayer].royalPoint = 10;
             game.players[game.currPlayer].gamePoint = 20;
             // game.players[game.currPlayer].royalResult = 0;
             // game.players[game.currPlayer].updateAlertCanvas(alertContext);
             // test room closure and bonus
-            // game.players[game.currPlayer].hotel.roomPrepare(0,3);
-            // game.players[game.currPlayer].hotel.roomPrepare(0,4);
-            // game.players[game.currPlayer].hotel.roomPrepare(1,0);
-            // game.players[game.currPlayer].hotel.roomPrepare(1,1);
+            game.players[game.currPlayer].hotel.roomPrepare(0,3);
+            game.players[game.currPlayer].hotel.roomPrepare(0,4);
+            game.players[game.currPlayer].hotel.roomPrepare(1,0);
+            game.players[game.currPlayer].hotel.roomPrepare(1,1);
             // game.players[game.currPlayer].hotel.roomPrepare(1,2);
             // game.players[game.currPlayer].hotel.roomPrepare(1,3);
             // game.players[game.currPlayer].hotel.roomPrepare(1,4);
-            // game.players[game.currPlayer].hotel.roomPrepare(2,0);
+            game.players[game.currPlayer].hotel.roomPrepare(2,0);
             // game.players[game.currPlayer].hotel.roomPrepare(2,1);
             // game.players[game.currPlayer].hotel.roomPrepare(2,2);
             // game.players[game.currPlayer].hotel.roomPrepare(2,3);
@@ -76,9 +76,9 @@ function gameOn() {
             // game.players[game.currPlayer].hotel.roomPrepare(3,0);
             // game.players[game.currPlayer].hotel.roomPrepare(3,1);
             // game.players[game.currPlayer].hotel.roomPrepare(3,4);
-            // game.players[game.currPlayer].hotel.roomClose(0,0);
-            // game.players[game.currPlayer].hotel.roomClose(0,1);
-            // game.players[game.currPlayer].hotel.roomClose(0,2);
+            game.players[game.currPlayer].hotel.roomClose(0,0);
+            game.players[game.currPlayer].hotel.roomClose(0,1);
+            game.players[game.currPlayer].hotel.roomClose(0,2);
             // game.players[game.currPlayer].hotel.roomClose(0,3);
             // game.players[game.currPlayer].hotel.roomClose(0,4);
             // game.players[game.currPlayer].hotel.roomClose(1,0);
@@ -99,8 +99,8 @@ function gameOn() {
             //     game.players[game.currPlayer].hireServer(0);
             // }
             // TODO: 25, 41
-            // game.players[game.currPlayer].addServerToHandDebug(47);
-            // game.players[game.currPlayer].hireServer(game.players[game.currPlayer].numServerOnHand-1);
+            game.players[game.currPlayer].addServerToHandDebug(47);
+            game.players[game.currPlayer].hireServer(game.players[game.currPlayer].numServerOnHand-1);
             // test guest bonus
             // game.players[game.currPlayer].hotel.addGuestToTable(57);
             // game.players[game.currPlayer].hotel.satisfyGuest(1);

@@ -6,6 +6,8 @@ class Game{
         this.playerNumber = playerNumber;
         // console.log("number of player: " + this.playerNumber);
         this.playerName = playerName;
+        this.gameOver = false;
+        this.winner = -1;
         this.standardHotel = standardHotel;
         this.diceNumber = playerNumber * 2 + 6;
         // console.log("number of dice: " + this.diceNumber);
@@ -164,9 +166,11 @@ class Game{
             }
 
             if(this.mainRound == 6) { // end of entire game
-                this.players[this.currPlayer].moveAllBufToKitchen();
+                this.currPlayer = 0;
                 this.gameEnd();
+                this.updateAllCanvas();
                 window.alert("游戏结束!" + this.players[this.winner].playerName + "获胜!");
+                return;
             } else { // go to next main round
                 this.royalRound = false;
                 // roll the mini round sequence
@@ -319,9 +323,12 @@ class Game{
                         return false; // 获得4种食物各1份/失去厨房和客桌上的全部食物
                         case 1: this.players[i].gainMoney(5);
                         return false; // 获得5块钱/失去5块钱或失去7游戏点数
-                        case 2: this.players[i].highlightServerToHire(3, true); this.players[i].royalResultFinish = false;
+                        case 2: 
+                        this.players[i].highlightServerToHire(3, true); 
+                        this.players[i].royalResultFinish = false;
+                        this.players[i].royalResultPending = true; 
                         return true; // 抽3员工打1免费返还剩余/丢弃3张员工手牌或失去7游戏点数
-                        case 3: this.players[i].hotel.highlightRoomToPrepare(this.money, 5, 1); this.players[i].royalResultFinish = false;
+                        case 3: this.players[i].hotel.highlightRoomToPrepare(this.players[i].money, 5, 1); this.players[i].royalResultFinish = false;
                         return true; // 2层以内免费准备2个房间/失去最高的准备好的2个房间或失去7游戏点数
                     }
                     break;
@@ -329,7 +336,7 @@ class Game{
                     switch(this.royalTask2){
                         case 0: this.players[i].gainGamePoint(8);
                         return false; // 获得8游戏点数/失去8游戏点数
-                        case 1: this.players[i].hotel.highlightRoomToPrepare(this.money, 5, 1); this.players[i].hotel.highlightRoomToCheckout(true, 1); this.players[i].royalResultFinish = false;
+                        case 1: this.players[i].hotel.highlightRoomToPrepare(this.players[i].money, 5); this.players[i].royalResultPending = true;  this.players[i].royalResultFinish = false;
                         return true; // 免费准备1个房间并入住/失去最高层和次高层各1个已入住房间
                         case 2: this.players[i].gainGamePoint(2*this.players[i].numServerHired);
                         return false; // 每个已雇佣员工获得2游戏点数/每个已雇佣员工失去2游戏点数
@@ -345,8 +352,15 @@ class Game{
     }
 
     gameEnd() {
+        // find the winner
+        var highestPoint = -1;
+        this.gameOver = true;
         for(let i=0; i<this.playerNumber; i++){
             this.players[i].gainGamePoint( this.players[i].calculateFinalGamePoint() );
+            if(this.players[i].gamePoint >= highestPoint) {
+                highestPoint = this.players[i].gamePoint;
+                this.winner = i;
+            }
         }
     }
 
@@ -830,7 +844,12 @@ class Game{
                     } else if(this.players[this.currPlayer].hotel.roomToPrepare>0 && this.players[this.currPlayer].hotel.roomHighLight[floor][col]){
                         console.log("prepare room at floor " + floor + " col " + col);
                         // prepare selected room, check money
-                        this.players[this.currPlayer].hotel.roomPrepare(floor, col);
+                        if(this.players[this.currPlayer].royalResultPending) { // only case is the royal task 1 reward, directly close it
+                            this.players[this.currPlayer].hotel.roomClose(floor, col);
+                            this.players[this.currPlayer].royalResultPending = false;
+                        } else {
+                            this.players[this.currPlayer].hotel.roomPrepare(floor, col);
+                        }
                         if(!((this.players[this.currPlayer].hasHiredServer(8) && this.players[this.currPlayer].hotel.roomColor[floor][col]==2) ||   //免费准备蓝色房间
                             (this.players[this.currPlayer].hasHiredServer(9) && this.players[this.currPlayer].hotel.roomColor[floor][col]==0) ||  //免费准备红色房间
                             (this.players[this.currPlayer].hasHiredServer(10) && this.players[this.currPlayer].hotel.roomColor[floor][col]==1))     //免费准备黄色房间
@@ -844,9 +863,11 @@ class Game{
                         this.players[this.currPlayer].hotel.roomToPrepare--;
                         this.players[this.currPlayer].hotel.roomToPrepareDiscount.pop();
                         if(this.players[this.currPlayer].hotel.roomToPrepare == 0){ // finished rooms
+                            this.players[this.currPlayer].royalResultFinish = true;
                             this.players[this.currPlayer].hotel.roomHighLightFlag = false;
+                        } else {
+                            this.players[this.currPlayer].hotel.highlightRoomToPrepare(this.players[this.currPlayer].money, this.players[this.currPlayer].hotel.roomToPrepareDiscount.at(-1),3,true);
                         }
-                        this.players[this.currPlayer].hotel.highlightRoomToPrepare(this.players[this.currPlayer].money, this.players[this.currPlayer].hotel.roomToPrepareDiscount.at(-1),3,true);
                     } else if(this.players[this.currPlayer].hotel.roomToClose>0 && this.players[this.currPlayer].hotel.roomHighLight[floor][col]){
                         console.log("checkout room at floor " + floor + " col " + col);
                         // close selected room, take guest bonus if any

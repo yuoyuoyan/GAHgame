@@ -32,9 +32,7 @@ class Hotel{
         this.roomToCloseGuestTableID = 0;
         this.roomCloseBonus = false;
         this.maxClosedRoomLevel = -1;
-        this.nextMaxClosedRoomLevel = -1;
         this.maxPreparedRoomLevel = -1;
-        this.nextMaxPreparedRoomLevel = -1;
         this.atSelectSatisfiedGuest = false; // assert it to select satisfied guest from table
         this.atSelectUnSatisfiedGuest = false; // assert it to select unsatisfied guest from table
     }
@@ -49,7 +47,7 @@ class Hotel{
                 if(occupiedRoom) {
                     if((this.roomStatus[floor][col] == 1) &&
                        ((isMaxLevel && floor==this.maxClosedRoomLevel) ||
-                        (isNextMaxLevel && floor==this.nextMaxClosedRoomLevel)) ) {
+                        (isNextMaxLevel && floor==(this.maxClosedRoomLevel-1))) ) {
                         this.roomHighLight[floor][col] = 1;
                         this.roomToLoseType.push(isMaxLevel?0:1);
                     } else {
@@ -58,7 +56,7 @@ class Hotel{
                 } else {
                     if((this.roomStatus[floor][col] == 0) &&
                        ((isMaxLevel && floor==this.maxPreparedRoomLevel) ||
-                        (isNextMaxLevel && floor==this.nextMaxPreparedRoomLevel)) ) {
+                        (isNextMaxLevel && floor==(this.maxPreparedRoomLevel-1))) ) {
                         this.roomHighLight[floor][col] = 1;
                         this.roomToLoseType.push(isMaxLevel?2:3);
                     } else {
@@ -66,6 +64,10 @@ class Hotel{
                     }
                 }
             }
+        }
+        // corner case when no room matches requirement
+        if(this.roomToLoseType.length==0){ 
+            this.game.players[this.game.currPlayer].royalResultFinish = true;
         }
     }
 
@@ -144,28 +146,6 @@ class Hotel{
         }
         // update max level
         this.maxPreparedRoomLevel = Math.max(this.maxPreparedRoomLevel, floor);
-        var nxtFound = false;
-        for(let i=this.maxPreparedRoomLevel-1; i>=0; i--){
-            for(let j=0; j<5; j++){
-                if(this.roomStatus[i][j]==0){
-                    this.nextMaxPreparedRoomLevel = i;
-                    nxtFound = true;
-                    break;
-                }
-            }
-        }
-        if(!nxtFound) {
-            for(let j=0; j<5; j++){
-                if(this.roomStatus[floor][j]==0){
-                    this.nextMaxPreparedRoomLevel = floor;
-                    nxtFound = true;
-                    break;
-                }
-            }
-        }
-        if(!nxtFound) {
-            this.nextMaxPreparedRoomLevel = -1;
-        }
         // check major task A3
         // 准备/入住12个房间
         if(this.game.majorTask0==3 && (this.roomPreparedNum + this.roomClosedNum) >= 12){
@@ -178,7 +158,7 @@ class Hotel{
             return;
         }
 
-        if(this.roomStatus[floor][col] != 0){
+        if(this.roomStatus[floor][col] != 0 && !this.game.players[this.game.currPlayer].royalResultPending){
             return;
         }
 
@@ -196,29 +176,6 @@ class Hotel{
         }
         // update max level
         this.maxClosedRoomLevel = Math.max(this.maxClosedRoomLevel, floor);
-        var nxtFound = false;
-        for(let i=this.maxClosedRoomLevel-1; i>=0; i--){
-            for(let j=0; j<5; j++){
-                if(this.roomStatus[i][j]==1){
-                    this.nextMaxClosedRoomLevel = i;
-                    nxtFound = true;
-                    break;
-                }
-            }
-        }
-        if(!nxtFound) {
-            nxtFound = false;
-            for(let j=0; j<5; j++){
-                if(this.roomStatus[floor][j]==1){
-                    this.nextMaxClosedRoomLevel = floor;
-                    nxtFound = true;
-                    break;
-                }
-            }
-        }
-        if(!nxtFound) {
-            this.nextMaxClosedRoomLevel = -1;
-        }
         // count the closed floors
         this.roomRowClosedNum = 0;
         for(let floor=0; floor<4; floor++){
@@ -316,6 +273,24 @@ class Hotel{
             this.roomPreparedNum--;
         }
         this.roomStatus[floor][col] = -1;
+        
+        // update max level info
+        this.maxPreparedRoomLevel = -1;
+        for(let floor=3; floor>=0; floor--){
+            for(let col=0; col<5; col++){
+                if(this.roomStatus[floor][col] == 0){
+                    this.maxPreparedRoomLevel = Math.max(this.maxPreparedRoomLevel, floor);
+                }
+            }
+        }
+        this.maxClosedRoomLevel = -1;
+        for(let floor=3; floor>=0; floor--){
+            for(let col=0; col<5; col++){
+                if(this.roomStatus[floor][col] == 1){
+                    this.maxClosedRoomLevel = Math.max(this.maxClosedRoomLevel, floor);
+                }
+            }
+        }
     }
 
     areaBonus(floor, col) {
