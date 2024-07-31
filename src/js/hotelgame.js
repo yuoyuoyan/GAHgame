@@ -22,8 +22,8 @@ player3Canvas.addEventListener("click", handlePlayer3ClickWrap);
 // 2. all actions, done
 // 3. room bonus, done
 // 4. major tasks, done
-// 5. all servers
-// 6. all guests
+// 5. all servers, done
+// 6. all guests, done
 // 7. royal tasks
 
 function gameOn() {
@@ -50,11 +50,14 @@ function gameOn() {
             // game.majorTask1 = 0;
             // game.majorTask2 = 0;
             // test royal task
-            // game.alertType = 7;
-            // game.mainRound = 6;
-            // game.royalTask0 = 1;
-            // game.royalTask1 = 3;
-            // game.royalTask2 = 3;
+            game.mainRound = 2;
+            game.miniRound = 7;
+            game.currPlayer = 0;
+            game.royalTask0 = 3;
+            game.royalTask1 = 0;
+            game.royalTask2 = 0;
+            game.players[game.currPlayer].royalPoint = 3;
+            game.players[game.currPlayer].gamePoint = 20;
             // game.players[game.currPlayer].royalResult = 0;
             // game.players[game.currPlayer].updateAlertCanvas(alertContext);
             // test room closure and bonus
@@ -99,7 +102,7 @@ function gameOn() {
             // game.players[game.currPlayer].addServerToHandDebug(47);
             // game.players[game.currPlayer].hireServer(game.players[game.currPlayer].numServerOnHand-1);
             // test guest bonus
-            // game.players[game.currPlayer].hotel.addGuestToTable(25);
+            // game.players[game.currPlayer].hotel.addGuestToTable(57);
             // game.players[game.currPlayer].hotel.satisfyGuest(1);
             // test alert canvas
             // game.players[game.currPlayer].atSelectFood = 2;

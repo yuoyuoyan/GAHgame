@@ -17,7 +17,6 @@ class Hotel{
         this.roomRedClosedNum = 0;
         this.roomYellowClosedNum = 0;
         this.roomBlueClosedNum = 0;
-        this.roomMaxFloor = -1;
         this.roomHighLightFlag = true;
         this.roomHighLight = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]];
         this.numGuestOnTable = 0;
@@ -32,6 +31,10 @@ class Hotel{
         this.roomToCloseGuestID = 0;
         this.roomToCloseGuestTableID = 0;
         this.roomCloseBonus = false;
+        this.maxClosedRoomLevel = -1;
+        this.nextMaxClosedRoomLevel = -1;
+        this.maxPreparedRoomLevel = -1;
+        this.nextMaxPreparedRoomLevel = -1;
         this.atSelectSatisfiedGuest = false; // assert it to select satisfied guest from table
         this.atSelectUnSatisfiedGuest = false; // assert it to select unsatisfied guest from table
     }
@@ -43,13 +46,24 @@ class Hotel{
         }
         for(let floor=0; floor<4; floor++){
             for(let col=0; col<5; col++){
-                if((this.roomStatus[floor][col] == (occupiedRoom ? 1 : 0)) && // occupied room or prepared room
-                    (isMaxLevel && floor==this.maxLevel) || // room at max level
-                    (isNextMaxLevel && floor==Math.max(0,this.maxLevel-1)) ) {
-                    this.roomHighLight[floor][col] = 1;
-                    this.roomToLoseType.push(occupiedRoom?(isMaxLevel?0:1):(isMaxLevel?2:3));
+                if(occupiedRoom) {
+                    if((this.roomStatus[floor][col] == 1) &&
+                       ((isMaxLevel && floor==this.maxClosedRoomLevel) ||
+                        (isNextMaxLevel && floor==this.nextMaxClosedRoomLevel)) ) {
+                        this.roomHighLight[floor][col] = 1;
+                        this.roomToLoseType.push(isMaxLevel?0:1);
+                    } else {
+                        this.roomHighLight[floor][col] = 0;
+                    }
                 } else {
-                    this.roomHighLight[floor][col] = 0;
+                    if((this.roomStatus[floor][col] == 0) &&
+                       ((isMaxLevel && floor==this.maxPreparedRoomLevel) ||
+                        (isNextMaxLevel && floor==this.nextMaxPreparedRoomLevel)) ) {
+                        this.roomHighLight[floor][col] = 1;
+                        this.roomToLoseType.push(isMaxLevel?2:3);
+                    } else {
+                        this.roomHighLight[floor][col] = 0;
+                    }
                 }
             }
         }
@@ -84,7 +98,7 @@ class Hotel{
             this.roomToCloseColor = 4;
             this.roomToCloseGuestID = -1;
             this.roomToCloseGuestTableID = -1;
-            this.roomToClose = roomNum;
+            this.roomToClose += roomNum;
         } else { // normal guest checkout
             this.roomToCloseColor = color;
             this.roomToCloseGuestID = guestID;
@@ -128,6 +142,30 @@ class Hotel{
         } else if(floor==3 && col>=2){
             this.game.players[this.game.currPlayer].gainGamePoint(2);
         }
+        // update max level
+        this.maxPreparedRoomLevel = Math.max(this.maxPreparedRoomLevel, floor);
+        var nxtFound = false;
+        for(let i=this.maxPreparedRoomLevel-1; i>=0; i--){
+            for(let j=0; j<5; j++){
+                if(this.roomStatus[i][j]==0){
+                    this.nextMaxPreparedRoomLevel = i;
+                    nxtFound = true;
+                    break;
+                }
+            }
+        }
+        if(!nxtFound) {
+            for(let j=0; j<5; j++){
+                if(this.roomStatus[floor][j]==0){
+                    this.nextMaxPreparedRoomLevel = floor;
+                    nxtFound = true;
+                    break;
+                }
+            }
+        }
+        if(!nxtFound) {
+            this.nextMaxPreparedRoomLevel = -1;
+        }
         // check major task A3
         // 准备/入住12个房间
         if(this.game.majorTask0==3 && (this.roomPreparedNum + this.roomClosedNum) >= 12){
@@ -157,7 +195,30 @@ class Hotel{
             case 2: this.roomBlueClosedNum++; break;
         }
         // update max level
-        this.roomMaxFloor = Math.max(this.roomMaxFloor, floor);
+        this.maxClosedRoomLevel = Math.max(this.maxClosedRoomLevel, floor);
+        var nxtFound = false;
+        for(let i=this.maxClosedRoomLevel-1; i>=0; i--){
+            for(let j=0; j<5; j++){
+                if(this.roomStatus[i][j]==1){
+                    this.nextMaxClosedRoomLevel = i;
+                    nxtFound = true;
+                    break;
+                }
+            }
+        }
+        if(!nxtFound) {
+            nxtFound = false;
+            for(let j=0; j<5; j++){
+                if(this.roomStatus[floor][j]==1){
+                    this.nextMaxClosedRoomLevel = floor;
+                    nxtFound = true;
+                    break;
+                }
+            }
+        }
+        if(!nxtFound) {
+            this.nextMaxClosedRoomLevel = -1;
+        }
         // count the closed floors
         this.roomRowClosedNum = 0;
         for(let floor=0; floor<4; floor++){

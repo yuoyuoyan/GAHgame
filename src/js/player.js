@@ -55,7 +55,8 @@ class Player{
         this.loseServerNum = 0;
         this.loseHiredNum = 0;
         this.serveFoodNum = 0;
-        this.specialRound = false;
+        this.specialRound = false; // at a special round
+        this.specialRoundFlag = false; // about to go to a special round
         this.gamePoint = 0;
         this.royalPoint = 0;
         this.hotelID = hotelID;
@@ -97,7 +98,7 @@ class Player{
         this.opCheckout = false;
         if(!this.firstGuestTurn){
             for(let i=0; i<this.hotel.numGuestOnTable; i++){
-                if(this.hotel.guestOnTable[i].guestSatisfied){
+                if(this.hotel.guestOnTable[i]!=null && this.hotel.guestOnTable[i].guestSatisfied){
                     this.opCheckout = true;
                 }
             }
@@ -196,9 +197,9 @@ class Player{
         }
         for(let i=0; i<this.serverOnHand.length; i++){
             if(this.hireLimitLastThree) { // at draw 3 hire 1 senario
-                this.serverOnHandHighLight[i] = (i>=(this.serverOnHand.length-3) && this.money >= (discount + this.serverOnHand[i].serverCost)) ? 1 : 0;
+                this.serverOnHandHighLight[i] = (i>=(this.serverOnHand.length-3) && (this.money+discount) >= this.serverOnHand[i].serverCost) ? 1 : 0;
             } else {
-                this.serverOnHandHighLight[i] = (this.money >= (discount + this.serverOnHand[i].serverCost)) ? 1 : 0;
+                this.serverOnHandHighLight[i] = ((this.money+discount) >= this.serverOnHand[i].serverCost) ? 1 : 0;
             }
         }
     }
@@ -225,7 +226,7 @@ class Player{
         // assert royal result finish if no action needed
         if(this.royalPunishSelection == 2) { // Pay 1 to neglicate the punishment
             this.loseMoney(1);
-        } else if(this.players[i].royalResult==0) { // punishment
+        } else if(this.royalResult==0) { // punishment
             switch(this.game.mainRound){
                 case 2: 
                     switch(this.game.royalTask0){
@@ -250,7 +251,7 @@ class Player{
                         break; // 丢弃2张员工手牌或失去5游戏点数
                         case 3:
                         if(this.royalPunishSelection==0) {
-                            this.highlightRoomToLose(true, false, false, false);
+                            this.hotel.highlightRoomToLose(true, false, false, false);
                         } else if(this.royalPunishSelection==1) {
                             this.loseGamePoint(5);
                             this.royalResultFinish = true;
@@ -281,7 +282,7 @@ class Player{
                         break; // 丢弃3张员工手牌或失去7游戏点数
                         case 3:
                         if(this.royalPunishSelection==0) {
-                            this.highlightRoomToLose(true, false, false, false); this.highlightRoomToLose(true, false, false, false);
+                            this.hotel.highlightRoomToLose(true, false, false, false); this.hotel.highlightRoomToLose(true, false, false, false);
                         } else if(this.royalPunishSelection==1) {
                             this.loseGamePoint(7);
                             this.royalResultFinish = true;
@@ -773,8 +774,8 @@ class Player{
             case 10: // 额外关闭1个房间
             this.hotel.highlightRoomToCheckout(true, 1); break;
             case 13: // 减1费开1个房间并原价开1个房间
-            this.hotel.highlightRoomToPrepare(this.money, 1);
             this.hotel.highlightRoomToPrepare(this.money, 0);
+            this.hotel.highlightRoomToPrepare(this.money, 1);
             break;
             case 18: // 减1费打出1张员工并原价开1个房间
             this.hotel.highlightRoomToPrepare(this.money); break;
@@ -819,7 +820,6 @@ class Player{
             this.gainRed(1); break;
         }
         // free invite
-        this.freeInviteNum = 1;
         switch(guestID) {
             case  0:
             case 14:
@@ -827,16 +827,20 @@ class Player{
             case 31:
             case 33:
             case 37:
-            case 54: this.freeInviteNum = 1; break;
-            case 40: this.freeInviteNum = 2; break;
+            case 54: this.addFreeInvite(1); break;
+            case 40: this.addFreeInvite(2); break;
         }
-        this.guestHighLightFlag = true;
-        this.game.checkGuestInvite(10);
         // special bonus
         if(guestID==50) { // 立即额外进行一个回合，不需要拿取骰子
-            this.specialRound = true;
+            this.specialRoundFlag = true;
         }
         this.game.updateAllCanvas();
+    }
+
+    addFreeInvite(value) {
+        this.freeInviteNum = value; 
+        this.game.guestHighLightFlag = true; 
+        this.game.checkGuestInvite(10);
     }
 
     // ========================================canvas==============================================
@@ -1019,21 +1023,21 @@ class Player{
             break;
             case 7: // pick royal task result
             var img0, img1, text0, text1;
-            if(this.game.mainRound==2 && this.royalResult[0]==0) {
+            if(this.game.mainRound==2 && this.royalResult==0) {
                 switch(this.game.royalTask0){
                     case 0: img0 = moneyImg; img1 = gamePointTokenImg; text0 = "失去3块钱"; text1 = "失去5游戏点数"; break;
                     case 1: img0 = brownImg; img1 = null; text0 = "失去厨房全部食物"; text1 = null; break;
                     case 2: img0 = serverTokenImg; img1 = gamePointTokenImg; text0 = "丢弃2张员工手牌"; text1 = "失去5游戏点数"; break;
                     case 3: img0 = roomPreparedTokenImg; img1 = gamePointTokenImg; text0 = "失去最高的准备好的房间"; text1 = "失去5游戏点数"; break
                 }
-            } else if(this.game.mainRound==4 && this.royalResult[1]==0) {
+            } else if(this.game.mainRound==4 && this.royalResult==0) {
                 switch(this.game.royalTask1){
                     case 0: img0 = brownImg; img1 = null; text0 = "失去厨房和客桌上的全部食物"; text1 = null; break;
                     case 1: img0 = moneyImg; img1 = gamePointTokenImg; text0 = "失去5块钱"; text1 = "失去7游戏点数"; break;
                     case 2: img0 = serverTokenImg; img1 = gamePointTokenImg; text0 = "丢弃3张员工手牌"; text1 = "失去7游戏点数"; break;
                     case 3: img0 = roomClosedTokenImg; img1 = gamePointTokenImg; text0 = "失去最高和次高的已入住的2个房间"; text1 = "失去7游戏点数"; break;
                 }
-            } else if(this.game.mainRound==6 && this.royalResult[2]==0) {
+            } else if(this.game.mainRound==6 && this.royalResult==0) {
                 switch(this.game.royalTask2){
                     case 0: img0 = gamePointTokenImg; img1 = null; text0 = "失去8游戏点数"; text1 = null; break;
                     case 1: img0 = roomClosedTokenImg; img1 = null; text0 = "失去最高层和次高层各1个已入住房间"; text1 = null; break;
@@ -1085,7 +1089,9 @@ class Player{
         for(let i=0; i<3; i++){
             if((this.serverOnHandCanvasIdx + i) < this.numServerOnHand){
                 serverXoffset+=170;
-                context.drawImage(serverImg[this.serverOnHand[this.serverOnHandCanvasIdx+i].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+                if((this.serverOnHandCanvasIdx + i) < this.numServerOnHand) {
+                    context.drawImage(serverImg[this.serverOnHand[this.serverOnHandCanvasIdx+i].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+                }
                 // hightlight block if needed
                 if(this.serverOnHandHighLightFlag && this.serverOnHandHighLight[this.serverOnHandCanvasIdx+i]) {
                     context.strokeStyle = "red";
@@ -1387,7 +1393,7 @@ class Player{
     // ========================================click handle==============================================
     handlePlayerClick(event) {
         // check if this event is invite
-        if(event.offsetX >= 712 && event.offsetX <= 752 && event.offsetY >= 10 && event.offsetY <= 30){
+        if(event.offsetX >= 702 && event.offsetX <= 742 && event.offsetY >= 10 && event.offsetY <= 30){
             console.log("Invite button pressed");
             if(this.opInvite){
                 // disable all 
@@ -1403,7 +1409,7 @@ class Player{
         }
 
         // check if this event is action
-        if(event.offsetX >= 757 && event.offsetX <= 797 && event.offsetY >= 10 && event.offsetY <= 30){
+        if(event.offsetX >= 747 && event.offsetX <= 787 && event.offsetY >= 10 && event.offsetY <= 30){
             console.log("Action button pressed");
             if(this.opAction){
                 // disable all
@@ -1419,7 +1425,7 @@ class Player{
         }
 
         // check if this event is serve
-        if(event.offsetX >= 802 && event.offsetX <= 842 && event.offsetY >= 10 && event.offsetY <= 30){
+        if(event.offsetX >= 792 && event.offsetX <= 832 && event.offsetY >= 10 && event.offsetY <= 30){
             console.log("Serve button pressed");
             if(this.opServe){
                 // no need to disable other options
@@ -1432,7 +1438,7 @@ class Player{
         }
 
         // check if this event is checkout
-        if(event.offsetX >= 847 && event.offsetX <= 887 && event.offsetY >= 10 && event.offsetY <= 30){
+        if(event.offsetX >= 837 && event.offsetX <= 877 && event.offsetY >= 10 && event.offsetY <= 30){
             console.log("Checkout button pressed");
             if(this.opCheckout){
                 // disable all
@@ -1443,7 +1449,7 @@ class Player{
         }
 
         // check if this event is end
-        if(event.offsetX >= 892 && event.offsetX <= 932 && event.offsetY >= 10 && event.offsetY <= 30){
+        if(event.offsetX >= 882 && event.offsetX <= 922 && event.offsetY >= 10 && event.offsetY <= 30){
             console.log("End button pressed");
             if(this.opEnd){
                 this.endFlag = true;
