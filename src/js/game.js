@@ -105,7 +105,13 @@ class Game{
         this.guestHighLight[0] = money >= 3;
     }
 
-    
+    findNextPlayer() {
+        for(let i=0; i<this.playerNumber; i++){
+            if(this.players[i].miniTurn[0]==(this.miniRound+1) || this.players[i].miniTurn[1]==(this.miniRound+1)){
+                return i;
+            }
+        }
+    }
 
     nextMiniRound() {
         // First guest invitation is special
@@ -121,6 +127,9 @@ class Game{
             }
         } else if(this.miniRound == (2*this.playerNumber-1) || this.royalRound) { // end of main round, check royal round first
             if(!this.royalRound){ // start of royal round, reset curr player first
+                this.players[this.currPlayer].inviteFlag = false;
+                this.players[this.currPlayer].actionFlag = false;
+                this.players[this.currPlayer].moveAllBufToKitchen();
                 this.currPlayer = 0;
             } else {
                 this.currPlayer++;
@@ -141,25 +150,27 @@ class Game{
             }
 
             if(this.mainRound == 6) { // end of entire game
+                this.players[this.currPlayer].moveAllBufToKitchen();
                 this.gameEnd();
                 window.alert("游戏结束!" + this.players[this.winner].playerName + "获胜!");
             } else { // go to next main round
                 this.royalRound = false;
-                this.players[this.currPlayer].inviteFlag = false;
-                this.players[this.currPlayer].actionFlag = false;
+                // this.players[this.currPlayer].inviteFlag = false;
+                // this.players[this.currPlayer].actionFlag = false;
+                // this.players[this.currPlayer].moveAllBufToKitchen();
+                // roll the mini round sequence
+                const tmp = this.players[this.playerNumber-1].miniTurn;
+                for(let i=this.playerNumber-1; i>0; i--){
+                    this.players[i].miniTurn = this.players[i-1].miniTurn;
+                }
+                this.players[0].miniTurn = tmp;
                 this.mainRound++;
                 this.miniRound = 0;
-                this.currPlayer = 0;
+                this.currPlayer = this.findNextPlayer();
                 for(let i=0; i<this.playerNumber; i++){
                     this.players[i].diceTaken = [-1, -1];
                 }
                 this.rollDice();
-                // roll the mini round sequence
-                const tmp = this.players[this.playerNumber-1].miniTurn;
-                for(let i=1; i<this.playerNumber; i++){
-                    this.players[i].miniTurn = this.players[i-1].miniTurn;
-                }
-                this.players[0].miniTurn = tmp;
                 // take a food for every per-turn server
                 if(this.players[this.currPlayer].hasHiredServer(0)){
                     this.players[this.currPlayer].gainBrown(1);
@@ -181,8 +192,9 @@ class Game{
             // next mini round
             this.players[this.currPlayer].inviteFlag = false;
             this.players[this.currPlayer].actionFlag = false;
+            this.players[this.currPlayer].moveAllBufToKitchen();
             this.miniRound++;
-            this.currPlayer = (this.miniRound < this.playerNumber) ? this.miniRound : 2*this.playerNumber-this.miniRound-1;
+            this.currPlayer = this.findNextPlayer();
             // take a food for every per-turn server
             if(this.players[this.currPlayer].hasHiredServer(0)){
                 this.players[this.currPlayer].gainBrown(1);
@@ -728,7 +740,7 @@ class Game{
                     this.players[this.currPlayer].freeInviteNum--;
                 } else {
                     this.guestHighLightFlag = false;
-                    this.players[this.currPlayer].inviteFlag = false;
+                    this.players[this.currPlayer].inviteFlag = true;
                     this.players[this.currPlayer].freeInviteNum = 0;
                 }
             }
@@ -780,7 +792,9 @@ class Game{
                         // prepare selected room, no need to worry about money
                         this.players[this.currPlayer].hotel.roomPrepare(floor, col);
                         this.players[this.currPlayer].loseMoney(floor);
-                        if(this.players[this.currPlayer].hotel.roomPreparedNum == 3){ // finished all three rooms
+                        this.players[this.currPlayer].hotel.roomToPrepare--;
+                        this.players[this.currPlayer].hotel.roomToPrepareDiscount.pop();
+                        if(this.players[this.currPlayer].hotel.roomToPrepare == 0){ // finished all three rooms
                             this.players[this.currPlayer].hotel.roomHighLightFlag = false;
                             this.players[this.currPlayer].hotel.firstThreeRoom = false;
                         }
@@ -794,17 +808,17 @@ class Game{
                             (this.players[this.currPlayer].hasHiredServer(10) && this.players[this.currPlayer].hotel.roomColor[floor][col]==1))     //免费准备黄色房间
                         ){ // exceptions to pay preparation fee
                             if(this.players[this.currPlayer].hotel.roomToPrepareDiscount.length > 0){
-                                this.players[this.currPlayer].loseMoney( Math.min(floor-this.players[this.currPlayer].hotel.roomToPrepareDiscount.at(-1), 0) );
+                                this.players[this.currPlayer].loseMoney( Math.max(floor-this.players[this.currPlayer].hotel.roomToPrepareDiscount.at(-1), 0) );
                             } else {
                                 this.players[this.currPlayer].loseMoney(floor);
                             }
                         }
-                        if(this.players[this.currPlayer].hotel.roomToPrepare == 1){ // finished rooms
+                        this.players[this.currPlayer].hotel.roomToPrepare--;
+                        this.players[this.currPlayer].hotel.roomToPrepareDiscount.pop();
+                        if(this.players[this.currPlayer].hotel.roomToPrepare == 0){ // finished rooms
                             this.players[this.currPlayer].hotel.roomHighLightFlag = false;
                         }
-                        this.players[this.currPlayer].hotel.roomToPrepareDiscount.pop();
                         this.players[this.currPlayer].hotel.highlightRoomToPrepare(this.players[this.currPlayer].money, this.players[this.currPlayer].hotel.roomToPrepareDiscount.at(-1),3,true);
-                        this.players[this.currPlayer].hotel.roomToPrepare--;
                     } else if(this.players[this.currPlayer].hotel.roomToClose>0 && this.players[this.currPlayer].hotel.roomHighLight[floor][col]){
                         console.log("checkout room at floor " + floor + " col " + col);
                         // close selected room, take guest bonus if any
@@ -884,31 +898,31 @@ class Game{
                     if(event.offsetX>=foodXoffset && event.offsetX<=(foodXoffset+foodWidth) && event.offsetY>=foodYoffset && event.offsetY<=(foodYoffset+foodHeight) &&
                         !this.players[this.currPlayer].hotel.guestOnTable[i].guestFoodServed[j]){
                         var serveKichenFlag = false;
-                        var serverBufFlag = false;
+                        var serveBufFlag = false;
                         switch(this.players[this.currPlayer].hotel.guestOnTable[i].guestRequirement[j]){
                             case 0: // need brown
-                            serveKichenFlag = this.players[this.currPlayer].hasBrownKitchen();
+                            serveKichenFlag = this.players[this.currPlayer].hasBrownKitchen() && this.players[this.currPlayer].serveFoodNum>0;
                             serveBufFlag = this.players[this.currPlayer].hasBrownBuf();
                             if(serveBufFlag){this.players[this.currPlayer].loseBrownBuf();}
                             else if(serveKichenFlag){this.players[this.currPlayer].loseBrownKitchen();}
                             break;
                             case 1: // need white
-                            serveKichenFlag = this.players[this.currPlayer].hasWhiteKitchen(); 
+                            serveKichenFlag = this.players[this.currPlayer].hasWhiteKitchen() && this.players[this.currPlayer].serveFoodNum>0; 
                             serveBufFlag = this.players[this.currPlayer].hasWhiteBuf(); 
                             if(serveBufFlag){this.players[this.currPlayer].loseWhiteBuf();}
                             else if(serveKichenFlag){this.players[this.currPlayer].loseWhiteKitchen();}
                             break;
                             case 2: // need red
-                            serveKichenFlag = this.players[this.currPlayer].hasRedKitchen(); 
+                            serveKichenFlag = this.players[this.currPlayer].hasRedKitchen() && this.players[this.currPlayer].serveFoodNum>0; 
                             serveBufFlag = this.players[this.currPlayer].hasRedBuf(); 
                             if(serveBufFlag){this.players[this.currPlayer].loseRedBuf();}
                             else if(serveKichenFlag){this.players[this.currPlayer].loseRedKitchen();}
                             break;
                             case 3: // need black
-                            serveKichenFlag = this.players[this.currPlayer].hasBlackKichen(); 
+                            serveKichenFlag = this.players[this.currPlayer].hasBlackKitchen() && this.players[this.currPlayer].serveFoodNum>0; 
                             serveBufFlag = this.players[this.currPlayer].hasBlackBuf(); 
-                            if(serveBufFlag){this.players[this.currPlayer].loseBlackKitchen();}
-                            else if(serveKichenFlag){this.players[this.currPlayer].loseBlackBuf();}
+                            if(serveBufFlag){this.players[this.currPlayer].loseBlackBuf();}
+                            else if(serveKichenFlag){this.players[this.currPlayer].loseBlackKitchen();}
                             break;
                         }
                         
@@ -1207,11 +1221,11 @@ class Game{
                     console.log("boost selected");
                     if(this.players[this.currPlayer].atActionBoost){
                         this.players[this.currPlayer].money++;
-                        this.players[this.currPlayer].atHireServerdiscount.at(-1)--;
+                        this.players[this.currPlayer].atHireServerdiscount[this.players[this.currPlayer].atHireServerdiscount.length-1]--;
                         this.players[this.currPlayer].atActionBoost = false;
                     } else {
                         this.players[this.currPlayer].money--;
-                        this.players[this.currPlayer].atHireServerdiscount.at(-1)++;
+                        this.players[this.currPlayer].atHireServerdiscount[this.players[this.currPlayer].atHireServerdiscount.length-1]++;
                         this.players[this.currPlayer].atActionBoost = true;
                     }
                 }
@@ -1227,7 +1241,7 @@ class Game{
             
         } else if(this.players[this.currPlayer].atTakeMirror){
             if(event.offsetX>=225 && event.offsetX<=275 && event.offsetY>=90 && event.offsetY<=110){ // increase dice
-                if(this.players[this.currPlayer].atMirrorDice < 6){
+                if(this.players[this.currPlayer].atMirrorDice < 5){
                     this.players[this.currPlayer].atMirrorDice++;
                 }
                 console.log("brown increase selected");
@@ -1275,14 +1289,22 @@ class Game{
 
     handleServerClick(event) {
         console.log("server canvas clicked");
-        // left roll
+        // left roll server on hand
         if(event.offsetX>=0 && event.offsetX<=25 && event.offsetY>=80 && event.offsetY<=130 && this.players[this.currPlayer].serverOnHandCanvasIdx>0){
             console.log("sever on hand left roll clicked");
             this.players[this.currPlayer].serverOnHandCanvasIdx--;
-        } // right roll
+        } // right roll server on hand
         else if(event.offsetX>=615 && event.offsetX<=640 && event.offsetY>=80 && event.offsetY<=130 && this.players[this.currPlayer].serverOnHandCanvasIdx<(this.players[this.currPlayer].numServerOnHand-3)) {
             console.log("sever on hand right roll clicked");
             this.players[this.currPlayer].serverOnHandCanvasIdx++;
+        } // left roll server hired  this.triangleCanvas(context, 0, 380, 25, 405, 25, 355);
+        if(event.offsetX>=0 && event.offsetX<=25 && event.offsetY>=355 && event.offsetY<=405 && this.players[this.currPlayer].serverHiredCanvasIdx>0){
+            console.log("sever hired left roll clicked");
+            this.players[this.currPlayer].serverHiredCanvasIdx--;
+        } // right roll server hired  this.triangleCanvas(context, 640, 380, 615, 405, 615, 355);
+        else if(event.offsetX>=615 && event.offsetX<=640 && event.offsetY>=355 && event.offsetY<=405 && this.players[this.currPlayer].serverHiredCanvasIdx<(this.players[this.currPlayer].numServerHired-3)) {
+            console.log("sever hired right roll clicked");
+            this.players[this.currPlayer].serverHiredCanvasIdx++;
         } 
         else{
             for(let i=0; i<3; i++){ // server on hand hire or lose

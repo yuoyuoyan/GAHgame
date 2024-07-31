@@ -80,6 +80,10 @@ class Player{
         this.serverHiredHighLightFlag = false;
         this.serverHiredHighLight = [];
         this.hotel = new Hotel(this.game, hotelID); // prepare hotel
+        // prepare the first three rooms
+        this.hotel.highlightRoomToPrepare(this.money);
+        this.hotel.highlightRoomToPrepare(this.money);
+        this.hotel.highlightRoomToPrepare(this.money);
     }
 
     checkOpStatus() {
@@ -102,7 +106,7 @@ class Player{
         if(this.game.royalRound) {
             this.opEnd = this.royalResultFinish;
         } else {
-            this.opEnd = this.firstGuestTurn ? (this.inviteFlag && (this.hotel.roomPreparedNum == 3)) : this.actionFlag;
+            this.opEnd = this.firstGuestTurn ? (this.inviteFlag && (this.hotel.roomToPrepare == 0)) : this.actionFlag;
         }
     }
 
@@ -123,7 +127,7 @@ class Player{
         // default maximum white
         this.atTakeWhite = Math.floor(value/2);
         this.atTakeBrown = value - this.atTakeWhite;
-        this.alertType = 0;
+        this.game.alertType = 0;
     }
 
     actionTakeRedBlack(value) {
@@ -132,15 +136,14 @@ class Player{
         // default maximum black
         this.atTakeBlack = Math.floor(value/2);
         this.atTakeRed = value - this.atTakeBlack;
-        this.alertType = 1;
+        this.game.alertType = 1;
     }
 
     actionPrepareRoom(value) {
         alertCanvas.style.display = 'block';
         this.atPrepareRoom = true;
-        // default maximum rooms
         this.atRoomToPrepare = value;
-        this.alertType = 2;
+        this.game.alertType = 2;
     }
 
     actionTakeRoyalMoney(value) {
@@ -153,7 +156,7 @@ class Player{
         } else {
             this.atMoney = 0;
         }
-        this.alertType = 3;
+        this.game.alertType = 3;
     }
 
     actionHireServer(value) {
@@ -162,7 +165,7 @@ class Player{
         this.serverOnHandHighLightFlag = true;
         // default maximum discount
         this.atHireServerdiscount.push(value);
-        this.alertType = 4;
+        this.game.alertType = 4;
     }
 
     actionTakeMirror(value) {
@@ -171,7 +174,7 @@ class Player{
         // default dice 1
         this.atMirrorStrength = value;
         this.atMirrorDice = 1;
-        this.alertType = 5;
+        this.game.alertType = 5;
     }
 
     highlightServerToLose(numServer) {
@@ -341,7 +344,7 @@ class Player{
         }
         // check major task A1
         // 积累10点皇室点数
-        if(this.majorTask0==1 && this.royalPoint >= 10){
+        if(this.game.majorTask0==1 && this.royalPoint >= 10){
             this.gainMajorTaskBonus(0);
         }
     }
@@ -378,6 +381,14 @@ class Player{
     hasBlackKitchen() {return this.black > 0;}
     hasBlackBuf() {return this.blackBuf > 0;}
 
+    moveAllBufToKitchen(){
+        this.brown += this.brownBuf; this.brownBuf = 0;
+        this.white += this.whiteBuf; this.whiteBuf = 0;
+        this.red += this.redBuf; this.redBuf = 0;
+        this.black += this.blackBuf; this.blackBuf = 0;
+        this.food += this.foodBuf; this.foodBuf = 0;
+    }
+
     clearKitchen() {
         this.brown = 0;
         this.white = 0;
@@ -406,7 +417,7 @@ class Player{
         this.money += value;
         // check major task A0
         // 积累20块钱
-        if(this.majorTask0==0 && this.money >= 20){
+        if(this.game.majorTask0==0 && this.money >= 20){
             this.gainMajorTaskBonus(0);
         }
     }
@@ -420,20 +431,21 @@ class Player{
         // could happen after royal task punishment
         var existFlag = false;
         for(let i=0; i<3; i++){
-            if(this.majorTaskComp[taskID][i] == this.playerID) {
+            if(this.game.majorTaskComp[taskID][i] == this.playerID) {
                 existFlag = true;
             }
         }
         if(existFlag) return;
         // normal record
         for(let i=0; i<3; i++){
-            if(this.majorTaskComp[taskID][i]!=-1){
-                this.majorTaskComp[taskID][i] = this.playerID;
+            if(this.game.majorTaskComp[taskID][i]==-1){
+                this.game.majorTaskComp[taskID][i] = this.playerID;
                 switch(i){
                     case 0: this.gainGamePoint(15); break;
                     case 1: this.gainGamePoint(10); break;
                     case 2: this.gainGamePoint(5); break;
                 }
+                break;
             }
         }
     }
@@ -457,7 +469,7 @@ class Player{
 
         // check major task A2
         // 雇佣6名员工
-        if(this.majorTask0==2 && this.numServerHired >= 6){
+        if(this.game.majorTask0==2 && this.numServerHired >= 6){
             this.gainMajorTaskBonus(0);
         }
 
@@ -538,6 +550,7 @@ class Player{
     }
 
     calculateFinalGamePoint() {
+        // server effect
         // the most special, handle first
         var orgHiredServerNum = this.serverHired.length;
         if(this.hasHiredServer(28)){ //最终结算时获得所有其他玩家的结算效果
@@ -578,7 +591,7 @@ class Player{
         if(this.hasHiredServer(39)){ //最终结算时每个完成的全局任务获得5游戏点数
             for(let i=0; i<3; i++){
                 for(let j=0; j<3; j++){
-                    if(this.playerID == this.majorTaskComp[i][j]){
+                    if(this.playerID == this.game.majorTaskComp[i][j]){
                         this.playerID.gainGamePoint(5);
                     }
                 }
@@ -596,6 +609,19 @@ class Player{
         if(this.hasHiredServer(47)){ //最终结算时每个入住的红黄蓝房间组合获得4游戏点数
             this.gainGamePoint(Math.min(this.hotel.roomRedClosedNum, this.hotel.roomBlueClosedNum, this.hotel.roomYellowClosedNum) * 4);
         }
+
+        // room points
+        for(let floor=0; floor<4; floor++){
+            for(let col=0; col<5; col++){
+                if(this.hotel.roomStatus[floor][col] == 1) {
+                    this.gainGamePoint(floor+1);
+                }
+            }
+        }
+        // money points
+        this.gainGamePoint(this.money);
+        // food points
+        this.gainGamePoint(this.food);
     }
 
     guestBonus(guestID) {
@@ -1108,7 +1134,7 @@ class Player{
         }
 
         // player name
-        const nameXoffset = 50;
+        const nameXoffset = 40;
         const nameYoffset = 30;
         this.textCanvas(context, this.playerName.substring(0, 16), nameXoffset, nameYoffset)
 
@@ -1178,17 +1204,17 @@ class Player{
         const gamePointWidth = 30;
         const gamePointHeigh = 40;
         context.drawImage(gamePointTokenImg, gamePointXoffset, gamePointYoffset, gamePointWidth, gamePointHeigh);
-        gamePointXoffset += 40;
+        gamePointXoffset += 30;
         gamePointYoffset = 30;
         this.textCanvas(context, this.gamePoint, gamePointXoffset, gamePointYoffset);
 
         // royal point
-        var   royalPointXoffset = gamePointXoffset+20;
+        var   royalPointXoffset = gamePointXoffset+50;
         var   royalPointYoffset = 5;
         const royalPointWidth = 30;
         const royalPointHeigh = 40;
         context.drawImage(royalTokenImg, royalPointXoffset, royalPointYoffset, royalPointWidth, royalPointHeigh);
-        royalPointXoffset += 40;
+        royalPointXoffset += 35;
         royalPointYoffset = 30;
         this.textCanvas(context, this.royalPoint, royalPointXoffset, royalPointYoffset);
 
@@ -1198,7 +1224,7 @@ class Player{
         const moneyWidth = 30;
         const moneyHeigh = 40;
         context.drawImage(moneyImg, moneyXoffset, moneyYoffset, moneyWidth, moneyHeigh);
-        moneyXoffset += 40;
+        moneyXoffset += 35;
         moneyYoffset = 30;
         this.textCanvas(context, this.money, moneyXoffset, moneyYoffset);
 
@@ -1214,7 +1240,7 @@ class Player{
             context.lineWidth = 3;
             context.strokeRect(foodXoffset, foodYoffset, foodWidth, foodHeigh);
         }
-        foodXoffset += 40;
+        foodXoffset += 35;
         foodYoffset = 30;
         this.textCanvas(context, this.brown + this.brownBuf, foodXoffset, foodYoffset);
 
@@ -1227,7 +1253,7 @@ class Player{
             context.lineWidth = 3;
             context.strokeRect(foodXoffset, foodYoffset, foodWidth, foodHeigh);
         }
-        foodXoffset += 40;
+        foodXoffset += 35;
         foodYoffset = 30;
         this.textCanvas(context, this.white + this.whiteBuf, foodXoffset, foodYoffset);
 
@@ -1240,7 +1266,7 @@ class Player{
             context.lineWidth = 3;
             context.strokeRect(foodXoffset, foodYoffset, foodWidth, foodHeigh);
         }
-        foodXoffset += 40;
+        foodXoffset += 35;
         foodYoffset = 30;
         this.textCanvas(context, this.red + this.redBuf, foodXoffset, foodYoffset);
 
@@ -1253,7 +1279,7 @@ class Player{
             context.lineWidth = 3;
             context.strokeRect(foodXoffset, foodYoffset, foodWidth, foodHeigh);
         }
-        foodXoffset += 40;
+        foodXoffset += 35;
         foodYoffset = 30;
         this.textCanvas(context, this.black + this.blackBuf, foodXoffset, foodYoffset);
 
@@ -1394,7 +1420,7 @@ class Player{
             console.log("End button pressed");
             if(this.opEnd){
                 this.endFlag = true;
-                this.nextMiniRound();
+                this.game.nextMiniRound();
             }
         }
         

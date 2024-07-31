@@ -8,7 +8,7 @@ class Hotel{
         // -1 as idle, 0 as prepared, 1 as occupied
         this.roomStatus = [[-1,-1,-1,-1,-1], [-1,-1,-1,-1,-1], [-1,-1,-1,-1,-1], [-1,-1,-1,-1,-1]];
         this.roomArea = roomAreaByID[hotelID];
-        this.roomAreaRoom = roomAreaRoomByID[hotelID];
+        this.roomAreaRoom = roomAreaRoomByID[hotelID].slice(); // clone an array not refer to it
         this.roomClosedNum = 0;
         this.roomPreparedNum = 0;
         this.roomColumnClosedNum = 0;
@@ -209,38 +209,38 @@ class Hotel{
         // check major task B3
         // 完整入住所有的某颜色房间
         if(this.game.majorTask1==3 && 
-            (this.roomRedClosedNum    == roomColorNumByID[this.hotelID][0]) ||
+           ((this.roomRedClosedNum    == roomColorNumByID[this.hotelID][0]) ||
             (this.roomYellowClosedNum == roomColorNumByID[this.hotelID][1]) ||
-            (this.roomBlueClosedNum   == roomColorNumByID[this.hotelID][2]) ){
+            (this.roomBlueClosedNum   == roomColorNumByID[this.hotelID][2]) )){
             this.game.players[this.game.currPlayer].gainMajorTaskBonus(1);
         }
         // check major task C0
         // 入住3个红和3个黄和3个蓝房间
         if(this.game.majorTask2==0 && 
-            (this.roomRedClosedNum    >= 3) ||
-            (this.roomYellowClosedNum >= 3) ||
-            (this.roomBlueClosedNum   >= 3) ){
+           ((this.roomRedClosedNum    >= 3) &&
+            (this.roomYellowClosedNum >= 3) &&
+            (this.roomBlueClosedNum   >= 3) )){
             this.game.players[this.game.currPlayer].gainMajorTaskBonus(2);
         }
         // check major task C1
         // 入住4个红和3个黄房间
         if(this.game.majorTask2==1 && 
-            (this.roomRedClosedNum    >= 4) ||
-            (this.roomYellowClosedNum >= 3) ){
+           ((this.roomRedClosedNum    >= 4) &&
+            (this.roomYellowClosedNum >= 3) )){
             this.game.players[this.game.currPlayer].gainMajorTaskBonus(2);
         }
         // check major task C2
         // 入住4个黄和3个蓝房间
         if(this.game.majorTask2==2 && 
-            (this.roomYellowClosedNum >= 4) ||
-            (this.roomBlueClosedNum   >= 3) ){
+           ((this.roomYellowClosedNum >= 4) &&
+            (this.roomBlueClosedNum   >= 3) )){
             this.game.players[this.game.currPlayer].gainMajorTaskBonus(2);
         }
         // check major task C3
         // 入住4个蓝和3个红房间
-        if(this.game.majorTask2==2 && 
-            (this.roomBlueClosedNum   >= 4) ||
-            (this.roomRedClosedNum    >= 3) ){
+        if(this.game.majorTask2==3 && 
+           ((this.roomBlueClosedNum   >= 4) &&
+            (this.roomRedClosedNum    >= 3) )){
             this.game.players[this.game.currPlayer].gainMajorTaskBonus(2);
         }
     }
