@@ -1116,19 +1116,18 @@ class Game{
                 console.log("confirm selected");
             }
         } else if(this.players[this.currPlayer].atPrepareRoom){
-            var roomTmp = this.actionPoint[2]+1+(this.players[this.currPlayer].atActionBoost?1:0);
+            var roomTmp = (this.players[this.currPlayer].atMirrorStrength > 0) ? this.players[this.currPlayer].atMirrorStrength+(this.players[this.currPlayer].atActionBoost?1:0) :
+                this.actionPoint[2]+1+(this.players[this.currPlayer].atActionBoost?1:0);
             if(event.offsetX>=20 && event.offsetX<=120 && event.offsetY>=90 && event.offsetY<=140){ // boost
                 if(this.players[this.currPlayer].money>0){
                     console.log("boost selected");
                     if(this.players[this.currPlayer].atActionBoost){
                         this.players[this.currPlayer].money++;
                         this.players[this.currPlayer].atRoomToPrepare--;
-                        roomTmp--;
                         this.players[this.currPlayer].atActionBoost = false;
                     } else {
                         this.players[this.currPlayer].money--;
                         this.players[this.currPlayer].atRoomToPrepare++;
-                        roomTmp++;
                         this.players[this.currPlayer].atActionBoost = true;
                     }
                 }

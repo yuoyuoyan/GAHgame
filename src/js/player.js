@@ -44,6 +44,7 @@ class Player{
         this.atMoney = 0;
         this.atHireServerdiscount = [];
         this.atMirrorDice = 1;
+        this.atMirrorStrength = 0;
         this.atActionBoost = false;
         this.freeInviteNum = 0;
         this.inviteFlag = false; // whether already invited this turn
@@ -459,6 +460,12 @@ class Player{
         }
     }
 
+    addServerToHandDebug(serverID) { // debug only, force a server card on hand
+        this.numServerOnHand++;
+        this.serverOnHand.push(new Server(serverID));
+        this.serverOnHandHighLight.push(1);
+    }
+
     hireServer(serverIndex) {
         if(serverIndex >= this.serverOnHand.length){ // overflow
             return;
@@ -569,17 +576,17 @@ class Player{
             }
         }
 
-        if(this.hasHiredServer(26) || othersFinalServer.includes(26)){ // 最终结算时每个入住的红房间获得5游戏点数
-            bonusPoint += this.hotel.roomRedClosedNum * 5;
-            // this.gainGamePoint(this.hotel.roomRedClosedNum * 5);
+        if(this.hasHiredServer(26) || othersFinalServer.includes(26)){ // 最终结算时每个入住的红房间获得3游戏点数
+            bonusPoint += this.hotel.roomRedClosedNum * 3;
+            // this.gainGamePoint(this.hotel.roomRedClosedNum * 3);
         }
-        if(this.hasHiredServer(27) || othersFinalServer.includes(27)){ //最终结算时每个入住的蓝房间获得5游戏点数
-            bonusPoint += this.hotel.roomBlueClosedNum * 5;
-            // this.gainGamePoint(this.hotel.roomBlueClosedNum * 5);
+        if(this.hasHiredServer(27) || othersFinalServer.includes(27)){ //最终结算时每个入住的蓝房间获得3游戏点数
+            bonusPoint += this.hotel.roomBlueClosedNum * 3;
+            // this.gainGamePoint(this.hotel.roomBlueClosedNum * 3);
         }
-        if(this.hasHiredServer(29) || othersFinalServer.includes(29)){ //最终结算时每个入住的黄房间获得5游戏点数
-            bonusPoint += this.hotel.roomYellowClosedNum * 5;
-            // this.gainGamePoint(this.hotel.roomYellowClosedNum * 5);
+        if(this.hasHiredServer(29) || othersFinalServer.includes(29)){ //最终结算时每个入住的黄房间获得3游戏点数
+            bonusPoint += this.hotel.roomYellowClosedNum * 3;
+            // this.gainGamePoint(this.hotel.roomYellowClosedNum * 3);
         }
         if(this.hasHiredServer(30) || othersFinalServer.includes(30)){ //最终结算时每个入住的房间获得1游戏点数
             bonusPoint += this.hotel.roomClosedNum;
@@ -1225,7 +1232,7 @@ class Player{
         context.drawImage(gamePointTokenImg, gamePointXoffset, gamePointYoffset, gamePointWidth, gamePointHeigh);
         gamePointXoffset += 30;
         gamePointYoffset = 30;
-        var gamePointText = this.gamePoint + " (" + 0 + ")";
+        var gamePointText = this.gamePoint + " (" + (this.gamePoint+this.calculateFinalGamePoint()) + ")";
         this.textCanvas(context, gamePointText, gamePointXoffset, gamePointYoffset);
 
         // royal point

@@ -46,7 +46,7 @@ function gameOn() {
         game.currPlayer = 0;
         if(debugState) {
             // test major task
-            // game.majorTask0 = 0;
+            // game.majorTask0 = 2;
             // game.majorTask1 = 0;
             // game.majorTask2 = 0;
             // test royal task
@@ -95,14 +95,9 @@ function gameOn() {
             // for(let i=0; i<6; i++){
             //     game.players[game.currPlayer].hireServer(0);
             // }
-            // game.players[game.currPlayer].serverHired.push(new Server(0));
-            // game.players[game.currPlayer].serverHired.push(new Server(1));
-            // game.players[game.currPlayer].serverHired.push(new Server(2));
-            // game.players[game.currPlayer].serverHired.push(new Server(3));
-            // game.players[game.currPlayer].serverHired.push(new Server(4));
-            // game.players[game.currPlayer].serverHired.push(new Server(5));
-            // game.players[game.currPlayer].numServerHired = 6;
-            // game.players[game.currPlayer].calculateFinalGamePoint();
+            // TODO: 25, 41
+            // game.players[game.currPlayer].addServerToHandDebug(47);
+            // game.players[game.currPlayer].hireServer(game.players[game.currPlayer].numServerOnHand-1);
             // test guest bonus
             // game.players[game.currPlayer].hotel.addGuestToTable(25);
             // game.players[game.currPlayer].hotel.satisfyGuest(1);
