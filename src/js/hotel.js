@@ -26,6 +26,7 @@ class Hotel{
         this.roomToPrepare = 0;
         this.roomToPrepareDiscount = [];
         this.roomToLose = 0;
+        this.roomToLoseType = []; // 0 as occupied at max level, 1 as occupied at next max level, 2 as prepared at max level, 3 as prepared at next max level
         this.roomToClose = 0;
         this.roomToCloseColor = 0; // 1,2,3 as r/y/b, 4 as any color
         this.roomToCloseGuestID = 0;
@@ -46,6 +47,7 @@ class Hotel{
                     (isMaxLevel && floor==this.maxLevel) || // room at max level
                     (isNextMaxLevel && floor==Math.max(0,this.maxLevel-1)) ) {
                     this.roomHighLight[floor][col] = 1;
+                    this.roomToLoseType.push(occupiedRoom?(isMaxLevel?0:1):(isMaxLevel?2:3));
                 } else {
                     this.roomHighLight[floor][col] = 0;
                 }
@@ -241,6 +243,18 @@ class Hotel{
             (this.roomRedClosedNum    >= 3) ){
             this.game.players[this.game.currPlayer].gainMajorTaskBonus(2);
         }
+    }
+
+    roomLose(floor, col) {
+        if(floor<0 || floor>3 || col<0 || col>4){
+            return;
+        }
+        if(this.roomStatus[floor][col] == 1) {
+            this.roomClosedNum--;
+        } else if(this.roomStatus[floor][col] == 0) {
+            this.roomPreparedNum--;
+        }
+        this.roomStatus[floor][col] = -1;
     }
 
     areaBonus(floor, col) {

@@ -52,6 +52,7 @@ class Player{
         this.hireLimitLastThree = false; // only used at draw 3 and hire 1
         this.royalPunishSelection = 0;
         this.loseServerNum = 0;
+        this.loseHiredNum = 0;
         this.serveFoodNum = 0;
         this.specialRound = false;
         this.gamePoint = 0;
@@ -62,6 +63,11 @@ class Player{
         this.white = 1;
         this.red = 1;
         this.black = 1;
+        this.foodBuf = 0;
+        this.brownBuf = 0;
+        this.whiteBuf = 0;
+        this.redBuf = 0;
+        this.blackBuf = 0;
         this.money = 10;
         this.numServerOnHand = 0;
         this.numServerHired = 0;
@@ -71,6 +77,8 @@ class Player{
         this.serverHiredCanvasIdx = 0;
         this.serverOnHandHighLightFlag = false;
         this.serverOnHandHighLight = [];
+        this.serverHiredHighLightFlag = false;
+        this.serverHiredHighLight = [];
         this.hotel = new Hotel(this.game, hotelID); // prepare hotel
     }
 
@@ -191,7 +199,26 @@ class Player{
         }
     }
 
+    highlightHiredServerToLose() {
+        // only happen at royal task punishment
+        // check if this player has final server first
+        var hasFinalServer = false;
+        for(let i=0; i<this.numServerHired; i++){
+            if(this.serverHired[i].serverType == 3){
+                hasFinalServer = true;
+                break;
+            }
+        }
+        // highlight final server or all hired server if not exist
+        this.serverHiredHighLightFlag = ture;
+        this.loseHiredNum++;
+        for(let i=0; i<this.numServerHired; i++){
+            this.serverHiredHighLight[i] = hasFinalServer ? (this.serverHired[i].serverType==3 ? 1 : 0) : 1;
+        }
+    }
+
     royalResultExecute() { // execute royal task result after selection, only happens to punishment
+        // assert royal result finish if no action needed
         if(this.royalPunishSelection == 2) { // Pay 1 to neglicate the punishment
             this.loseMoney(1);
         } else if(this.players[i].royalResult==0) { // punishment
@@ -204,14 +231,17 @@ class Player{
                         } else if(this.royalPunishSelection==1) {
                             this.loseGamePoint(5);
                         }
+                        this.royalResultFinish = true;
                         break; // 失去3块钱或5游戏点数
                         case 1: this.clearKitchen(); 
+                        this.royalResultFinish = true;
                         break; // 失去厨房全部食物
                         case 2:
                         if(this.royalPunishSelection==0) {
                             this.highlightServerToLose(2);
                         } else if(this.royalPunishSelection==1) {
                             this.loseGamePoint(5);
+                            this.royalResultFinish = true;
                         }
                         break; // 丢弃2张员工手牌或失去5游戏点数
                         case 3:
@@ -219,6 +249,7 @@ class Player{
                             this.highlightRoomToLose(true, false, false, false);
                         } else if(this.royalPunishSelection==1) {
                             this.loseGamePoint(5);
+                            this.royalResultFinish = true;
                         }
                         break; // 失去最高的准备好的房间或失去5游戏点数
                     }
@@ -226,6 +257,7 @@ class Player{
                 case 4:
                     switch(this.game.royalTask1){
                         case 0: this.players[i].clearGuestTable(); this.players[i].clearKitchen(); 
+                        this.royalResultFinish = true;
                         break; // 失去厨房和客桌上的全部食物
                         case 1:
                         if(this.royalPunishSelection==0) {
@@ -233,12 +265,14 @@ class Player{
                         } else if(this.royalPunishSelection==1) {
                             this.loseGamePoint(7);
                         }
+                        this.royalResultFinish = true;
                         break; // 失去5块钱或失去7游戏点数
                         case 2:
                         if(this.royalPunishSelection==0) {
                             this.highlightServerToLose(3);
                         } else if(this.royalPunishSelection==1) {
                             this.loseGamePoint(7);
+                            this.royalResultFinish = true;
                         }
                         break; // 丢弃3张员工手牌或失去7游戏点数
                         case 3:
@@ -246,6 +280,7 @@ class Player{
                             this.highlightRoomToLose(true, false, false, false); this.highlightRoomToLose(true, false, false, false);
                         } else if(this.royalPunishSelection==1) {
                             this.loseGamePoint(7);
+                            this.royalResultFinish = true;
                         }
                         break; // 失去最高的准备好的2个房间或失去7游戏点数
                     }
@@ -253,24 +288,25 @@ class Player{
                 case 6:
                     switch(this.game.royalTask2){
                         case 0: this.players[i].loseGamePoint(8);
+                        this.royalResultFinish = true;
                         break; // 失去8游戏点数
-                        case 1: this.players[i].hotel.highlightRoomToLose(true, false, false); this.players[i].hotel.highlightRoomToLose(true, false, false);
+                        case 1: this.players[i].hotel.highlightRoomToLose(true, false, false, true); this.players[i].hotel.highlightRoomToLose(false, true, false, true);
                         break; // 失去最高层和次高层各1个已入住房间
                         case 2: this.players[i].loseGamePoint(2*this.players[i].numServerHired);
+                        this.royalResultFinish = true;
                         break; // 每个已雇佣员工失去2游戏点数
                         case 3:
                         if(this.royalPunishSelection==0) {
-                            // TODO
-                            this.highlightHiredServerToLose(1);
+                            this.highlightHiredServerToLose();
                         } else if(this.royalPunishSelection==1) {
                             this.loseGamePoint(10);
+                            this.royalResultFinish = true;
                         }
                         break; // 失去1位已雇佣员工（终局结算优先）或失去10游戏点数
                     }
                     break;
             }
         }
-        // this.royalResultFinish = true;
     }
 
     setMiniTurn(turn0, turn1) {
@@ -318,61 +354,29 @@ class Player{
         return this.royalPoint;
     }
 
-    gainBrown(value) {
-        this.brown+=value;
-        this.food+=value;
-    }
+    gainBrown(value) {this.brownBuf+=value; this.foodBuf+=value;}
+    loseBrownKitchen() {this.brown--; this.food--;}
+    loseBrownBuf() {this.brownBuf--; this.foodBuf--;}
+    hasBrownKitchen() {return this.brown > 0;}
+    hasBrownBuf() {return this.brownBuf > 0;}
 
-    loseBrown() {
-        this.brown--; // one at a time
-        this.food--;
-    }
+    gainWhite(value) {this.whiteBuf+=value; this.foodBuf+=value;}
+    loseWhiteKitchen() {this.white--; this.food--;}
+    loseWhiteBuf() {this.whiteBuf--; this.foodBuf--;}
+    hasWhiteKitchen() {return this.white > 0;}
+    hasWhiteBuf() {return this.whiteBuf > 0;}
 
-    hasBrown() {
-        return this.brown > 0;
-    }
+    gainRed(value) {this.redBuf+=value; this.foodBuf+=value;}
+    loseRedKitchen() {this.red--; this.food--;}
+    loseRedBuf() {this.redBuf--; this.foodBuf--;}
+    hasRedKitchen() {return this.red > 0;}
+    hasRedBuf() {return this.redBuf > 0;}
 
-    gainWhite(value) {
-        this.white+=value;
-        this.food+=value;
-    }
-
-    loseWhite() {
-        this.white--; // one at a time
-        this.food--;
-    }
-
-    hasWhite() {
-        return this.white > 0;
-    }
-
-    gainRed(value) {
-        this.red+=value;
-        this.food+=value;
-    }
-
-    loseRed() {
-        this.red--; // one at a time
-        this.food--;
-    }
-
-    hasRed() {
-        return this.red > 0;
-    }
-
-    gainBlack(value) {
-        this.black+=value;
-        this.food+=value;
-    }
-
-    loseBlack() {
-        this.black--; // one at a time
-        this.food--;
-    }
-
-    hasBlack() {
-        return this.black > 0;
-    }
+    gainBlack(value) {this.blackBuf+=value; this.foodBuf+=value;}
+    loseBlackKitchen() {this.black--; this.food--;}
+    loseBlackBuf() {this.blackBuf--; this.foodBuf--;}
+    hasBlackKitchen() {return this.black > 0;}
+    hasBlackBuf() {return this.blackBuf > 0;}
 
     clearKitchen() {
         this.brown = 0;
@@ -408,10 +412,20 @@ class Player{
     }
 
     loseMoney(value) {
-        this.money -= value;
+        this.money = Math.max(0, this.money - value);
     }
 
     gainMajorTaskBonus(taskID) {
+        // check if this player is on board already
+        // could happen after royal task punishment
+        var existFlag = false;
+        for(let i=0; i<3; i++){
+            if(this.majorTaskComp[taskID][i] == this.playerID) {
+                existFlag = true;
+            }
+        }
+        if(existFlag) return;
+        // normal record
         for(let i=0; i<3; i++){
             if(this.majorTaskComp[taskID][i]!=-1){
                 this.majorTaskComp[taskID][i] = this.playerID;
@@ -496,8 +510,17 @@ class Player{
         this.numServerOnHand--;
     }
 
+    removeServerOnHand(serverIndex) {
+        if(serverIndex >= this.numServerOnHand){ // overflow
+            return;
+        }
+
+        this.serverOnHand.splice(serverIndex, 1); // remove this server on hand
+        this.numServerOnHand--;
+    }
+
     removeHiredServer(serverIndex) {
-        if(serverIndex >= this.serverHired.length){ // overflow
+        if(serverIndex >= this.numServerHired){ // overflow
             return;
         }
 
@@ -966,8 +989,10 @@ class Player{
                     case 3: img0 = serverTokenImg; img1 = gamePointTokenImg; text0 = "失去1位已雇佣员工（终局结算优先）"; text1 = "失去10游戏点数"; break;
                 }
             }
-            context.drawImage(img0, 50, 30, 50, 40);
-            this.textCanvas(context, text0, 150, 60);
+            if(img1!=null){
+                context.drawImage(img0, 50, 30, 50, 40);
+                this.textCanvas(context, text0, 150, 60);
+            }
             if(img1!=null){
                 context.drawImage(img1, 50, 100, 40, 50);
                 this.textCanvas(context, text1, 150, 130);
@@ -1044,6 +1069,12 @@ class Player{
             if(this.serverHiredCanvasIdx + i < this.numServerHired){
                 serverXoffset+=170;
                 context.drawImage(serverImg[this.serverHired[this.serverHiredCanvasIdx+i].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+                // hightlight block if needed
+                if(this.serverHiredHighLightFlag && this.serverHiredHighLight[this.serverHiredCanvasIdx+i]) {
+                    context.strokeStyle = "red";
+                    context.lineWidth = 5;
+                    context.strokeRect(serverXoffset, serverYoffset, serverWidth, serverHeight);
+                }
             }
         }
 
@@ -1178,33 +1209,53 @@ class Player{
         const foodWidth = 30;
         const foodHeigh = 30;
         context.drawImage(brownImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
+        if(this.hasBrownBuf()) { // highlight if buffer has valid food
+            context.strokeStyle = "green";
+            context.lineWidth = 3;
+            context.strokeRect(foodXoffset, foodYoffset, foodWidth, foodHeigh);
+        }
         foodXoffset += 40;
         foodYoffset = 30;
-        this.textCanvas(context, this.brown, foodXoffset, foodYoffset);
+        this.textCanvas(context, this.brown + this.brownBuf, foodXoffset, foodYoffset);
 
         // white
         foodXoffset += 30;
         foodYoffset = 5;
         context.drawImage(whiteImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
+        if(this.hasWhiteBuf()) { // highlight if buffer has valid food
+            context.strokeStyle = "green";
+            context.lineWidth = 3;
+            context.strokeRect(foodXoffset, foodYoffset, foodWidth, foodHeigh);
+        }
         foodXoffset += 40;
         foodYoffset = 30;
-        this.textCanvas(context, this.white, foodXoffset, foodYoffset);
+        this.textCanvas(context, this.white + this.whiteBuf, foodXoffset, foodYoffset);
 
         // red
         foodXoffset += 30;
         foodYoffset = 5;
         context.drawImage(redImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
+        if(this.hasRedBuf()) { // highlight if buffer has valid food
+            context.strokeStyle = "green";
+            context.lineWidth = 3;
+            context.strokeRect(foodXoffset, foodYoffset, foodWidth, foodHeigh);
+        }
         foodXoffset += 40;
         foodYoffset = 30;
-        this.textCanvas(context, this.red, foodXoffset, foodYoffset);
+        this.textCanvas(context, this.red + this.redBuf, foodXoffset, foodYoffset);
 
         // black
         foodXoffset += 30;
         foodYoffset = 5;
         context.drawImage(blackImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
+        if(this.hasBlackBuf()) { // highlight if buffer has valid food
+            context.strokeStyle = "green";
+            context.lineWidth = 3;
+            context.strokeRect(foodXoffset, foodYoffset, foodWidth, foodHeigh);
+        }
         foodXoffset += 40;
         foodYoffset = 30;
-        this.textCanvas(context, this.black, foodXoffset, foodYoffset);
+        this.textCanvas(context, this.black + this.blackBuf, foodXoffset, foodYoffset);
 
         // operation if it's this player's turn, including invite, action, serve, and checkout
         var   opXoffset = foodXoffset+30;
@@ -1306,10 +1357,10 @@ class Player{
                 this.disableAllOp();
                 this.atAction = true;
             }
-            this.actionHighLightFlag = true;
+            this.game.actionHighLightFlag = true;
             for(let i=0; i<6; i++){
-                if(this.actionPoint[i]>0){
-                    this.actionHighLight[i] = 1;
+                if(this.game.actionPoint[i]>0){
+                    this.game.actionHighLight[i] = 1;
                 }
             }
         }
