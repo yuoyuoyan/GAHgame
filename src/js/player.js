@@ -549,10 +549,11 @@ class Player{
         return false;
     }
 
-    calculateFinalGamePoint() {
+    calculateFinalGamePoint() { // return the bonus point at the end, not added directly for normal round prediction
+        var bonusPoint = 0;
         // server effect
         // the most special, handle first
-        var orgHiredServerNum = this.serverHired.length;
+        var othersFinalServer = [];
         if(this.hasHiredServer(28)){ //最终结算时获得所有其他玩家的结算效果
             for(let i=0; i<this.playerNumber; i++){
                 if(i==this.playerID){
@@ -561,67 +562,85 @@ class Player{
                 const finalServerID = [26, 27, 29, 30, 31, 33, 36, 39, 40, 45, 46, 47];
                 for(let j=0; j<finalServerID.length; j++){
                     if(this.players[i].hasHiredServer(finalServerID[j])) {
-                        this.serverHired.push(new Server(finalServerID[j]));
+                        othersFinalServer.push(finalServerID[j]);
+                        // this.serverHired.push(new Server(finalServerID[j]));
                     }
                 }
             }
         }
 
-        if(this.hasHiredServer(26)){ // 最终结算时每个入住的红房间获得5游戏点数
-            this.gainGamePoint(this.hotel.roomRedClosedNum * 5);
+        if(this.hasHiredServer(26) || othersFinalServer.includes(26)){ // 最终结算时每个入住的红房间获得5游戏点数
+            bonusPoint += this.hotel.roomRedClosedNum * 5;
+            // this.gainGamePoint(this.hotel.roomRedClosedNum * 5);
         }
-        if(this.hasHiredServer(27)){ //最终结算时每个入住的蓝房间获得5游戏点数
-            this.gainGamePoint(this.hotel.roomBlueClosedNum * 5);
+        if(this.hasHiredServer(27) || othersFinalServer.includes(27)){ //最终结算时每个入住的蓝房间获得5游戏点数
+            bonusPoint += this.hotel.roomBlueClosedNum * 5;
+            // this.gainGamePoint(this.hotel.roomBlueClosedNum * 5);
         }
-        if(this.hasHiredServer(29)){ //最终结算时每个入住的黄房间获得5游戏点数
-            this.gainGamePoint(this.hotel.roomYellowClosedNum * 5);
+        if(this.hasHiredServer(29) || othersFinalServer.includes(29)){ //最终结算时每个入住的黄房间获得5游戏点数
+            bonusPoint += this.hotel.roomYellowClosedNum * 5;
+            // this.gainGamePoint(this.hotel.roomYellowClosedNum * 5);
         }
-        if(this.hasHiredServer(30)){ //最终结算时每个入住的房间获得1游戏点数
-            this.gainGamePoint(this.hotel.roomClosedNum);
+        if(this.hasHiredServer(30) || othersFinalServer.includes(30)){ //最终结算时每个入住的房间获得1游戏点数
+            bonusPoint += this.hotel.roomClosedNum;
+            // this.gainGamePoint(this.hotel.roomClosedNum);
         }
-        if(this.hasHiredServer(31)){ //最终结算时每个雇佣的员工获得2游戏点数
-            this.gainGamePoint(orgHiredServerNum * 2);
+        if(this.hasHiredServer(31) || othersFinalServer.includes(31)){ //最终结算时每个雇佣的员工获得2游戏点数
+            bonusPoint += this.numServerHired * 2;
+            // this.gainGamePoint(orgHiredServerNum * 2);
         }
-        if(this.hasHiredServer(33)){ //最终结算时每个准备好或者入住的房间获得1游戏点数
-            this.gainGamePoint(this.hotel.roomClosedNum + this.hotel.roomPreparedNum);
+        if(this.hasHiredServer(33) || othersFinalServer.includes(33)){ //最终结算时每个准备好或者入住的房间获得1游戏点数
+            bonusPoint += (this.hotel.roomClosedNum + this.hotel.roomPreparedNum);
+            // this.gainGamePoint(this.hotel.roomClosedNum + this.hotel.roomPreparedNum);
         }
-        if(this.hasHiredServer(36)){ //最终结算时每个全部入住的区域获得2游戏点数
-            this.gainGamePoint(this.hotel.roomAreaClosedNum * 2);
+        if(this.hasHiredServer(36) || othersFinalServer.includes(36)){ //最终结算时每个全部入住的区域获得2游戏点数
+            bonusPoint += this.hotel.roomAreaClosedNum * 2;
+            // this.gainGamePoint(this.hotel.roomAreaClosedNum * 2);
         }
-        if(this.hasHiredServer(39)){ //最终结算时每个完成的全局任务获得5游戏点数
+        if(this.hasHiredServer(39) || othersFinalServer.includes(39)){ //最终结算时每个完成的全局任务获得5游戏点数
             for(let i=0; i<3; i++){
                 for(let j=0; j<3; j++){
                     if(this.playerID == this.game.majorTaskComp[i][j]){
-                        this.playerID.gainGamePoint(5);
+                        bonusPoint += 5;
+                        // this.playerID.gainGamePoint(5);
                     }
                 }
             }
         }
-        if(this.hasHiredServer(40)){ //最终结算时每个剩余的皇室点数获得2游戏点数
-            this.gainGamePoint(this.royalPoint * 2);
+        if(this.hasHiredServer(40) || othersFinalServer.includes(40)){ //最终结算时每个剩余的皇室点数获得2游戏点数
+            bonusPoint += this.royalPoint * 2;
+            // this.gainGamePoint(this.royalPoint * 2);
         }
-        if(this.hasHiredServer(45)){ //最终结算时每个全部入住的层获得5游戏点数
-            this.gainGamePoint(this.hotel.roomRowClosedNum * 5);
+        if(this.hasHiredServer(45) || othersFinalServer.includes(45)){ //最终结算时每个全部入住的层获得5游戏点数
+            bonusPoint += this.hotel.roomRowClosedNum * 5;
+            // this.gainGamePoint(this.hotel.roomRowClosedNum * 5);
         }
-        if(this.hasHiredServer(46)){ //最终结算时每个全部入住的列获得5游戏点数
-            this.gainGamePoint(this.hotel.roomColumnClosedNum * 5);
+        if(this.hasHiredServer(46) || othersFinalServer.includes(46)){ //最终结算时每个全部入住的列获得5游戏点数
+            bonusPoint += this.hotel.roomColumnClosedNum * 5;
+            // this.gainGamePoint(this.hotel.roomColumnClosedNum * 5);
         }
-        if(this.hasHiredServer(47)){ //最终结算时每个入住的红黄蓝房间组合获得4游戏点数
-            this.gainGamePoint(Math.min(this.hotel.roomRedClosedNum, this.hotel.roomBlueClosedNum, this.hotel.roomYellowClosedNum) * 4);
+        if(this.hasHiredServer(47) || othersFinalServer.includes(47)){ //最终结算时每个入住的红黄蓝房间组合获得4游戏点数
+            bonusPoint += Math.min(this.hotel.roomRedClosedNum, this.hotel.roomBlueClosedNum, this.hotel.roomYellowClosedNum) * 4;
+            // this.gainGamePoint(Math.min(this.hotel.roomRedClosedNum, this.hotel.roomBlueClosedNum, this.hotel.roomYellowClosedNum) * 4);
         }
 
         // room points
         for(let floor=0; floor<4; floor++){
             for(let col=0; col<5; col++){
                 if(this.hotel.roomStatus[floor][col] == 1) {
-                    this.gainGamePoint(floor+1);
+                    bonusPoint += floor+1;
+                    // this.gainGamePoint(floor+1);
                 }
             }
         }
         // money points
-        this.gainGamePoint(this.money);
+        bonusPoint += this.money;
+        // this.gainGamePoint(this.money);
         // food points
-        this.gainGamePoint(this.food);
+        bonusPoint += this.food + this.foodBuf;
+        // this.gainGamePoint(this.food + this.foodBuf);
+
+        return bonusPoint;
     }
 
     guestBonus(guestID) {
@@ -1206,10 +1225,11 @@ class Player{
         context.drawImage(gamePointTokenImg, gamePointXoffset, gamePointYoffset, gamePointWidth, gamePointHeigh);
         gamePointXoffset += 30;
         gamePointYoffset = 30;
-        this.textCanvas(context, this.gamePoint, gamePointXoffset, gamePointYoffset);
+        var gamePointText = this.gamePoint + " (" + 0 + ")";
+        this.textCanvas(context, gamePointText, gamePointXoffset, gamePointYoffset);
 
         // royal point
-        var   royalPointXoffset = gamePointXoffset+50;
+        var   royalPointXoffset = gamePointXoffset+100;
         var   royalPointYoffset = 5;
         const royalPointWidth = 30;
         const royalPointHeigh = 40;
@@ -1245,7 +1265,7 @@ class Player{
         this.textCanvas(context, this.brown + this.brownBuf, foodXoffset, foodYoffset);
 
         // white
-        foodXoffset += 30;
+        foodXoffset += 20;
         foodYoffset = 5;
         context.drawImage(whiteImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
         if(this.hasWhiteBuf()) { // highlight if buffer has valid food
@@ -1258,7 +1278,7 @@ class Player{
         this.textCanvas(context, this.white + this.whiteBuf, foodXoffset, foodYoffset);
 
         // red
-        foodXoffset += 30;
+        foodXoffset += 20;
         foodYoffset = 5;
         context.drawImage(redImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
         if(this.hasRedBuf()) { // highlight if buffer has valid food
@@ -1271,7 +1291,7 @@ class Player{
         this.textCanvas(context, this.red + this.redBuf, foodXoffset, foodYoffset);
 
         // black
-        foodXoffset += 30;
+        foodXoffset += 20;
         foodYoffset = 5;
         context.drawImage(blackImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
         if(this.hasBlackBuf()) { // highlight if buffer has valid food

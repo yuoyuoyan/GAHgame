@@ -320,7 +320,7 @@ class Game{
 
     gameEnd() {
         for(let i=0; i<this.playerNumber; i++){
-            this.players[i].calculateFinalGamePoint();
+            this.players[i].gainGamePoint( this.players[i].calculateFinalGamePoint() );
         }
     }
 
