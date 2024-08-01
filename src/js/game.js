@@ -673,6 +673,7 @@ class Game{
             context.shadowColor="white";
             context.shadowBlur=5;
             context.lineWidth=2;
+            context.strokeStyle = "white";
             context.strokeText(this.actionPoint[i].toString(), numberXoffset, numberYoffset);
             context.shadowBlur=0;
             context.fillStyle="black";

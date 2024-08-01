@@ -97,7 +97,7 @@ class Player{
         this.opServe = this.game.royalRound ? false : ((this.money > 0) && (this.food > 0) && !this.firstGuestTurn && !this.atServe);
         this.opCheckout = false;
         if(!this.firstGuestTurn){
-            for(let i=0; i<this.hotel.numGuestOnTable; i++){
+            for(let i=0; i<3; i++){
                 if(this.hotel.guestOnTable[i]!=null && this.hotel.guestOnTable[i].guestSatisfied){
                     this.opCheckout = true;
                 }
@@ -651,6 +651,8 @@ class Player{
         // food points
         bonusPoint += this.food + this.foodBuf;
         // this.gainGamePoint(this.food + this.foodBuf);
+        // substract the remaining guests on table
+        bonusPoint -= this.hotel.numGuestOnTable * 5;
 
         return bonusPoint;
     }
@@ -810,6 +812,9 @@ class Player{
             alertCanvas.style.display = 'block';
             this.atSelectFood = 1;
             this.atTakeBrown = 1; // default to brown
+            this.atTakeWhite = 0;
+            this.atTakeRed = 0;
+            this.atTakeBlack = 0;
             this.game.alertType = 6;
             break;
             case 8: // 获得1个白蛋糕并减3费打出1张员工
