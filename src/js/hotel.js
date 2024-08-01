@@ -178,9 +178,9 @@ class Hotel{
         this.roomClosedNum++;
         this.roomPreparedNum--;
         switch(this.roomColor[floor][col]){
-            case 0: this.roomRedClosedNum++;    roomRedPreparedNum--; break;
-            case 1: this.roomYellowClosedNum++; roomYellowPreparedNum--; break;
-            case 2: this.roomBlueClosedNum++;   roomBluePreparedNum--; break;
+            case 0: this.roomRedClosedNum++;    this.roomRedPreparedNum--; break;
+            case 1: this.roomYellowClosedNum++; this.roomYellowPreparedNum--; break;
+            case 2: this.roomBlueClosedNum++;   this.roomBluePreparedNum--; break;
         }
         // update max level
         this.maxClosedRoomLevel = Math.max(this.maxClosedRoomLevel, floor);
@@ -278,16 +278,16 @@ class Hotel{
         if(this.roomStatus[floor][col] == 1) {
             this.roomClosedNum--;
             switch(this.roomColor[floor][col]){
-                case 0: roomRedClosedNum--; break;
-                case 1: roomYellowClosedNum--; break;
-                case 2: roomBlueClosedNum--; break;
+                case 0: this.roomRedClosedNum--; break;
+                case 1: this.roomYellowClosedNum--; break;
+                case 2: this.roomBlueClosedNum--; break;
             }
         } else if(this.roomStatus[floor][col] == 0) {
             this.roomPreparedNum--;
             switch(this.roomColor[floor][col]){
-                case 0: roomRedPreparedNum--; break;
-                case 1: roomYellowPreparedNum--; break;
-                case 2: roomBluePreparedNum--; break;
+                case 0: this.roomRedPreparedNum--; break;
+                case 1: this.roomYellowPreparedNum--; break;
+                case 2: this.roomBluePreparedNum--; break;
             }
         }
         this.roomStatus[floor][col] = -1;
