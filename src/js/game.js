@@ -123,6 +123,7 @@ class Game{
         this.players[this.currPlayer].atActionBoost = false;
         this.players[this.currPlayer].freeInviteNum = 0;
         this.players[this.currPlayer].hireNum = 0;
+        this.players[this.currPlayer].atServe = false;
         this.players[this.currPlayer].serveFoodNum = 0;
         this.players[this.currPlayer].serverOnHandHighLightFlag = false;
         this.players[this.currPlayer].serverHiredHighLightFlag = false;
