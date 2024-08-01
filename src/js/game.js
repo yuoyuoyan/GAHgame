@@ -340,7 +340,7 @@ class Game{
                         return true; // 免费准备1个房间并入住/失去最高层和次高层各1个已入住房间
                         case 2: this.players[i].gainGamePoint(2*this.players[i].numServerHired);
                         return false; // 每个已雇佣员工获得2游戏点数/每个已雇佣员工失去2游戏点数
-                        case 3: this.players[i].highlightServerToHire(10); this.players[i].royalResultFinish = false;
+                        case 3: this.players[i].highlightServerToHire(10); this.players[i].royalResultPending = true; this.players[i].royalResultFinish = false;
                         return true; // 免费雇佣1位手牌上的员工/失去1位已雇佣员工（终局结算优先）或失去10游戏点数
                     }
                     break;

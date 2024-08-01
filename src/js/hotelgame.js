@@ -1,6 +1,6 @@
 var playerNames = JSON.parse(decodeURIComponent(document.cookie));
-const skipPrepare = 1;
-const debugState = 1;
+const skipPrepare = 0;
+const debugState = 0;
 
 // init game info and draw background
 window.onload = gameOn;
@@ -24,7 +24,7 @@ player3Canvas.addEventListener("click", handlePlayer3ClickWrap);
 // 4. major tasks, done
 // 5. all servers, done
 // 6. all guests, done
-// 7. royal tasks
+// 7. royal tasks, done
 
 function gameOn() {
     // skip the first guest round
@@ -56,7 +56,7 @@ function gameOn() {
             game.royalTask0 = 0;
             game.royalTask1 = 0;
             game.royalTask2 = 3;
-            game.players[game.currPlayer].royalPoint = 10;
+            game.players[game.currPlayer].royalPoint = 5;
             game.players[game.currPlayer].gamePoint = 20;
             // game.players[game.currPlayer].royalResult = 0;
             // game.players[game.currPlayer].updateAlertCanvas(alertContext);

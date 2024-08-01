@@ -215,10 +215,14 @@ class Player{
             }
         }
         // highlight final server or all hired server if not exist
-        this.serverHiredHighLightFlag = ture;
+        this.serverHiredHighLightFlag = true;
         this.loseHiredNum++;
         for(let i=0; i<this.numServerHired; i++){
             this.serverHiredHighLight[i] = hasFinalServer ? (this.serverHired[i].serverType==3 ? 1 : 0) : 1;
+        }
+        // corner case, no hired server
+        if(this.numServerHired ==0 ) {
+            this.royalResultFinish = true;
         }
     }
 
