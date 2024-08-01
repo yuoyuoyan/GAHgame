@@ -97,7 +97,7 @@ class Hotel{
         }
     }
 
-    highlightRoomToCheckout(isBonus=false, roomNum=1, color=4, guestID=-1, tableID=-1) {
+    highlightRoomToCheckout(isBonus=false, roomNum=1, color=3, guestID=-1, tableID=-1) {
         this.roomHighLightFlag = true;
         if(isBonus){ // guest or server bonus
             this.roomToCloseColor = 4;
@@ -114,7 +114,7 @@ class Hotel{
         for(let floor=0; floor<4; floor++){
             for(let col=0; col<5; col++){
                 if (this.roomStatus[floor][col] == 0 && // prepared
-                    (this.roomColor[floor][col] == color || color==4)) { // match color or color doesn't care
+                    (this.roomColor[floor][col] == color || color==3)) { // match color or color doesn't care
                     this.roomHighLight[floor][col] = 1;
                 } else {
                     this.roomHighLight[floor][col] = 0;
