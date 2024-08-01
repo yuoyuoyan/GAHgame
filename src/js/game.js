@@ -916,7 +916,8 @@ class Game{
             if(this.players[this.currPlayer].hotel.guestOnTable[i] != null && 
                 event.offsetX>=guestXoffset && event.offsetX<=(guestXoffset+guestWidth) && event.offsetY>=guestYoffset && event.offsetY<=(guestYoffset+guestHeight)) {
                 if(this.players[this.currPlayer].hotel.atSelectSatisfiedGuest &&
-                    this.players[this.currPlayer].hotel.guestOnTable[i].guestSatisfied){
+                    this.players[this.currPlayer].hotel.guestOnTable[i].guestSatisfied &&
+                    this.players[this.currPlayer].hotel.hasPreparedRoom(this.players[this.currPlayer].hotel.guestOnTable[i].guestColor)){
                     console.log("satisfied guest " + i + " is clicked");
                     // start picking the room to close
                     this.players[this.currPlayer].hotel.atSelectSatisfiedGuest = false;

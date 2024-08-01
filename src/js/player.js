@@ -98,7 +98,8 @@ class Player{
         this.opCheckout = false;
         if(!this.firstGuestTurn){
             for(let i=0; i<3; i++){
-                if(this.hotel.guestOnTable[i]!=null && this.hotel.guestOnTable[i].guestSatisfied){
+                if(this.hotel.guestOnTable[i]!=null && this.hotel.guestOnTable[i].guestSatisfied &&
+                    this.hotel.hasPreparedRoom(this.hotel.guestOnTable[i].guestColor)){
                     this.opCheckout = true;
                 }
             }

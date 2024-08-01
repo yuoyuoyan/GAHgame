@@ -17,6 +17,9 @@ class Hotel{
         this.roomRedClosedNum = 0;
         this.roomYellowClosedNum = 0;
         this.roomBlueClosedNum = 0;
+        this.roomRedPreparedNum = 0;
+        this.roomYellowPreparedNum = 0;
+        this.roomBluePreparedNum = 0;
         this.roomHighLightFlag = true;
         this.roomHighLight = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]];
         this.numGuestOnTable = 0;
@@ -138,6 +141,11 @@ class Hotel{
         }
         this.roomStatus[floor][col] = 0;
         this.roomPreparedNum++;
+        switch(this.roomColor[floor][col]){
+            case 0: this.roomRedPreparedNum++; break;
+            case 1: this.roomYellowPreparedNum++; break;
+            case 2: this.roomBluePreparedNum++; break;
+        }
         // bonus game point at the upright corner
         if(floor==2 && col>=3){
             this.game.players[this.game.currPlayer].gainGamePoint(1);
@@ -170,9 +178,9 @@ class Hotel{
         this.roomClosedNum++;
         this.roomPreparedNum--;
         switch(this.roomColor[floor][col]){
-            case 0: this.roomRedClosedNum++; break;
-            case 1: this.roomYellowClosedNum++; break;
-            case 2: this.roomBlueClosedNum++; break;
+            case 0: this.roomRedClosedNum++;    roomRedPreparedNum--; break;
+            case 1: this.roomYellowClosedNum++; roomYellowPreparedNum--; break;
+            case 2: this.roomBlueClosedNum++;   roomBluePreparedNum--; break;
         }
         // update max level
         this.maxClosedRoomLevel = Math.max(this.maxClosedRoomLevel, floor);
@@ -269,8 +277,18 @@ class Hotel{
         }
         if(this.roomStatus[floor][col] == 1) {
             this.roomClosedNum--;
+            switch(this.roomColor[floor][col]){
+                case 0: roomRedClosedNum--; break;
+                case 1: roomYellowClosedNum--; break;
+                case 2: roomBlueClosedNum--; break;
+            }
         } else if(this.roomStatus[floor][col] == 0) {
             this.roomPreparedNum--;
+            switch(this.roomColor[floor][col]){
+                case 0: roomRedPreparedNum--; break;
+                case 1: roomYellowPreparedNum--; break;
+                case 2: roomBluePreparedNum--; break;
+            }
         }
         this.roomStatus[floor][col] = -1;
         
@@ -368,6 +386,15 @@ class Hotel{
         this.guestOnTable[guestTableID].guestSatisfied = true;
     }
 
+    hasPreparedRoom(color) {
+        switch(color){
+            case 0: return this.roomRedPreparedNum>0; break;
+            case 1: return this.roomYellowPreparedNum>0; break;
+            case 2: return this.roomBluePreparedNum>0; break;
+            case 3: return this.roomPreparedNum>0; break;
+        }
+    }
+
     // ========================================canvas==============================================
     updateHotelCanvas(context) {
         // clear canvas
@@ -444,7 +471,8 @@ class Hotel{
         for(let i=0; i<3; i++){
             if(this.guestOnTable[i] != null) {
                 context.drawImage(guestImg[this.guestOnTable[i].guestID], guestXoffset, guestYoffset, guestWidth, guestHeight);
-                if(this.atSelectSatisfiedGuest && this.guestOnTable[i].guestSatisfied) { // hightlight satisfied guests if flag on
+                if(this.atSelectSatisfiedGuest && this.guestOnTable[i].guestSatisfied &&
+                    this.hasPreparedRoom(this.guestOnTable[i].guestColor)) { // hightlight satisfied guests if flag on
                     context.strokeStyle = "red";
                     context.lineWidth = 3;
                     context.strokeRect(guestXoffset, guestYoffset, guestWidth, guestHeight);
