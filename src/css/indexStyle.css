@@ -4,22 +4,49 @@ body{
     background-repeat: repeat;
 }
 
-#playerName{
+#roomID{
     display:block;
+    margin:20px auto;
+    width:100px;
+    padding:10px 10px;
+}
+
+#roomIDText{
+    display:block;
+    margin:20px auto;
+    width:100px;
+    padding:10px 10px;
+}
+
+#roomIDButton{
+    display:block;
+    margin:20px auto;
+    width:100px;
+    padding:10px 10px;
+    background-color:#8f7a66;
+    font-family:Arial;
+    color:white;
+    outline: none;
+    border-radius:10px;
+    text-decoration:none;
+}
+
+#playerName{
+    display:none;
     margin:20px auto;
     width:100px;
     padding:10px 10px;
 }
 
 #playerNameText{
-    display:block;
+    display:none;
     margin:20px auto;
     width:100px;
     padding:10px 10px;
 }
 
 #playerButton{
-    display:block;
+    display:none;
     margin:20px auto;
     width:100px;
     padding:10px 10px;
@@ -34,18 +61,19 @@ body{
 canvas{
     /* width:450px;
     height:450px;  */  /*canvas标签类似图片，需要修改尺寸，而不是设置样式*/
-    display: block;
+    display: none;
     margin: 30px auto;
     background-color: #8f7a66;
     /* box-shadow: -2px -2px 2px #EFEFEF, 5px 5px 5px #B9B9B9; */
 }
 
 #startButton{
-    display:block;
+    display:none;
     margin:20px auto;
     width:100px;
     padding:10px 10px;
-    background-color:#8f7a66;
+    background-color:#656565;
+    /* background-color:#8f7a66; */
     font-family:Arial;
     color:white;
     outline: none;
