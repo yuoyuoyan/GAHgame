@@ -18,6 +18,7 @@ var roomOwner = false;
 var roomState = true;
 var playerState = false;
 var waitingState = false;
+var gameState = false;
 var ourPlayerName = "";
 var ourPlayerIndex = -1;
 var playerNames = [];
@@ -111,29 +112,23 @@ function addPlayer(name) {
         roomID: roomID,
         name: name
     };
+    // one client can only add name by once
+    playerState = false;
+    waitingState = true;
+    playerButton.style.backgroundColor = "grey";
     socket.send(JSON.stringify(msg));
     console.log("add a name " + name);
 }
 
-// wait for room info from server
-async function handlePlayerInfo(event) {
-    // Handle received message
-    var msg = await event.data;
-    msg = JSON.parse(msg);
-    console.log('Client side: received message ' + msg);
-    switch(msg.type){
-        case("addPlayer") :
-            if(playerNames.includes(msg.name)) { // no need to repeat
-                return;
-            }
-            playerNames.push(msg.name);
-            if(roomOwner && playerNames.length >= 2){
-                startButton.style.backgroundColor = "#8f7a66";
-                startButton.addEventListener("click", startGame);
-            }
-            break;
-    }
-};
+// start the game
+function startGame() {
+    // record player names in cookies and go to game page
+    var msg = {
+        type: "startGame",
+        roomID: roomID,
+    };
+    socket.send(JSON.stringify(msg));
+}
 
 // button misc
 playerButton.addEventListener("mouseover", () => {
@@ -145,17 +140,15 @@ playerButton.addEventListener("mouseout", () => {
     playerButton.style.cursor = 'default';
 }); // change cursor style by move out
 
-// start the game
-function startGame() {
-    // record player names in cookies and go to game page
-    var msg = {
-        type: "startGame",
-        roomID: roomID,
-    };
-    socket.send(JSON.stringify(msg));
-    document.cookie = JSON.stringify(playerNames);
-    window.location.href = "hotelgame.html";
-}
+// button misc
+startButton.addEventListener("mouseover", () => {
+    if(waitingState && roomOwner){
+        startButton.style.cursor = 'pointer';
+    }
+}); // change cursor style by hovering
+startButton.addEventListener("mouseout", () => {
+    startButton.style.cursor = 'default';
+}); // change cursor style by move out
 
 // handle all messages from server
 async function handleMsg(event) {
@@ -176,7 +169,7 @@ async function handleMsg(event) {
             }
             roomOwner = ourPlayerIndex==0;
             // can start game if you are the owner
-            if(roomOwner) {
+            if(roomOwner & playerNumber>=2) {
                 startButton.style.backgroundColor = "#8f7a66";
                 startButton.addEventListener("click", startGame);
             }
@@ -196,18 +189,46 @@ async function handleMsg(event) {
             }
             updatePlayerCanvas();
             break;
+        case("startGame") :
+            waitingState = false;
+            gameState = true;
+            playerNameLabel.style.display = 'none';
+            playerNameText.style.display = 'none';
+            playerButton.style.display = 'none';
+            canvas.style.display = 'none';
+            startButton.style.display = 'none';
+            guestCanvas.style.display = 'block';
+            actionCanvas.style.display = 'block';
+            player0Canvas.style.display = 'block';
+            player1Canvas.style.display = 'block';
+            player2Canvas.style.display = 'block';
+            player3Canvas.style.display = 'block';
+            serverCanvas.style.display = 'block';
+            hotelCanvas.style.display = 'block';
+            game = new Game(playerNames.length, playerNames, 1);
+            gameOn();
+            // document.cookie = JSON.stringify(playerNames);
+            // window.location.href = "hotelgame.html";
+            break;
+        case("gameInitInfo") :
+            game.majorTask0 = msg.majorTask[0];
+            game.majorTask1 = msg.majorTask[1];
+            game.majorTask2 = msg.majorTask[2];
+            game.royalTask0 = msg.royalTask[0];
+            game.royalTask1 = msg.royalTask[1];
+            game.royalTask2 = msg.royalTask[2];
+            for(let i=0; i<5; i++){
+                game.guestInQueue.push(msg.guest[i]);
+            }
+            for(let i=0; i<6; i++){
+                for(let player=0; player<playerNumber; player++){
+                    // player can only see its own hand, others will show with back side
+                    game.players[ourPlayerIndex].addServerToHandDebug(msg.server[i]);
+                }
+            }
+            break;
     }
 };
-
-// button misc
-startButton.addEventListener("mouseover", () => {
-    if(playerState && roomOwner){
-        startButton.style.cursor = 'pointer';
-    }
-}); // change cursor style by hovering
-startButton.addEventListener("mouseout", () => {
-    startButton.style.cursor = 'default';
-}); // change cursor style by move out
 
 // canvas update
 function updatePlayerCanvas() {

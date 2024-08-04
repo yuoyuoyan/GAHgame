@@ -1,10 +1,11 @@
-var playerNames = JSON.parse(decodeURIComponent(document.cookie));
+// var playerNames = JSON.parse(decodeURIComponent(document.cookie));
 const skipPrepare = 0;
 const debugState = 0;
 
 // init game info and draw background
-window.onload = gameOn;
-const game = new Game(playerNames.length, playerNames, 1);
+// window.onload = gameOn;
+// const game = new Game(playerNames.length, playerNames, 1);
+var game;
 
 // listen to canvas click
 guestCanvas.addEventListener("click",   handleGuestClickWrap);

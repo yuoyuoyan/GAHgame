@@ -58,7 +58,7 @@ body{
     text-decoration:none;
 }
 
-canvas{
+#nameboard{
     /* width:450px;
     height:450px;  */  /*canvas标签类似图片，需要修改尺寸，而不是设置样式*/
     display: none;
@@ -79,4 +79,92 @@ canvas{
     outline: none;
     border-radius:10px;
     text-decoration:none;
+}
+
+#guestboard{
+    display: none;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    /* border: 3px solid #73AD21; */
+}
+
+#actionboard{
+    display: none;
+    position: absolute;
+    top: 640px;
+    left: 0px;
+    /* border: 3px solid #73AD21; */
+}
+
+#player0board{
+    display: none;
+    position: absolute;
+    top: 800px;
+    left: 0px;
+    background-color:#b89e86;
+    /* border: 3px solid #73AD21; */
+}
+#player1board{
+    display: none;
+    position: absolute;
+    top: 850px;
+    left: 0px;
+    background-color:#d6cfc9;
+    /* border: 3px solid #73AD21; */
+}
+#player2board{
+    display: none;
+    position: absolute;
+    top: 900px;
+    left: 0px;
+    background-color:#b89e86;
+    /* border: 3px solid #73AD21; */
+}
+#player3board{
+    display: none;
+    position: absolute;
+    top: 950px;
+    left: 0px;
+    background-color:#d6cfc9;
+    /* border: 3px solid #73AD21; */
+}
+
+#hotelboard{
+    display: none;
+    position: absolute;
+    top: 0px;
+    left: 960px;
+    /* border: 3px solid #73AD21; */
+}
+
+#serverboard{
+    display: none;
+    position: absolute;
+    top: 840px;
+    left: 960px;
+    background-color:#8f7a66;
+    /* border: 3px solid #73AD21; */
+}
+
+#alertboard{
+    display: none;
+    position: absolute;
+    top: 480px;
+    left: 560px;
+    z-index: 100;
+    background-color:#8f7a66;
+    /* border: 3px solid #73AD21; */
+}
+
+#dialog{
+    display: none;
+    position: absolute;
+    top: 1000px;
+    left: 0px;
+    width: 960px;
+    background-color:#b89e86;
+    /* border: 1px solid black;
+    padding: 10px; */
+    overflow-y: auto;
 }

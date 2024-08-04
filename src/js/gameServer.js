@@ -15,6 +15,11 @@ class gameRoom{
         this.gameStart = false;
         this.gameOver = false;
         this.winner = -1;
+        // two card deck moved to server
+        this.guestDeck = Array.from({length: 58}, (_, i) => i);
+        this.serverDeck = Array.from({length: 48}, (_, i) => i);
+        shuffleDeck(this.guestDeck);
+        shuffleDeck(this.serverDeck);
     }
 }
 
@@ -25,11 +30,10 @@ wss.on('connection', function connection(ws) {
         console.log('Server side: received message ' + message);
         var rcvmsg = JSON.parse(message);
         var rplmsg;
-        var roomIndex;
+        var roomIndex = roomIDList.indexOf(rcvmsg.roomID);
         switch(rcvmsg.type){
             case "enterRoom":
                 if(checkRoomExist(rcvmsg.roomID)){ // room exist
-                    roomIndex = roomIDList.indexOf(rcvmsg.roomID);
                     if(roomList[roomIndex].roomPlayerNumber == 4){ // full already
                         console.log("Full room index " + roomIndex);
                         rplmsg = {
@@ -64,7 +68,6 @@ wss.on('connection', function connection(ws) {
                 break;
             case "addPlayer":
                 console.log("Add a player " + rcvmsg.name + " in room ID " + rcvmsg.roomID);
-                roomIndex = roomIDList.indexOf(rcvmsg.roomID);
                 roomList[roomIndex].playerNumber++;
                 roomList[roomIndex].playerName.push(rcvmsg.name);
                 roomList[roomIndex].playerClients.push(ws);
@@ -76,8 +79,25 @@ wss.on('connection', function connection(ws) {
                 break;
             case "startGame": // only owner can start game, owner is player ID 0
                 console.log("start game");
-                roomIndex = roomIDList.indexOf(rcvmsg.roomID);
                 roomList[roomIndex].gameStart = true;
+                rplmsg = {
+                    type: "startGame"
+                }
+                gameInit(roomList[roomIndex]);
+                break;
+            case "broadcast": // game operation to be broadcast to all players in room
+                console.log("broadcast info");
+                if(rcvmsg.serverReq > 0) {
+                    ;
+                }
+                if(rcvmsg.guestReq > 0) {
+                    ;
+                }
+                rplmsg = rcvmsg;
+                break;
+            case "endGame": // game over, close room
+                console.log("end game");
+                removeRoomByIndex(roomIndex);
                 break;
         }
         // broadcast room info whenever updated
@@ -138,4 +158,41 @@ function addRoom(roomID) {
 function removeRoomByIndex(roomIndex) {
     roomIDList.splice(roomIndex, 1);
     roomList.splice(roomIndex, 1);
+}
+
+function shuffleDeck(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function gameInit(room){
+    var firstFiveGuest = [];
+    const majorTask0 = Math.floor(Math.random() * 4);
+    const majorTask1 = Math.floor(Math.random() * 4);
+    const majorTask2 = Math.floor(Math.random() * 4);
+    const royalTask0 = Math.floor(Math.random() * 4);
+    const royalTask1 = Math.floor(Math.random() * 4);
+    const royalTask2 = Math.floor(Math.random() * 4);
+    
+    for(let i=0; i<5; i++){
+        var firstFiveGuest = [];
+        firstFiveGuest.push(room.guestDeck.at(-1));
+        room.guestDeck.pop();
+    }    
+    
+    for(let player=0; player<room.playerClients.length; player++){
+        var firstSixServer = [];
+        firstSixServer.push(room.serverDeck.at(-1));
+        room.serverDeck.pop();
+        msg = {
+            type: "gameInitInfo",
+            majorTask: [majorTask0, majorTask1, majorTask2],
+            royalTask: [royalTask0, royalTask1, royalTask2],
+            guest: firstFiveGuest,
+            server: firstSixServer
+        };
+        room.playerClients[player].send(JSON.stringify(msg));
+    }
 }

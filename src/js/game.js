@@ -4,28 +4,19 @@ class Game{
         // init top info
         console.log("new game!!")
         this.playerNumber = playerNumber;
-        // console.log("number of player: " + this.playerNumber);
         this.playerName = playerName;
         this.gameOver = false;
         this.winner = -1;
         this.standardHotel = standardHotel;
         this.diceNumber = playerNumber * 2 + 6;
-        // console.log("number of dice: " + this.diceNumber);
         this.majorTask0 = Math.floor(Math.random() * 4);
-        // console.log("major task 1: " + majorTaskDescription[0][this.majorTask0]);
         this.majorTask1 = Math.floor(Math.random() * 4);
-        // console.log("major task 2: " + majorTaskDescription[1][this.majorTask1]);
         this.majorTask2 = Math.floor(Math.random() * 4);
-        // console.log("major task 3: " + majorTaskDescription[2][this.majorTask2]);
         this.majorTaskComp = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]];
         this.royalTask0 = Math.floor(Math.random() * 4);
-        // console.log("royal task 1: " + royalTaskDescription[0][this.royalTask0]);
         this.royalTask1 = Math.floor(Math.random() * 4);
-        // console.log("royal task 2: " + royalTaskDescription[1][this.royalTask1]);
         this.royalTask2 = Math.floor(Math.random() * 4);
-        // console.log("royal task 3: " + royalTaskDescription[2][this.royalTask2]);
         this.mainRound = 0;
-        // console.log("main round: " + this.mainRound);
         this.miniRound = 0;
         this.royalRound = false;
         this.actionPoint = [0, 0, 0, 0, 0, 0];
@@ -37,19 +28,17 @@ class Game{
         this.alertType = 0;
 
         // init guest deck and server deck
-        this.guestDeck = Array.from({length: 58}, (_, i) => i);
-        this.serverDeck = Array.from({length: 48}, (_, i) => i);
-        this.shuffleDeck(this.guestDeck);
-        this.shuffleDeck(this.serverDeck);
+        // this.guestDeck = Array.from({length: 58}, (_, i) => i);
+        // this.serverDeck = Array.from({length: 48}, (_, i) => i);
+        // this.shuffleDeck(this.guestDeck);
+        // this.shuffleDeck(this.serverDeck);
 
         // take first 5 guests in queue
         this.guestInQueue = [];
-        for(let i=0; i<5; i++){
-            this.guestInQueue.push(this.guestDeck.at(-1));
-            // console.log("guest " + i + " in queue: " + guestNameByID[this.guestInQueue[i]]);
-            // console.log("bonus: " + guestDescriptionByID[this.guestInQueue[i]]);
-            this.guestDeck.pop();
-        }
+        // for(let i=0; i<5; i++){
+        //     this.guestInQueue.push(this.guestDeck.at(-1));
+        //     this.guestDeck.pop();
+        // }
 
         // init player info
         this.players = [];
@@ -78,10 +67,9 @@ class Game{
             this.players[3].miniTurn = [4, 5];
             break;
         }
-        for(let i=0; i<this.playerNumber; i++) { // draw 6 servers
-            this.players[i].addServerToHand(6);
-            // console.log("player " + playerName[i] + " draw a server ID: " + this.serverDeck.at(-1));
-        }
+        // for(let i=0; i<this.playerNumber; i++) { // draw 6 servers
+        //     this.players[i].addServerToHand(6);
+        // }
         
         // place the first player to start
         this.currPlayer = 0;
@@ -646,7 +634,7 @@ class Game{
         var   guestYoffset = 350;
         const guestWidth   = 160;
         const guestHeight  = 240;
-        for(let i=0; i<5; i++){
+        for(let i=0; i<this.guestInQueue.length; i++){
             context.drawImage(guestImg[this.guestInQueue[i]], guestXoffset, guestYoffset, guestWidth, guestHeight);
             guestXoffset += 182;
         }
