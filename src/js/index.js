@@ -1,22 +1,27 @@
 // server connection
 const socket = new WebSocket('ws://localhost:8080');
+socket.onmessage = handleMsg;
 
-var roomIDText = document.getElementById("roomIDText");
-var roomIDButton = document.getElementById("roomIDButton");
-var playerNameText = document.getElementById("playerNameText");
-var playerButton = document.getElementById("playerButton");
-var canvas = document.getElementById("nameboard");
-var startButton = document.getElementById("startButton");
-var context = canvas.getContext("2d");
+const roomIDLabel = document.getElementById("roomID");
+const roomIDText = document.getElementById("roomIDText");
+const roomIDButton = document.getElementById("roomIDButton");
+const playerNameLabel = document.getElementById("playerName");
+const playerNameText = document.getElementById("playerNameText");
+const playerButton = document.getElementById("playerButton");
+const canvas = document.getElementById("nameboard");
+const startButton = document.getElementById("startButton");
+const context = canvas.getContext("2d");
 
 // player list
-var roomState = true;
 var roomID = 0;
 var roomOwner = false;
-var playerID = -1;
+var roomState = true;
 var playerState = false;
 var waitingState = false;
+var ourPlayerName = "";
+var ourPlayerIndex = -1;
 var playerNames = [];
+var playerNumber = 0;
 
 // enter room button
 roomIDText.addEventListener("keyup", enterRoomEnter); // enter a room by type enter
@@ -60,45 +65,9 @@ function enterRoom(value) {
     };
     roomID = value;
     socket.send(JSON.stringify(msg));
-    socket.onmessage = handleRoomInfo;
-    playerButton.style.backgroundColor = "grey";
-    playerState = false;
-    waitingState = true;
+    // playerState = false;
+    // waitingState = true;
 }
-
-// wait for room info from server
-async function handleRoomInfo(event) {
-    // Handle received message
-    var msg = await event.data;
-    msg = JSON.parse(msg);
-    console.log('Client side: received message ' + msg);
-    switch(msg.type){
-        case("roomInfo") :
-            switch(msg.playerNumber) {
-                case -1:
-                    alert("this room is full, cannot enter");
-                    break;
-                case 3:
-                case 2:
-                case 1:
-                case 0: // turn to player name stage
-                    playerNames = msg.playerName;
-                    roomState = false;
-                    roomOwner = msg.playerNumber==0; // become owner if room is empty
-                    playerState = true;
-                    roomIDText.style.display = 'none';
-                    roomIDButton.style.display = 'none';
-                    playerNameText.style.display = 'block';
-                    playerButton.style.display = 'block';
-                    canvas.style.display = 'block';
-                    startButton.style.display = 'block';
-                    // switch the event function
-                    socket.onmessage = handlePlayerInfo;
-                    break;
-            }
-            break;
-    }
-};
 
 // add new player button
 playerNameText.addEventListener("keyup", addPlayerEnter); // add a player name by type enter
@@ -136,18 +105,14 @@ function addPlayer(name) {
         return;
     }
 
-    playerID = playerNames.length;
+    ourPlayerName = name;
     var msg = {
         type: "addPlayer",
-        playerID: playerID,
         roomID: roomID,
         name: name
     };
     socket.send(JSON.stringify(msg));
-
     console.log("add a name " + name);
-    playerNames.push(name);  // Add the name to the array
-    updatePlayerCanvas();
 }
 
 // wait for room info from server
@@ -172,7 +137,9 @@ async function handlePlayerInfo(event) {
 
 // button misc
 playerButton.addEventListener("mouseover", () => {
-    playerButton.style.cursor = 'pointer';
+    if(playerState){
+        playerButton.style.cursor = 'pointer';
+    }
 }); // change cursor style by hovering
 playerButton.addEventListener("mouseout", () => {
     playerButton.style.cursor = 'default';
@@ -190,9 +157,53 @@ function startGame() {
     window.location.href = "hotelgame.html";
 }
 
+// handle all messages from server
+async function handleMsg(event) {
+    // Handle received message
+    var msg = await event.data;
+    msg = JSON.parse(msg);
+    console.log('Client side: received message ' + msg);
+    switch(msg.type){
+        case("roomFull") : // room full, change to another room
+            alert("this room is full, cannot enter");
+            break;
+        case("roomInfo") :
+            playerNames = msg.playerName;
+            playerNumber = msg.playerNumber;
+            // become owner if we are the index 0
+            if(playerNames.includes(ourPlayerName)){
+                ourPlayerIndex = playerNames.indexOf(ourPlayerName);
+            }
+            roomOwner = ourPlayerIndex==0;
+            // can start game if you are the owner
+            if(roomOwner) {
+                startButton.style.backgroundColor = "#8f7a66";
+                startButton.addEventListener("click", startGame);
+            }
+            // switch to player state if in room state, and show up all blocks
+            if(roomState){
+                roomState = false;
+                playerState = true;
+                roomIDLabel.style.display = 'none';
+                roomIDText.style.display = 'none';
+                roomIDButton.style.display = 'none';
+                playerNameLabel.style.display = 'block';
+                playerNameText.style.display = 'block';
+                playerButton.style.display = 'block';
+                playerButton.style.backgroundColor = "#8f7a66";
+                canvas.style.display = 'block';
+                startButton.style.display = 'block';
+            }
+            updatePlayerCanvas();
+            break;
+    }
+};
+
 // button misc
 startButton.addEventListener("mouseover", () => {
-    startButton.style.cursor = 'pointer';
+    if(playerState && roomOwner){
+        startButton.style.cursor = 'pointer';
+    }
 }); // change cursor style by hovering
 startButton.addEventListener("mouseout", () => {
     startButton.style.cursor = 'default';
@@ -200,8 +211,10 @@ startButton.addEventListener("mouseout", () => {
 
 // canvas update
 function updatePlayerCanvas() {
+    // clear canvas first
+    context.clearRect(0, 0, 400, 200);
     context.font="20px verdana";
-    for(let i=0; i<playerNames.length; i++){
+    for(let i=0; i<playerNumber; i++){
         switch(i){
             case 0: context.fillStyle = "blue";   break;
             case 1: context.fillStyle = "red";    break;
