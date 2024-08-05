@@ -91,11 +91,11 @@ wss.on('connection', function connection(ws) {
             case "gameInitInfoReq" :
                 console.log("send game initialization info to players");
                 var playerIndex = rcvmsg.playerID;
-                var firstSixServer = [];
-                for(let i=0; i<6; i++){
-                    firstSixServer.push(roomList[roomIndex].serverDeck.at(-1));
-                    roomList[roomIndex].serverDeck.pop();
-                }
+                // var firstSixServer = [];
+                // for(let i=0; i<6; i++){
+                //     firstSixServer.push(roomList[roomIndex].serverDeck.at(-1));
+                //     roomList[roomIndex].serverDeck.pop();
+                // }
                 rplmsg = {
                     type: "gameInitInfo",
                     majorTask: roomList[roomIndex].majorTask,
