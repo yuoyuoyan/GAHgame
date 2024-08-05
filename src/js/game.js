@@ -485,7 +485,6 @@ class Game{
         this.guestInQueue.splice(guestSelected, 1); // remove this guest from queue
         this.guestInQueue.unshift(this.guestDeck.at(-1));
         this.guestDeck.pop();
-        this.log.push(this.playerName[this.currPlayer] + "邀请了客人" + guestNameByID[this.guestInQueue[0]]);
         console.log("add guest " + guestNameByID[this.guestInQueue[0]] + " to queue");
     }
 

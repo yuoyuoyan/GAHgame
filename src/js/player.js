@@ -131,7 +131,7 @@ class Player{
         this.atTakeWhite = Math.floor(value/2);
         this.atTakeBrown = value - this.atTakeWhite;
         this.game.alertType = 0;
-        this.game.log.push(this.game.playerName[this.game.currPlayer] +  + "选择拿菜，boost前棕白总量" + value);
+        this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择拿菜，boost前棕白总量" + value);
     }
 
     actionTakeRedBlack(value) {
@@ -141,7 +141,7 @@ class Player{
         this.atTakeBlack = Math.floor(value/2);
         this.atTakeRed = value - this.atTakeBlack;
         this.game.alertType = 1;
-        this.game.log.push(this.game.playerName[this.game.currPlayer] +  + "选择拿菜，boost前红黑总量" + value);
+        this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择拿菜，boost前红黑总量" + value);
     }
 
     actionPrepareRoom(value) {
@@ -149,7 +149,7 @@ class Player{
         this.atPrepareRoom = true;
         this.atRoomToPrepare = value;
         this.game.alertType = 2;
-        this.game.log.push(this.game.playerName[this.game.currPlayer] +  + "选择开房间，boost前共可开" + value);
+        this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择开房间，boost前共可开" + value);
     }
 
     actionTakeRoyalMoney(value) {
@@ -159,10 +159,10 @@ class Player{
         this.atRoyal = value;
         if(this.hasHiredServer(14)){
             this.atMoney = value;
-            this.game.log.push(this.game.playerName[this.game.currPlayer] +  + "的员工效果，同时获得皇室点数和钱");
+            this.game.log.push(this.game.playerName[this.game.currPlayer] + "的员工效果，同时获得皇室点数和钱");
         } else {
             this.atMoney = 0;
-            this.game.log.push(this.game.playerName[this.game.currPlayer] +  + "选择获取皇室点数和钱，boost前共可获得" + value);
+            this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择获取皇室点数和钱，boost前共可获得" + value);
         }
         this.game.alertType = 3;
     }
@@ -174,7 +174,7 @@ class Player{
         // default maximum discount
         this.atHireServerdiscount.push(value);
         this.game.alertType = 4;
-        this.game.log.push(this.game.playerName[this.game.currPlayer] +  + "选择雇佣员工，boost前共可减免" + value);
+        this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择雇佣员工，boost前共可减免" + value);
     }
 
     actionTakeMirror(value) {
@@ -184,7 +184,7 @@ class Player{
         this.atMirrorStrength = value;
         this.atMirrorDice = 1;
         this.game.alertType = 5;
-        this.game.log.push(this.game.playerName[this.game.currPlayer] +  + "选择镜像骰子，boost前强度为" + value);
+        this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择镜像骰子，boost前强度为" + value);
     }
 
     highlightServerToLose(numServer) {
