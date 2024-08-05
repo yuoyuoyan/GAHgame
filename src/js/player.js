@@ -902,16 +902,19 @@ class Player{
         // different types of alert
         switch(this.game.alertType){
             case 0: // take brown or white
-            context.drawImage(moneyImg, 20, 100, 30, 30);
+            // context.drawImage(moneyImg, 20, 100, 30, 30);
+            context.drawImage(tokenImg, moneyImgX, moneyImgY, 30, 30, 20, 100, 30, 30);
             this.textCanvas(context, "Boost", 60, 120);
             if(this.atActionBoost){ // draw a mark if boost is selected
                 this.markCanvas(context, 80, 110, 90, 120, 100, 100);
             }
-            context.drawImage(brownImg, 150, 100, 30, 30);
+            // context.drawImage(brownImg, 150, 100, 30, 30);
+            context.drawImage(tokenImg, brownImgX, brownImgY, 30, 30, 150, 100, 30, 30);
             this.textCanvas(context, this.atTakeBrown.toString(), 200, 120);
             this.triangleCanvas(context, 225, 110, 250, 90, 275, 110);
             this.triangleCanvas(context, 225, 120, 250, 140, 275, 120);
-            context.drawImage(whiteImg, 300, 100, 30, 30);
+            // context.drawImage(whiteImg, 300, 100, 30, 30);
+            context.drawImage(tokenImg, whiteImgX, whiteImgY, 30, 30, 300, 100, 30, 30);
             this.textCanvas(context, this.atTakeWhite.toString(), 350, 120);
             this.triangleCanvas(context, 375, 110, 400, 90, 425, 110);
             this.triangleCanvas(context, 375, 120, 400, 140, 425, 120);
@@ -922,16 +925,19 @@ class Player{
             this.textCanvas(context, "确定", 228, 200);
             break;
             case 1: // take red or black
-            context.drawImage(moneyImg, 20, 100, 30, 30);
+            // context.drawImage(moneyImg, 20, 100, 30, 30);
+            context.drawImage(tokenImg, moneyImgX, moneyImgY, 30, 30, 20, 100, 30, 30);
             this.textCanvas(context, "Boost", 60, 120);
             if(this.atActionBoost){ // draw a mark if boost is selected
                 this.markCanvas(context, 80, 110, 90, 120, 100, 100);
             }
-            context.drawImage(redImg, 150, 100, 30, 30);
+            // context.drawImage(redImg, 150, 100, 30, 30);
+            context.drawImage(tokenImg, redImgX, redImgY, 30, 30, 150, 100, 30, 30);
             this.textCanvas(context, this.atTakeRed.toString(), 200, 120);
             this.triangleCanvas(context, 225, 110, 250, 90, 275, 110);
             this.triangleCanvas(context, 225, 120, 250, 140, 275, 120);
-            context.drawImage(blackImg, 300, 100, 30, 30);
+            // context.drawImage(blackImg, 300, 100, 30, 30);
+            context.drawImage(tokenImg, blackImgX, blackImgY, 30, 30, 300, 100, 30, 30);
             this.textCanvas(context, this.atTakeBlack.toString(), 350, 120);
             this.triangleCanvas(context, 375, 110, 400, 90, 425, 110);
             this.triangleCanvas(context, 375, 120, 400, 140, 425, 120);
@@ -942,12 +948,14 @@ class Player{
             this.textCanvas(context, "确定", 228, 200);
             break;
             case 2: // prepare rooms
-            context.drawImage(moneyImg, 20, 100, 30, 30);
+            // context.drawImage(moneyImg, 20, 100, 30, 30);
+            context.drawImage(tokenImg, moneyImgX, moneyImgY, 30, 30, 20, 100, 30, 30);
             this.textCanvas(context, "Boost", 60, 120);
             if(this.atActionBoost){ // draw a mark if boost is selected
                 this.markCanvas(context, 80, 110, 90, 120, 100, 100);
             }
-            context.drawImage(roomPreparedTokenImg, 140, 90, 50, 50);
+            // context.drawImage(roomPreparedTokenImg, 140, 90, 50, 50);
+            context.drawImage(tokenImg, roomPreparedTokenImgX, roomPreparedTokenImgY, 30, 30, 140, 90, 50, 50);
             this.textCanvas(context, this.atRoomToPrepare.toString(), 200, 120);
             this.triangleCanvas(context, 225, 110, 250, 90, 275, 110);
             this.triangleCanvas(context, 225, 120, 250, 140, 275, 120);
@@ -958,16 +966,19 @@ class Player{
             this.textCanvas(context, "确定", 228, 200);
             break;
             case 3: // take royal points or money
-            context.drawImage(moneyImg, 20, 100, 30, 30);
+            // context.drawImage(moneyImg, 20, 100, 30, 30);
+            context.drawImage(tokenImg, moneyImgX, moneyImgY, 30, 30, 20, 100, 30, 30);
             this.textCanvas(context, "Boost", 60, 120);
             if(this.atActionBoost){ // draw a mark if boost is selected
                 this.markCanvas(context, 80, 110, 90, 120, 100, 100);
             }
-            context.drawImage(royalTokenImg, 150, 95, 30, 40);
+            // context.drawImage(royalTokenImg, 150, 95, 30, 40);
+            context.drawImage(tokenImg, royalTokenImgX, royalTokenImgY, 30, 30, 150, 95, 30, 40);
             this.textCanvas(context, this.atRoyal.toString(), 200, 120);
             this.triangleCanvas(context, 225, 110, 250, 90, 275, 110);
             this.triangleCanvas(context, 225, 120, 250, 140, 275, 120);
-            context.drawImage(moneyImg, 300, 100, 30, 30);
+            // context.drawImage(moneyImg, 300, 100, 30, 30);
+            context.drawImage(tokenImg, moneyImgX, moneyImgY, 30, 30, 300, 100, 30, 30);
             this.textCanvas(context, this.atMoney.toString(), 350, 120);
             this.triangleCanvas(context, 375, 110, 400, 90, 425, 110);
             this.triangleCanvas(context, 375, 120, 400, 140, 425, 120);
@@ -978,12 +989,15 @@ class Player{
             this.textCanvas(context, "确定", 228, 200);
             break;
             case 4: // hire servers
-            context.drawImage(moneyImg, 20, 100, 30, 30);
+            // context.drawImage(moneyImg, 20, 100, 30, 30);
+            context.drawImage(tokenImg, moneyImgX, moneyImgY, 30, 30, 20, 100, 30, 30);
             this.textCanvas(context, "Boost", 60, 120);
             if(this.atActionBoost){ // draw a mark if boost is selected
                 this.markCanvas(context, 80, 110, 90, 120, 100, 100);
             }
-            context.drawImage(serverImg[0], 140, 90, 50, 50);
+            // context.drawImage(serverImg[0], 140, 90, 50, 50);
+            context.drawImage(serverAllImg, 0, 0, 160, 240, 140, 90, 50, 50);
+            serverAllImg
             context.fillStyle = 'white';
             context.strokeStyle = 'black';
             context.strokeRect(200, 170, 100, 40);
@@ -991,15 +1005,18 @@ class Player{
             this.textCanvas(context, "确定", 228, 200);
             break;
             case 5: // take mirrors
-            var diceImg = dice1Img;
+            // var diceImg = dice1Img;
+            var diceImgX = 0;
+            var diceImgY = 0;
             switch(this.atMirrorDice){
-                case 1: diceImg = dice1Img; break;
-                case 2: diceImg = dice2Img; break;
-                case 3: diceImg = dice3Img; break;
-                case 4: diceImg = dice4Img; break;
-                case 5: diceImg = dice5Img; break;
+                case 1: diceImgX = dice1ImgX; diceImgY = dice1ImgY; break;
+                case 2: diceImgX = dice2ImgX; diceImgY = dice2ImgY; break;
+                case 3: diceImgX = dice3ImgX; diceImgY = dice3ImgY; break;
+                case 4: diceImgX = dice4ImgX; diceImgY = dice4ImgY; break;
+                case 5: diceImgX = dice5ImgX; diceImgY = dice5ImgY; break;
             }
-            context.drawImage(diceImg, 150, 100, 30, 30);
+            // context.drawImage(diceImg, 150, 100, 30, 30);
+            context.drawImage(tokenImg, diceImgX, diceImgY, 30, 30, 150, 100, 30, 30);
             this.triangleCanvas(context, 225, 110, 250, 90, 275, 110);
             this.triangleCanvas(context, 225, 120, 250, 140, 275, 120);
             context.fillStyle = 'white';
@@ -1009,19 +1026,23 @@ class Player{
             this.textCanvas(context, "确定", 228, 200);
             break;
             case 6: // pick food to take
-            context.drawImage(brownImg, 100, 25, 30, 30);
+            // context.drawImage(brownImg, 100, 25, 30, 30);
+            context.drawImage(tokenImg, brownImgX, brownImgY, 30, 30, 100, 25, 30, 30);
             this.textCanvas(context, this.atTakeBrown.toString(), 150, 45);
             this.triangleCanvas(context, 175, 35, 200, 15, 225, 35);
             this.triangleCanvas(context, 175, 45, 200, 65, 225, 45);
-            context.drawImage(whiteImg, 250, 25, 30, 30);
+            // context.drawImage(whiteImg, 250, 25, 30, 30);
+            context.drawImage(tokenImg, whiteImgX, whiteImgY, 30, 30, 250, 25, 30, 30);
             this.textCanvas(context, this.atTakeWhite.toString(), 300, 45);
             this.triangleCanvas(context, 325, 35, 350, 15, 375, 35);
             this.triangleCanvas(context, 325, 45, 350, 65, 375, 45);
-            context.drawImage(redImg, 100, 100, 30, 30);
+            // context.drawImage(redImg, 100, 100, 30, 30);
+            context.drawImage(tokenImg, redImgX, redImgY, 30, 30, 100, 100, 30, 30);
             this.textCanvas(context, this.atTakeRed.toString(), 150, 120);
             this.triangleCanvas(context, 175, 110, 200, 90, 225, 110);
             this.triangleCanvas(context, 175, 120, 200, 140, 225, 120);
-            context.drawImage(blackImg, 250, 100, 30, 30);
+            // context.drawImage(blackImg, 250, 100, 30, 30);
+            context.drawImage(tokenImg, blackImgX, blackImgY, 30, 30, 250, 100, 30, 30);
             this.textCanvas(context, this.atTakeBlack.toString(), 300, 120);
             this.triangleCanvas(context, 325, 110, 350, 90, 375, 110);
             this.triangleCanvas(context, 325, 120, 350, 140, 375, 120);
@@ -1032,39 +1053,52 @@ class Player{
             this.textCanvas(context, "确定", 228, 200);
             break;
             case 7: // pick royal task result
-            var img0, img1, text0, text1;
+            var img0, img1, text0, text1, img0X, img0Y, img1X, img1Y;
             if(this.game.mainRound==2 && this.royalResult==0) {
                 switch(this.game.royalTask0){
-                    case 0: img0 = moneyImg; img1 = gamePointTokenImg; text0 = "失去3块钱"; text1 = "失去5游戏点数"; break;
-                    case 1: img0 = brownImg; img1 = null; text0 = "失去厨房全部食物"; text1 = null; break;
-                    case 2: img0 = serverTokenImg; img1 = gamePointTokenImg; text0 = "丢弃2张员工手牌"; text1 = "失去5游戏点数"; break;
-                    case 3: img0 = roomPreparedTokenImg; img1 = gamePointTokenImg; text0 = "失去最高的准备好的房间"; text1 = "失去5游戏点数"; break
+                    case 0: img0 = moneyImg; img1 = gamePointTokenImg; text0 = "失去3块钱"; text1 = "失去5游戏点数"; 
+                            img0X = moneyImgX; img0Y = moneyImgY; img1X = gamePointTokenImgX; img1Y = gamePointTokenImgY; break;
+                    case 1: img0 = brownImg; img1 = null; text0 = "失去厨房全部食物"; text1 = null;
+                            img0X = brownImgX; img0Y = brownImgY; img1X = 0; img1Y = 0; break;
+                    case 2: img0 = serverTokenImg; img1 = gamePointTokenImg; text0 = "丢弃2张员工手牌"; text1 = "失去5游戏点数";
+                            img0X = serverTokenImgX; img0Y = serverTokenImgY; img1X = gamePointTokenImgX; img1Y = gamePointTokenImgY; break;
+                    case 3: img0 = roomPreparedTokenImg; img1 = gamePointTokenImg; text0 = "失去最高的准备好的房间"; text1 = "失去5游戏点数";
+                            img0X = roomPreparedTokenImgX; img0Y = roomPreparedTokenImgY; img1X = gamePointTokenImgX; img1Y = gamePointTokenImgY; break;
                 }
             } else if(this.game.mainRound==4 && this.royalResult==0) {
                 switch(this.game.royalTask1){
-                    case 0: img0 = brownImg; img1 = null; text0 = "失去厨房和客桌上的全部食物"; text1 = null; break;
-                    case 1: img0 = moneyImg; img1 = gamePointTokenImg; text0 = "失去5块钱"; text1 = "失去7游戏点数"; break;
-                    case 2: img0 = serverTokenImg; img1 = gamePointTokenImg; text0 = "丢弃3张员工手牌"; text1 = "失去7游戏点数"; break;
-                    case 3: img0 = roomClosedTokenImg; img1 = gamePointTokenImg; text0 = "失去最高和次高的已入住的2个房间"; text1 = "失去7游戏点数"; break;
+                    case 0: img0 = brownImg; img1 = null; text0 = "失去厨房和客桌上的全部食物"; text1 = null;
+                            img0X = brownImgX; img0Y = brownImgY; img1X = 0; img1Y = 0; break;
+                    case 1: img0 = moneyImg; img1 = gamePointTokenImg; text0 = "失去5块钱"; text1 = "失去7游戏点数";
+                            img0X = moneyImgX; img0Y = moneyImgY; img1X = gamePointTokenImgX; img1Y = gamePointTokenImgY; break;
+                    case 2: img0 = serverTokenImg; img1 = gamePointTokenImg; text0 = "丢弃3张员工手牌"; text1 = "失去7游戏点数";
+                            img0X = serverTokenImgX; img0Y = serverTokenImgY; img1X = gamePointTokenImgX; img1Y = gamePointTokenImgY; break;
+                    case 3: img0 = roomClosedTokenImg; img1 = gamePointTokenImg; text0 = "失去最高和次高的已入住的2个房间"; text1 = "失去7游戏点数";
+                            img0X = roomClosedTokenImgX; img0Y = roomClosedTokenImgY; img1X = gamePointTokenImgX; img1Y = gamePointTokenImgY; break;
                 }
             } else if(this.game.mainRound==6 && this.royalResult==0) {
                 switch(this.game.royalTask2){
-                    case 0: img0 = gamePointTokenImg; img1 = null; text0 = "失去8游戏点数"; text1 = null; break;
-                    case 1: img0 = roomClosedTokenImg; img1 = null; text0 = "失去最高层和次高层各1个已入住房间"; text1 = null; break;
-                    case 2: img0 = serverTokenImg; img1 = null; text0 = "每个已雇佣员工失去2游戏点数"; text1 = null; break;
-                    case 3: img0 = serverTokenImg; img1 = gamePointTokenImg; text0 = "失去1位已雇佣员工（终局结算优先）"; text1 = "失去10游戏点数"; break;
+                    case 0: img0 = gamePointTokenImg; img1 = null; text0 = "失去8游戏点数"; text1 = null;
+                            img0X = gamePointTokenImgX; img0Y = gamePointTokenImgY; img1X = 0; img1Y = 0; break;
+                    case 1: img0 = roomClosedTokenImg; img1 = null; text0 = "失去最高层和次高层各1个已入住房间"; text1 = null;
+                            img0X = roomClosedTokenImgX; img0Y = roomClosedTokenImgY; img1X = 0; img1Y = 0; break;
+                    case 2: img0 = serverTokenImg; img1 = null; text0 = "每个已雇佣员工失去2游戏点数"; text1 = null;
+                            img0X = serverTokenImgX; img0Y = serverTokenImgY; img1X = 0; img1Y = 0; break;
+                    case 3: img0 = serverTokenImg; img1 = gamePointTokenImg; text0 = "失去1位已雇佣员工（终局结算优先）"; text1 = "失去10游戏点数";
+                            img0X = serverTokenImgX; img0Y = serverTokenImgY; img1X = gamePointTokenImgX; img1Y = gamePointTokenImgY; break;
                 }
             }
-            if(img1!=null){
-                context.drawImage(img0, 50, 30, 50, 40);
+            if(img0!=null){
+                context.drawImage(tokenImg, img0X, img0Y, 30, 30, 50, 30, 50, 40);
                 this.textCanvas(context, text0, 150, 60);
             }
             if(img1!=null){
-                context.drawImage(img1, 50, 100, 40, 50);
+                context.drawImage(tokenImg, img1X, img1Y, 30, 30, 50, 100, 40, 50);
                 this.textCanvas(context, text1, 150, 130);
             }
             if(this.hasHiredServer(25)){
-                context.drawImage(moneyImg, 50, 170, 50, 40);
+                // context.drawImage(moneyImg, 50, 170, 50, 40);
+                context.drawImage(tokenImg, moneyImgX, moneyImgY, 30, 30, 50, 170, 50, 40);
                 this.textCanvas(context, "支付1块钱替代皇家任务惩罚", 150, 200);
             }
             this.markCanvas(context, 70, 40+70*this.royalPunishSelection, 90, 60+70*this.royalPunishSelection, 110, 20+70*this.royalPunishSelection);
@@ -1091,9 +1125,11 @@ class Player{
         const serverHeight = 240;
         if(this.serverOnHandCanvasIdx>0 && this.numServerOnHand>0) { 
             if(this.game.currPlayer == this.game.ourPlayer){
-                context.drawImage(serverImg[this.serverOnHand[this.serverOnHandCanvasIdx-1].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+                // context.drawImage(serverImg[this.serverOnHand[this.serverOnHandCanvasIdx-1].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+                context.drawImage(serverAllImg, serverWidth*(this.serverOnHand[this.serverOnHandCanvasIdx-1].serverID%10), serverHeight*(Math.floor(this.serverOnHand[this.serverOnHandCanvasIdx-1].serverID/10)), serverWidth, serverHeight, serverXoffset, serverYoffset, serverWidth, serverHeight);
             } else {
-                context.drawImage(serverBackImg, serverXoffset, serverYoffset, serverWidth, serverHeight);
+                // context.drawImage(serverBackImg, serverXoffset, serverYoffset, serverWidth, serverHeight);
+                context.drawImage(tokenImg, serverBackImgX, serverBackImgY, serverWidth, serverHeight, serverXoffset, serverYoffset, serverWidth, serverHeight);
             }
             // draw the left triangle to indicate
             this.triangleCanvas(context, 0, 105, 25, 130, 25, 80);
@@ -1105,9 +1141,11 @@ class Player{
                 serverXoffset+=170;
                 if((this.serverOnHandCanvasIdx + i) < this.numServerOnHand) {
                     if(this.game.currPlayer == this.game.ourPlayer){
-                        context.drawImage(serverImg[this.serverOnHand[this.serverOnHandCanvasIdx+i].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+                        // context.drawImage(serverImg[this.serverOnHand[this.serverOnHandCanvasIdx+i].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+                        context.drawImage(serverAllImg, serverWidth*(this.serverOnHand[this.serverOnHandCanvasIdx+i].serverID%10), serverHeight*(Math.floor(this.serverOnHand[this.serverOnHandCanvasIdx+i].serverID/10)), serverWidth, serverHeight, serverXoffset, serverYoffset, serverWidth, serverHeight);
                     } else {
-                        context.drawImage(serverBackImg, serverXoffset, serverYoffset, serverWidth, serverHeight);
+                        // context.drawImage(serverBackImg, serverXoffset, serverYoffset, serverWidth, serverHeight);
+                        context.drawImage(tokenImg, serverBackImgX, serverBackImgY, serverWidth, serverHeight, serverXoffset, serverYoffset, serverWidth, serverHeight);
                     }
                 }
                 // hightlight block if needed
@@ -1123,9 +1161,11 @@ class Player{
         if(this.serverOnHandCanvasIdx + 3 < this.numServerOnHand) {
             serverXoffset+=170;
             if(this.game.currPlayer == this.game.ourPlayer){
-                context.drawImage(serverImg[this.serverOnHand[this.serverOnHandCanvasIdx+3].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+                // context.drawImage(serverImg[this.serverOnHand[this.serverOnHandCanvasIdx+3].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+                context.drawImage(serverAllImg, serverWidth*(this.serverOnHand[this.serverOnHandCanvasIdx+3].serverID%10), serverHeight*(Math.floor(this.serverOnHand[this.serverOnHandCanvasIdx+3].serverID/10)), serverWidth, serverHeight, serverXoffset, serverYoffset, serverWidth, serverHeight);
             } else {
-                context.drawImage(serverBackImg, serverXoffset, serverYoffset, serverWidth, serverHeight);
+                // context.drawImage(serverBackImg, serverXoffset, serverYoffset, serverWidth, serverHeight);
+                context.drawImage(tokenImg, serverBackImgX, serverBackImgY, serverWidth, serverHeight, serverXoffset, serverYoffset, serverWidth, serverHeight);
             }
             // draw the right triangle to indicate
             this.triangleCanvas(context, 640, 105, 615, 130, 615, 80);
@@ -1139,7 +1179,8 @@ class Player{
         serverYoffset += 275;
         // console.log("num server hired: " + this.numServerHired);
         if(this.serverHiredCanvasIdx>0 && this.numServerHired>0) { 
-            context.drawImage(serverImg[this.serverHired[this.serverHiredCanvasIdx-1].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+            // context.drawImage(serverImg[this.serverHired[this.serverHiredCanvasIdx-1].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+            context.drawImage(serverAllImg, serverWidth*(this.serverHired[this.serverHiredCanvasIdx-1].serverID%10), serverHeight*(Math.floor(this.serverHired[this.serverHiredCanvasIdx-1].serverID/10)), serverWidth, serverHeight, serverXoffset, serverYoffset, serverWidth, serverHeight);
             // draw the left triangle to indicate
             this.triangleCanvas(context, 0, 380, 25, 405, 25, 355);
         }
@@ -1148,7 +1189,8 @@ class Player{
         for(let i=0; i<3; i++){
             if(this.serverHiredCanvasIdx + i < this.numServerHired){
                 serverXoffset+=170;
-                context.drawImage(serverImg[this.serverHired[this.serverHiredCanvasIdx+i].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+                // context.drawImage(serverImg[this.serverHired[this.serverHiredCanvasIdx+i].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+                context.drawImage(serverAllImg, serverWidth*(this.serverHired[this.serverHiredCanvasIdx+i].serverID%10), serverHeight*(Math.floor(this.serverHired[this.serverHiredCanvasIdx+i].serverID/10)), serverWidth, serverHeight, serverXoffset, serverYoffset, serverWidth, serverHeight);
                 // hightlight block if needed
                 if(this.serverHiredHighLightFlag && this.serverHiredHighLight[this.serverHiredCanvasIdx+i]) {
                     context.strokeStyle = "red";
@@ -1161,7 +1203,8 @@ class Player{
         // draw the remaining of next card if any
         if(this.serverHiredCanvasIdx + 3 < this.numServerHired) {
             serverXoffset+=170;
-            context.drawImage(serverImg[this.serverHired[this.serverHiredCanvasIdx+3].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+            // context.drawImage(serverImg[this.serverHired[this.serverHiredCanvasIdx+3].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+            context.drawImage(serverAllImg, serverWidth*(this.serverHired[this.serverHiredCanvasIdx+3].serverID%10), serverHeight*(Math.floor(this.serverHired[this.serverHiredCanvasIdx+3].serverID/10)), serverWidth, serverHeight, serverXoffset, serverYoffset, serverWidth, serverHeight);
             // draw the right triangle to indicate
             this.triangleCanvas(context, 640, 380, 615, 405, 615, 355);
         }
@@ -1207,16 +1250,19 @@ class Player{
         var   miniRoundWidth = 34;
         var   miniRoundHeight = 34;
         if(this.diceTaken[0] != -1){ // draw the dice
-            var diceImg = dice1Img;
+            // var diceImg = dice1Img;
+            var diceImgX = 0;
+            var diceImgY = 0;
             switch(this.diceTaken[0]){
-                case 1: diceImg = dice1Img; break;
-                case 2: diceImg = dice2Img; break;
-                case 3: diceImg = dice3Img; break;
-                case 4: diceImg = dice4Img; break;
-                case 5: diceImg = dice5Img; break;
-                case 6: diceImg = dice6Img; break;
+                case 1: diceImgX = dice1ImgX; diceImgY = dice1ImgY; break;
+                case 2: diceImgX = dice2ImgX; diceImgY = dice2ImgY; break;
+                case 3: diceImgX = dice3ImgX; diceImgY = dice3ImgY; break;
+                case 4: diceImgX = dice4ImgX; diceImgY = dice4ImgY; break;
+                case 5: diceImgX = dice5ImgX; diceImgY = dice5ImgY; break;
+                case 6: diceImgX = dice6ImgX; diceImgY = dice6ImgY; break;
             }
-            context.drawImage(diceImg, miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
+            // context.drawImage(diceImg, miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
+            context.drawImage(tokenImg, diceImgX, diceImgY, 30, 30, miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
         } else { // draw the mini turn number
             context.fillStyle = '#446516';
             context.strokeStyle = 'black';
@@ -1232,16 +1278,19 @@ class Player{
         var   miniRoundWidth = 34;
         var   miniRoundHeight = 34;
         if(this.diceTaken[1] != -1){ // draw the dice
-            var diceImg = dice1Img;
+            // var diceImg = dice1Img;
+            var diceImgX = 0;
+            var diceImgY = 0;
             switch(this.diceTaken[1]){
-                case 1: diceImg = dice1Img; break;
-                case 2: diceImg = dice2Img; break;
-                case 3: diceImg = dice3Img; break;
-                case 4: diceImg = dice4Img; break;
-                case 5: diceImg = dice5Img; break;
-                case 6: diceImg = dice6Img; break;
+                case 1: diceImgX = dice1ImgX; diceImgY = dice1ImgY; break;
+                case 2: diceImgX = dice2ImgX; diceImgY = dice2ImgY; break;
+                case 3: diceImgX = dice3ImgX; diceImgY = dice3ImgY; break;
+                case 4: diceImgX = dice4ImgX; diceImgY = dice4ImgY; break;
+                case 5: diceImgX = dice5ImgX; diceImgY = dice5ImgY; break;
+                case 6: diceImgX = dice6ImgX; diceImgY = dice6ImgY; break;
             }
-            context.drawImage(diceImg, miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
+            // context.drawImage(diceImg, miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
+            context.drawImage(tokenImg, diceImgX, diceImgY, 30, 30, miniRoundXoffset, miniRoundYoffset, miniRoundWidth, miniRoundHeight);
         } else { // draw the mini turn number
             context.fillStyle = '#446516';
             context.strokeStyle = 'black';
@@ -1257,7 +1306,8 @@ class Player{
         var   gamePointYoffset = 5;
         const gamePointWidth = 30;
         const gamePointHeigh = 40;
-        context.drawImage(gamePointTokenImg, gamePointXoffset, gamePointYoffset, gamePointWidth, gamePointHeigh);
+        // context.drawImage(gamePointTokenImg, gamePointXoffset, gamePointYoffset, gamePointWidth, gamePointHeigh);
+        context.drawImage(tokenImg, gamePointTokenImgX, gamePointTokenImgY, 30, 30, gamePointXoffset, gamePointYoffset, gamePointWidth, gamePointHeigh);
         gamePointXoffset += 30;
         gamePointYoffset = 30;
         var gamePointText = this.gamePoint + " (" + (this.gamePoint+(this.game.gameOver?0:this.calculateFinalGamePoint())) + ")";
@@ -1268,7 +1318,8 @@ class Player{
         var   royalPointYoffset = 5;
         const royalPointWidth = 30;
         const royalPointHeigh = 40;
-        context.drawImage(royalTokenImg, royalPointXoffset, royalPointYoffset, royalPointWidth, royalPointHeigh);
+        // context.drawImage(royalTokenImg, royalPointXoffset, royalPointYoffset, royalPointWidth, royalPointHeigh);
+        context.drawImage(tokenImg, royalTokenImgX, royalTokenImgY, 30, 30, royalPointXoffset, royalPointYoffset, royalPointWidth, royalPointHeigh);
         royalPointXoffset += 35;
         royalPointYoffset = 30;
         this.textCanvas(context, this.royalPoint, royalPointXoffset, royalPointYoffset);
@@ -1278,7 +1329,8 @@ class Player{
         var   moneyYoffset = 5;
         const moneyWidth = 30;
         const moneyHeigh = 40;
-        context.drawImage(moneyImg, moneyXoffset, moneyYoffset, moneyWidth, moneyHeigh);
+        // context.drawImage(moneyImg, moneyXoffset, moneyYoffset, moneyWidth, moneyHeigh);
+        context.drawImage(tokenImg, moneyImgX, moneyImgY, 30, 30, moneyXoffset, moneyYoffset, moneyWidth, moneyHeigh);
         moneyXoffset += 35;
         moneyYoffset = 30;
         this.textCanvas(context, this.money, moneyXoffset, moneyYoffset);
@@ -1289,7 +1341,8 @@ class Player{
         var   foodYoffset = 5;
         const foodWidth = 30;
         const foodHeigh = 30;
-        context.drawImage(brownImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
+        // context.drawImage(brownImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
+        context.drawImage(tokenImg, brownImgX, brownImgY, 30, 30, foodXoffset, foodYoffset, foodWidth, foodHeigh);
         if(this.hasBrownBuf()) { // highlight if buffer has valid food
             context.strokeStyle = "green";
             context.lineWidth = 3;
@@ -1302,7 +1355,8 @@ class Player{
         // white
         foodXoffset += 20;
         foodYoffset = 5;
-        context.drawImage(whiteImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
+        // context.drawImage(whiteImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
+        context.drawImage(tokenImg, whiteImgX, whiteImgY, 30, 30, foodXoffset, foodYoffset, foodWidth, foodHeigh);
         if(this.hasWhiteBuf()) { // highlight if buffer has valid food
             context.strokeStyle = "green";
             context.lineWidth = 3;
@@ -1315,7 +1369,8 @@ class Player{
         // red
         foodXoffset += 20;
         foodYoffset = 5;
-        context.drawImage(redImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
+        // context.drawImage(redImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
+        context.drawImage(tokenImg, redImgX, redImgY, 30, 30, foodXoffset, foodYoffset, foodWidth, foodHeigh);
         if(this.hasRedBuf()) { // highlight if buffer has valid food
             context.strokeStyle = "green";
             context.lineWidth = 3;
@@ -1328,7 +1383,8 @@ class Player{
         // black
         foodXoffset += 20;
         foodYoffset = 5;
-        context.drawImage(blackImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
+        // context.drawImage(blackImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
+        context.drawImage(tokenImg, blackImgX, blackImgY, 30, 30, foodXoffset, foodYoffset, foodWidth, foodHeigh);
         if(this.hasBlackBuf()) { // highlight if buffer has valid food
             context.strokeStyle = "green";
             context.lineWidth = 3;

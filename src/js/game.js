@@ -500,46 +500,58 @@ class Game{
         const majorTaskHeight  = 240;
         switch(this.majorTask0) {
             case 0: // major task A0
-            context.drawImage(majorTaskA0Img, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
+            // context.drawImage(majorTaskA0Img, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
+            context.drawImage(tokenImg, majorTaskA0ImgX, majorTaskA0ImgY, majorTaskWidth, majorTaskHeight, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
             break;
             case 1: // major task A1
-            context.drawImage(majorTaskA1Img, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
+            // context.drawImage(majorTaskA1Img, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
+            context.drawImage(tokenImg, majorTaskA1ImgX, majorTaskA1ImgY, majorTaskWidth, majorTaskHeight, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
             break;
             case 2: // major task A2
-            context.drawImage(majorTaskA2Img, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
+            // context.drawImage(majorTaskA2Img, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
+            context.drawImage(tokenImg, majorTaskA2ImgX, majorTaskA2ImgY, majorTaskWidth, majorTaskHeight, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
             break;
             case 3: // major task A3
-            context.drawImage(majorTaskA3Img, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
+            // context.drawImage(majorTaskA3Img, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
+            context.drawImage(tokenImg, majorTaskA3ImgX, majorTaskA3ImgY, majorTaskWidth, majorTaskHeight, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
             break;
         }
         majorTaskXoffset += 160;
         switch(this.majorTask1) {
             case 0: // major task B0
-            context.drawImage(majorTaskB0Img, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
+            // context.drawImage(majorTaskB0Img, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
+            context.drawImage(tokenImg, majorTaskB0ImgX, majorTaskB0ImgY, majorTaskWidth, majorTaskHeight, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
             break;
             case 1: // major task B1
-            context.drawImage(majorTaskB1Img, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
+            // context.drawImage(majorTaskB1Img, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
+            context.drawImage(tokenImg, majorTaskB1ImgX, majorTaskB1ImgY, majorTaskWidth, majorTaskHeight, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
             break;
             case 2: // major task B2
-            context.drawImage(majorTaskB2Img, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
+            // context.drawImage(majorTaskB2Img, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
+            context.drawImage(tokenImg, majorTaskB2ImgX, majorTaskB2ImgY, majorTaskWidth, majorTaskHeight, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
             break;
             case 3: // major task B3
-            context.drawImage(majorTaskB3Img, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
+            // context.drawImage(majorTaskB3Img, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
+            context.drawImage(tokenImg, majorTaskB3ImgX, majorTaskB3ImgY, majorTaskWidth, majorTaskHeight, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
             break;
         }
         majorTaskXoffset += 160;
         switch(this.majorTask2) {
             case 0: // major task C0
-            context.drawImage(majorTaskC0Img, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
+            // context.drawImage(majorTaskC0Img, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
+            context.drawImage(tokenImg, majorTaskC0ImgX, majorTaskC0ImgY, majorTaskWidth, majorTaskHeight, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
             break;
             case 1: // major task C1
-            context.drawImage(majorTaskC1Img, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
+            // context.drawImage(majorTaskC1Img, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
+            context.drawImage(tokenImg, majorTaskC1ImgX, majorTaskC1ImgY, majorTaskWidth, majorTaskHeight, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
             break;
             case 2: // major task C2
-            context.drawImage(majorTaskC2Img, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
+            // context.drawImage(majorTaskC2Img, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
+            context.drawImage(tokenImg, majorTaskC2ImgX, majorTaskC2ImgY, majorTaskWidth, majorTaskHeight, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
             break;
             case 3: // major task C3
-            context.drawImage(majorTaskC3Img, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
+            // context.drawImage(majorTaskC3Img, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
+            context.drawImage(tokenImg, majorTaskC3ImgX, majorTaskC3ImgY, majorTaskWidth, majorTaskHeight, majorTaskXoffset, majorTaskYoffset, majorTaskWidth, majorTaskHeight);
             break;
         }
         // draw major task completion marker
@@ -571,46 +583,58 @@ class Game{
         const royalTaskHeight  = 120;
         switch(this.royalTask0) {
             case 0: // royal task A0
-            context.drawImage(royalTaskA0Img, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
+            // context.drawImage(royalTaskA0Img, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
+            context.drawImage(tokenImg, royalTaskA0ImgX, royalTaskA0ImgY, royalTaskWidth, royalTaskHeight, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
             break;
             case 1: // royal task A1
-            context.drawImage(royalTaskA1Img, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
+            // context.drawImage(royalTaskA1Img, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
+            context.drawImage(tokenImg, royalTaskA1ImgX, royalTaskA1ImgY, royalTaskWidth, royalTaskHeight, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
             break;
             case 2: // royal task A2
-            context.drawImage(royalTaskA2Img, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
+            // context.drawImage(royalTaskA2Img, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
+            context.drawImage(tokenImg, royalTaskA2ImgX, royalTaskA2ImgY, royalTaskWidth, royalTaskHeight, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
             break;
             case 3: // royal task A3
-            context.drawImage(royalTaskA3Img, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
+            // context.drawImage(royalTaskA3Img, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
+            context.drawImage(tokenImg, royalTaskA3ImgX, royalTaskA3ImgY, royalTaskWidth, royalTaskHeight, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
             break;
         }
         royalTaskXoffset += 120;
         switch(this.royalTask1) {
             case 0: // royal task B0
-            context.drawImage(royalTaskB0Img, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
+            // context.drawImage(royalTaskB0Img, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
+            context.drawImage(tokenImg, royalTaskB0ImgX, royalTaskB0ImgY, royalTaskWidth, royalTaskHeight, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
             break;
             case 1: // royal task B1
-            context.drawImage(royalTaskB1Img, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
+            // context.drawImage(royalTaskB1Img, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
+            context.drawImage(tokenImg, royalTaskB1ImgX, royalTaskB1ImgY, royalTaskWidth, royalTaskHeight, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
             break;
             case 2: // royal task B2
-            context.drawImage(royalTaskB2Img, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
+            // context.drawImage(royalTaskB2Img, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
+            context.drawImage(tokenImg, royalTaskB2ImgX, royalTaskB2ImgY, royalTaskWidth, royalTaskHeight, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
             break;
             case 3: // royal task B3
-            context.drawImage(royalTaskB3Img, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
+            // context.drawImage(royalTaskB3Img, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
+            context.drawImage(tokenImg, royalTaskB3ImgX, royalTaskB3ImgY, royalTaskWidth, royalTaskHeight, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
             break;
         }
         royalTaskXoffset += 120;
         switch(this.royalTask2) {
             case 0: // royal task C0
-            context.drawImage(royalTaskC0Img, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
+            // context.drawImage(royalTaskC0Img, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
+            context.drawImage(tokenImg, royalTaskC0ImgX, royalTaskC0ImgY, royalTaskWidth, royalTaskHeight, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
             break;
             case 1: // royal task C1
-            context.drawImage(royalTaskC1Img, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
+            // context.drawImage(royalTaskC1Img, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
+            context.drawImage(tokenImg, royalTaskC1ImgX, royalTaskC1ImgY, royalTaskWidth, royalTaskHeight, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
             break;
             case 2: // royal task C2
-            context.drawImage(royalTaskC2Img, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
+            // context.drawImage(royalTaskC2Img, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
+            context.drawImage(tokenImg, royalTaskC2ImgX, royalTaskC2ImgY, royalTaskWidth, royalTaskHeight, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
             break;
             case 3: // royal task C3
-            context.drawImage(royalTaskC3Img, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
+            // context.drawImage(royalTaskC3Img, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
+            context.drawImage(tokenImg, royalTaskC3ImgX, royalTaskC3ImgY, royalTaskWidth, royalTaskHeight, royalTaskXoffset, royalTaskYoffset, royalTaskWidth, royalTaskHeight);
             break;
         }
         // draw royal point markers
@@ -645,7 +669,8 @@ class Game{
         const guestWidth   = 160;
         const guestHeight  = 240;
         for(let i=0; i<this.guestInQueue.length; i++){
-            context.drawImage(guestImg[this.guestInQueue[i]], guestXoffset, guestYoffset, guestWidth, guestHeight);
+            // context.drawImage(guestImg[this.guestInQueue[i]], guestXoffset, guestYoffset, guestWidth, guestHeight);
+            context.drawImage(guestAllImg, guestWidth*(this.guestInQueue[i]%10), guestHeight*(Math.floor(this.guestInQueue[i]/10)), guestWidth, guestHeight, guestXoffset, guestYoffset, guestWidth, guestHeight);
             guestXoffset += 182;
         }
         // hightlight marked guests
@@ -663,7 +688,8 @@ class Game{
     }
 
     updateActionCanvas(context){
-        context.drawImage(actionBoardImg, 0, 0);
+        // context.drawImage(actionBoardImg, 0, 0);
+        context.drawImage(tokenImg, actionBoardImgX, actionBoardImgY, 960, 160, 0, 0, 960, 160);
         // draw the action dice number
         var   numberXoffset = 75;
         var   numberYoffset = 25;

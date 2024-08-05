@@ -1,5 +1,5 @@
 // server connection
-// const socket = new WebSocket('ws://localhost:8080');
+// const socket = new WebSocket('ws://localhost:8083');
 const socket = new WebSocket('ws://121.43.102.218:8083');
 socket.onmessage = handleMsg;
 
@@ -25,7 +25,7 @@ var ourPlayerIndex = -1;
 var playerNames = [];
 var playerNumber = 0;
 
-// var game = new Game(2, ["player1", "player2"], 1);
+var game;
 
 // enter room button
 roomIDText.addEventListener("keyup", enterRoomEnter); // enter a room by type enter

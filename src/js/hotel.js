@@ -405,22 +405,24 @@ class Hotel{
         var   bonusRoomYoffset = 0;
         var   bonusRoomWidth = 640;
         var   bonusRoomHeight = 120;
-        context.drawImage(bonusRoomImg, bonusRoomXoffset, bonusRoomYoffset, bonusRoomWidth, bonusRoomHeight);
+        // context.drawImage(bonusRoomImg, bonusRoomXoffset, bonusRoomYoffset, bonusRoomWidth, bonusRoomHeight);
+        context.drawImage(tokenImg, bonusRoomImgX, bonusRoomImgY, bonusRoomWidth, bonusRoomHeight, bonusRoomXoffset, bonusRoomYoffset, bonusRoomWidth, bonusRoomHeight);
 
         // hotel base
-        var   hotelBaseImg;
+        var   hotelBaseImgX, hotelBaseImgY;
         switch(this.hotelID){
-            case 0: hotelBaseImg = hotel0Img; break;
-            case 1: hotelBaseImg = hotel1Img; break;
-            case 2: hotelBaseImg = hotel2Img; break;
-            case 3: hotelBaseImg = hotel3Img; break;
-            case 4: hotelBaseImg = hotel4Img; break;
+            case 0: hotelBaseImgX = hotel0ImgX; hotelBaseImgY = hotel0ImgY; break;
+            case 1: hotelBaseImgX = hotel1ImgX; hotelBaseImgY = hotel1ImgY; break;
+            case 2: hotelBaseImgX = hotel2ImgX; hotelBaseImgY = hotel2ImgY; break;
+            case 3: hotelBaseImgX = hotel3ImgX; hotelBaseImgY = hotel3ImgY; break;
+            case 4: hotelBaseImgX = hotel4ImgX; hotelBaseImgY = hotel4ImgY; break;
         }
         var   hotelBaseXoffset = 0;
         var   hotelBaseYoffset = bonusRoomHeight;
         const hotelBaseWidth = 640;
         const hotelBaseHeight = 480;
-        context.drawImage(hotelBaseImg, hotelBaseXoffset, hotelBaseYoffset, hotelBaseWidth, hotelBaseHeight);
+        // context.drawImage(hotelBaseImg, hotelBaseXoffset, hotelBaseYoffset, hotelBaseWidth, hotelBaseHeight);
+        context.drawImage(hotelImg, hotelBaseImgX, hotelBaseImgY, hotelBaseWidth, hotelBaseHeight, hotelBaseXoffset, hotelBaseYoffset, hotelBaseWidth, hotelBaseHeight);
 
         // hotel room status
         var   hotelRoomXoffset = 60;
@@ -430,21 +432,25 @@ class Hotel{
         for(let floor=0; floor<4; floor++){
             for(let col=0; col<5; col++){
                 if(this.roomStatus[floor][col] == 1) { // closed
-                    var hotelRoomImg;
+                    var hotelRoomImgX;
+                    var hotelRoomImgY;
                     switch(this.roomColor[floor][col]){
-                        case 0: hotelRoomImg = roomRedClosedImg; break;
-                        case 1: hotelRoomImg = roomYellowClosedImg; break;
-                        case 2: hotelRoomImg = roomBlueClosedImg; break;
+                        case 0: hotelRoomImgX = roomRedClosedImgX;    hotelRoomImgY = roomRedClosedImgY;    break;
+                        case 1: hotelRoomImgX = roomYellowClosedImgX; hotelRoomImgY = roomYellowClosedImgY; break;
+                        case 2: hotelRoomImgX = roomBlueClosedImgX;   hotelRoomImgY = roomBlueClosedImgY;   break;
                     }
-                    context.drawImage(hotelRoomImg, hotelRoomXoffset + 115 * col, hotelRoomYoffset + 120 * (3-floor), hotelRoomWidth, hotelRoomHeight);
+                    // context.drawImage(hotelRoomImg, hotelRoomXoffset + 115 * col, hotelRoomYoffset + 120 * (3-floor), hotelRoomWidth, hotelRoomHeight);
+                    context.drawImage(tokenImg, hotelRoomImgX, hotelRoomImgY, hotelRoomWidth, hotelRoomHeight, hotelRoomXoffset + 115 * col, hotelRoomYoffset + 120 * (3-floor), hotelRoomWidth, hotelRoomHeight);
                 } else if(this.roomStatus[floor][col] == 0) { // prepared
-                    var hotelRoomImg;
+                    var hotelRoomImgX;
+                    var hotelRoomImgY;
                     switch(this.roomColor[floor][col]){
-                        case 0: hotelRoomImg = roomRedPreparedImg; break;
-                        case 1: hotelRoomImg = roomYellowPreparedImg; break;
-                        case 2: hotelRoomImg = roomBluePreparedImg; break;
+                        case 0: hotelRoomImgX = roomRedPreparedImgX;    hotelRoomImgY = roomRedPreparedImgY;    break;
+                        case 1: hotelRoomImgX = roomYellowPreparedImgX; hotelRoomImgY = roomYellowPreparedImgY; break;
+                        case 2: hotelRoomImgX = roomBluePreparedImgX;   hotelRoomImgY = roomBluePreparedImgY;   break;
                     }
-                    context.drawImage(hotelRoomImg, hotelRoomXoffset + 115 * col, hotelRoomYoffset + 120 * (3-floor), hotelRoomWidth, hotelRoomHeight);
+                    // context.drawImage(hotelRoomImg, hotelRoomXoffset + 115 * col, hotelRoomYoffset + 120 * (3-floor), hotelRoomWidth, hotelRoomHeight);
+                    context.drawImage(tokenImg, hotelRoomImgX, hotelRoomImgY, hotelRoomWidth, hotelRoomHeight, hotelRoomXoffset + 115 * col, hotelRoomYoffset + 120 * (3-floor), hotelRoomWidth, hotelRoomHeight);
                 }
                 // hightlight the marked room
                 if(this.roomHighLightFlag && this.roomHighLight[floor][col]) {
@@ -460,7 +466,8 @@ class Hotel{
         var   guestTableYoffset = hotelRoomYoffset+480;
         const guestTableWidth = 640;
         const guestTableHeight = 200;
-        context.drawImage(tableImg, guestTableXoffset, guestTableYoffset, guestTableWidth, guestTableHeight);
+        // context.drawImage(tableImg, guestTableXoffset, guestTableYoffset, guestTableWidth, guestTableHeight);
+        context.drawImage(tokenImg, tableImgX, tableImgY, guestTableWidth, guestTableHeight, guestTableXoffset, guestTableYoffset, guestTableWidth, guestTableHeight);
 
         // hotel room highlight
         // guest table
@@ -470,7 +477,8 @@ class Hotel{
         const guestHeight  = 240;
         for(let i=0; i<3; i++){
             if(this.guestOnTable[i] != null) {
-                context.drawImage(guestImg[this.guestOnTable[i].guestID], guestXoffset, guestYoffset, guestWidth, guestHeight);
+                // context.drawImage(guestImg[this.guestOnTable[i].guestID], guestXoffset, guestYoffset, guestWidth, guestHeight);
+                context.drawImage(guestAllImg, guestWidth*(this.guestOnTable[i].guestID%10), guestHeight*(Math.floor(this.guestOnTable[i].guestID/10)), guestWidth, guestHeight, guestXoffset, guestYoffset, guestWidth, guestHeight);
                 if(this.atSelectSatisfiedGuest && this.guestOnTable[i].guestSatisfied &&
                     this.hasPreparedRoom(this.guestOnTable[i].guestColor)) { // hightlight satisfied guests if flag on
                     context.strokeStyle = "red";

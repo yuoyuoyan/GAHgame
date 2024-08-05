@@ -5,7 +5,6 @@ const debugState = 0;
 // init game info and draw background
 // window.onload = gameOn;
 // const game = new Game(playerNames.length, playerNames, 1);
-var game;
 
 // listen to canvas click
 guestCanvas.addEventListener("click",   handleGuestClickWrap);
