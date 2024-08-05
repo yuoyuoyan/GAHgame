@@ -1,6 +1,6 @@
 // server connection
 // const socket = new WebSocket('ws://localhost:8080');
-const socket = new WebSocket('ws://121.43.102.218:8080');
+const socket = new WebSocket('ws://121.43.102.218:8081');
 socket.onmessage = handleMsg;
 
 const roomIDLabel = document.getElementById("roomID");
