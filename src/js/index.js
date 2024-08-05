@@ -24,6 +24,8 @@ var ourPlayerIndex = -1;
 var playerNames = [];
 var playerNumber = 0;
 
+// var game = new Game(2, ["player1", "player2"], 1);
+
 // enter room button
 roomIDText.addEventListener("keyup", enterRoomEnter); // enter a room by type enter
 roomIDButton.addEventListener("click", enterRoomClick); // enter a room by click button
@@ -206,7 +208,15 @@ async function handleMsg(event) {
             serverCanvas.style.display = 'block';
             hotelCanvas.style.display = 'block';
             game = new Game(playerNames.length, playerNames, 1);
+            game.ourPlayer = ourPlayerIndex;
             gameOn();
+            // send an init info request
+            var msg = {
+                type: "gameInitInfoReq",
+                roomID: roomID,
+                playerID: ourPlayerIndex
+            };
+            socket.send(JSON.stringify(msg));
             // document.cookie = JSON.stringify(playerNames);
             // window.location.href = "hotelgame.html";
             break;
@@ -217,14 +227,52 @@ async function handleMsg(event) {
             game.royalTask0 = msg.royalTask[0];
             game.royalTask1 = msg.royalTask[1];
             game.royalTask2 = msg.royalTask[2];
+            game.guestDeck = msg.guestDeck;
+            game.serverDeck = msg.serverDeck;
             for(let i=0; i<5; i++){
-                game.guestInQueue.push(msg.guest[i]);
+                game.guestInQueue.push(game.guestDeck.at(-1));
+                game.guestDeck.pop();
             }
-            for(let i=0; i<6; i++){
-                for(let player=0; player<playerNumber; player++){
-                    // player can only see its own hand, others will show with back side
-                    game.players[ourPlayerIndex].addServerToHandDebug(msg.server[i]);
-                }
+            // draw 6 servers
+            for(let i=0; i<game.playerNumber; i++) {
+                game.players[i].addServerToHand(6);
+            }
+            game.updateAllCanvas();
+            break;
+        case("broadcast") : // broadcast all canvas clicking to every players
+            // only act when it's our controlled player
+            var event = {
+                offsetX: msg.offsetX,
+                offsetY: msg.offsetY
+            };
+            switch(msg.canvasType){
+                case("guest") :
+                    game.handleGuestClick(event);
+                    break;
+                case("action") :
+                    game.handleActionClick(event);
+                    break;
+                case("hotel") :
+                    game.handleHotelClick(event);
+                    break;
+                case("server") :
+                    game.handleServerClick(event);
+                    break;
+                case("alert") :
+                    game.handleAlertClick(event);
+                    break;
+                case("player0") :
+                    game.handlePlayer0Click(event);
+                    break;
+                case("player1") :
+                    game.handlePlayer1Click(event);
+                    break;
+                case("player2") :
+                    game.handlePlayer2Click(event);
+                    break;
+                case("player3") :
+                    game.handlePlayer3Click(event);
+                    break;
             }
             break;
     }

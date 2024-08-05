@@ -28,8 +28,8 @@ class Game{
         this.alertType = 0;
 
         // init guest deck and server deck
-        // this.guestDeck = Array.from({length: 58}, (_, i) => i);
-        // this.serverDeck = Array.from({length: 48}, (_, i) => i);
+        this.guestDeck = Array.from({length: 58}, (_, i) => i);
+        this.serverDeck = Array.from({length: 48}, (_, i) => i);
         // this.shuffleDeck(this.guestDeck);
         // this.shuffleDeck(this.serverDeck);
 
@@ -73,7 +73,8 @@ class Game{
         
         // place the first player to start
         this.currPlayer = 0;
-        console.log("current player: " + this.playerName[this.currPlayer]);
+        this.ourPlayer = 0;
+        // console.log("current player: " + this.playerName[this.currPlayer]);
         // draw canvas
         this.updateAllCanvas();
     }
@@ -1360,11 +1361,11 @@ class Game{
                             this.players[this.currPlayer].hireNum--;
                             this.players[this.currPlayer].hireServer(serverIdx);
                             if(this.players[this.currPlayer].hireLimitLastThree){ // draw 3 hire 1 senario, put back the reset
-                                this.serverDeck.push(this.players[this.currPlayer].serverOnHand.at(-1));
-                                this.serverDeck.push(this.players[this.currPlayer].serverOnHand.at(-1));
+                                this.serverDeck.unshift(this.players[this.currPlayer].serverOnHand.at(-1));
+                                this.serverDeck.unshift(this.players[this.currPlayer].serverOnHand.at(-1));
                                 this.players[this.currPlayer].removeServerOnHand(this.players[this.currPlayer].numServerOnHand-1);
                                 this.players[this.currPlayer].removeServerOnHand(this.players[this.currPlayer].numServerOnHand-1);
-                                this.shuffleDeck(this.serverDeck);
+                                // this.shuffleDeck(this.serverDeck);
                             }
                             if(this.players[this.currPlayer].royalResultPending){ // royal task reward
                                 this.players[this.currPlayer].royalResultPending = false;

@@ -99,9 +99,8 @@ function gameOn() {
             // for(let i=0; i<6; i++){
             //     game.players[game.currPlayer].hireServer(0);
             // }
-            // TODO: 25, 41
-            game.players[game.currPlayer].addServerToHandDebug(47);
-            game.players[game.currPlayer].hireServer(game.players[game.currPlayer].numServerOnHand-1);
+            // game.players[game.currPlayer].addServerToHandDebug(47);
+            // game.players[game.currPlayer].hireServer(game.players[game.currPlayer].numServerOnHand-1);
             // test guest bonus
             // game.players[game.currPlayer].hotel.addGuestToTable(57);
             // game.players[game.currPlayer].hotel.satisfyGuest(1);
@@ -116,14 +115,14 @@ function gameOn() {
     game.updateAllCanvas();
 }
 
+/*
+// single-player mode, handle click by directly calling function
 function handleGuestClickWrap(event){
     game.handleGuestClick(event);
 }
-
 function handleActionClickWrap(event){
     game.handleActionClick(event);
 }
-
 function handleHotelClickWrap(event) {
     game.handleHotelClick(event);
 }
@@ -144,4 +143,116 @@ function handlePlayer2ClickWrap(event) {
 }
 function handlePlayer3ClickWrap(event) {
     game.handlePlayer3Click(event);
+}
+*/
+
+// multi-player mode, handle click by sending event to server and broadcast to everyone including ourself
+// can only send out when it's our controlled player's turn
+function handleGuestClickWrap(event){
+    if(game.currPlayer == game.ourPlayer) {
+        var msg = {
+            type: "broadcast",
+            canvasType: "guest",
+            roomID: roomID,
+            offsetX: event.offsetX,
+            offsetY: event.offsetY
+        };
+        socket.send(JSON.stringify(msg));
+    }
+}
+function handleActionClickWrap(event){
+    if(game.currPlayer == game.ourPlayer) {
+        var msg = {
+            type: "broadcast",
+            canvasType: "action",
+            roomID: roomID,
+            offsetX: event.offsetX,
+            offsetY: event.offsetY
+        };
+        socket.send(JSON.stringify(msg));
+    }
+}
+function handleHotelClickWrap(event) {
+    if(game.currPlayer == game.ourPlayer) {
+        var msg = {
+            type: "broadcast",
+            canvasType: "hotel",
+            roomID: roomID,
+            offsetX: event.offsetX,
+            offsetY: event.offsetY
+        };
+        socket.send(JSON.stringify(msg));
+    }
+}
+function handleServerClickWrap(event) {
+    if(game.currPlayer == game.ourPlayer) {
+        var msg = {
+            type: "broadcast",
+            canvasType: "server",
+            roomID: roomID,
+            offsetX: event.offsetX,
+            offsetY: event.offsetY
+        };
+        socket.send(JSON.stringify(msg));
+    }
+}
+function handleAlertClickWrap(event) {
+    if(game.currPlayer == game.ourPlayer) {
+        var msg = {
+            type: "broadcast",
+            canvasType: "alert",
+            roomID: roomID,
+            offsetX: event.offsetX,
+            offsetY: event.offsetY
+        };
+        socket.send(JSON.stringify(msg));
+    }
+}
+function handlePlayer0ClickWrap(event) {
+    if(game.currPlayer == game.ourPlayer) {
+        var msg = {
+            type: "broadcast",
+            canvasType: "player0",
+            roomID: roomID,
+            offsetX: event.offsetX,
+            offsetY: event.offsetY
+        };
+        socket.send(JSON.stringify(msg));
+    }
+}
+function handlePlayer1ClickWrap(event) {
+    if(game.currPlayer == game.ourPlayer) {
+        var msg = {
+            type: "broadcast",
+            canvasType: "player1",
+            roomID: roomID,
+            offsetX: event.offsetX,
+            offsetY: event.offsetY
+        };
+        socket.send(JSON.stringify(msg));
+    }
+}
+function handlePlayer2ClickWrap(event) {
+    if(game.currPlayer == game.ourPlayer) {
+        var msg = {
+            type: "broadcast",
+            canvasType: "player2",
+            roomID: roomID,
+            offsetX: event.offsetX,
+            offsetY: event.offsetY
+        };
+        socket.send(JSON.stringify(msg));
+    }
+}
+function handlePlayer3ClickWrap(event) {
+    if(game.currPlayer == game.ourPlayer) {
+        var msg = {
+            type: "broadcast",
+            canvasType: "player3",
+            roomID: roomID,
+            offsetX: event.offsetX,
+            offsetY: event.offsetY
+        };
+        socket.send(JSON.stringify(msg));
+    }
 }

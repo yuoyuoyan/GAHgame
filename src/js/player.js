@@ -1090,7 +1090,11 @@ class Player{
         const serverWidth = 160;
         const serverHeight = 240;
         if(this.serverOnHandCanvasIdx>0 && this.numServerOnHand>0) { 
-            context.drawImage(serverImg[this.serverOnHand[this.serverOnHandCanvasIdx-1].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+            if(this.game.currPlayer == this.game.ourPlayer){
+                context.drawImage(serverImg[this.serverOnHand[this.serverOnHandCanvasIdx-1].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+            } else {
+                context.drawImage(serverBackImg, serverXoffset, serverYoffset, serverWidth, serverHeight);
+            }
             // draw the left triangle to indicate
             this.triangleCanvas(context, 0, 105, 25, 130, 25, 80);
         }
@@ -1100,7 +1104,11 @@ class Player{
             if((this.serverOnHandCanvasIdx + i) < this.numServerOnHand){
                 serverXoffset+=170;
                 if((this.serverOnHandCanvasIdx + i) < this.numServerOnHand) {
-                    context.drawImage(serverImg[this.serverOnHand[this.serverOnHandCanvasIdx+i].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+                    if(this.game.currPlayer == this.game.ourPlayer){
+                        context.drawImage(serverImg[this.serverOnHand[this.serverOnHandCanvasIdx+i].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+                    } else {
+                        context.drawImage(serverBackImg, serverXoffset, serverYoffset, serverWidth, serverHeight);
+                    }
                 }
                 // hightlight block if needed
                 if(this.serverOnHandHighLightFlag && this.serverOnHandHighLight[this.serverOnHandCanvasIdx+i]) {
@@ -1114,7 +1122,11 @@ class Player{
         // draw the remaining of next card if any
         if(this.serverOnHandCanvasIdx + 3 < this.numServerOnHand) {
             serverXoffset+=170;
-            context.drawImage(serverImg[this.serverOnHand[this.serverOnHandCanvasIdx+3].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+            if(this.game.currPlayer == this.game.ourPlayer){
+                context.drawImage(serverImg[this.serverOnHand[this.serverOnHandCanvasIdx+3].serverID], serverXoffset, serverYoffset, serverWidth, serverHeight);
+            } else {
+                context.drawImage(serverBackImg, serverXoffset, serverYoffset, serverWidth, serverHeight);
+            }
             // draw the right triangle to indicate
             this.triangleCanvas(context, 640, 105, 615, 130, 615, 80);
         }

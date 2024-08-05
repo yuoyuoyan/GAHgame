@@ -18,8 +18,9 @@ class gameRoom{
         // two card deck moved to server
         this.guestDeck = Array.from({length: 58}, (_, i) => i);
         this.serverDeck = Array.from({length: 48}, (_, i) => i);
-        shuffleDeck(this.guestDeck);
-        shuffleDeck(this.serverDeck);
+        // task info
+        this.majorTask = [];
+        this.royalTask = [];
     }
 }
 
@@ -85,14 +86,25 @@ wss.on('connection', function connection(ws) {
                 }
                 gameInit(roomList[roomIndex]);
                 break;
+            case "gameInitInfoReq" :
+                console.log("send game initialization info to players");
+                var playerIndex = rcvmsg.playerID;
+                var firstSixServer = [];
+                for(let i=0; i<6; i++){
+                    firstSixServer.push(roomList[roomIndex].serverDeck.at(-1));
+                    roomList[roomIndex].serverDeck.pop();
+                }
+                rplmsg = {
+                    type: "gameInitInfo",
+                    majorTask: roomList[roomIndex].majorTask,
+                    royalTask: roomList[roomIndex].royalTask,
+                    guestDeck: roomList[roomIndex].guestDeck,
+                    serverDeck: roomList[roomIndex].serverDeck,
+                };
+                roomList[roomIndex].playerClients[playerIndex].send(JSON.stringify(rplmsg));
+                return;
             case "broadcast": // game operation to be broadcast to all players in room
                 console.log("broadcast info");
-                if(rcvmsg.serverReq > 0) {
-                    ;
-                }
-                if(rcvmsg.guestReq > 0) {
-                    ;
-                }
                 rplmsg = rcvmsg;
                 break;
             case "endGame": // game over, close room
@@ -168,31 +180,12 @@ function shuffleDeck(array) {
 }
 
 function gameInit(room){
-    var firstFiveGuest = [];
-    const majorTask0 = Math.floor(Math.random() * 4);
-    const majorTask1 = Math.floor(Math.random() * 4);
-    const majorTask2 = Math.floor(Math.random() * 4);
-    const royalTask0 = Math.floor(Math.random() * 4);
-    const royalTask1 = Math.floor(Math.random() * 4);
-    const royalTask2 = Math.floor(Math.random() * 4);
-    
-    for(let i=0; i<5; i++){
-        var firstFiveGuest = [];
-        firstFiveGuest.push(room.guestDeck.at(-1));
-        room.guestDeck.pop();
-    }    
-    
-    for(let player=0; player<room.playerClients.length; player++){
-        var firstSixServer = [];
-        firstSixServer.push(room.serverDeck.at(-1));
-        room.serverDeck.pop();
-        msg = {
-            type: "gameInitInfo",
-            majorTask: [majorTask0, majorTask1, majorTask2],
-            royalTask: [royalTask0, royalTask1, royalTask2],
-            guest: firstFiveGuest,
-            server: firstSixServer
-        };
-        room.playerClients[player].send(JSON.stringify(msg));
-    }
+    room.majorTask[0] = Math.floor(Math.random() * 4);
+    room.majorTask[1] = Math.floor(Math.random() * 4);
+    room.majorTask[2] = Math.floor(Math.random() * 4);
+    room.royalTask[0] = Math.floor(Math.random() * 4);
+    room.royalTask[1] = Math.floor(Math.random() * 4);
+    room.royalTask[2] = Math.floor(Math.random() * 4);
+    shuffleDeck(room.guestDeck);
+    shuffleDeck(room.serverDeck);
 }

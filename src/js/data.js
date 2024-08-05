@@ -180,6 +180,7 @@ const roomYellowClosedImg = document.getElementById("roomYellowClosedImg");
 const roomPreparedTokenImg = document.getElementById("roomPreparedTokenImg");
 const roomClosedTokenImg = document.getElementById("roomClosedTokenImg");
 const serverTokenImg = document.getElementById("serverTokenImg");
+const serverBackImg = document.getElementById("serverBackImg");
 const tableImg = document.getElementById("tableImg");
 
 // major task data
