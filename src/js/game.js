@@ -428,9 +428,18 @@ class Game{
 
     rollDice() {
         console.log("roll dice");
-        this.actionPoint = [0, 0, 0, 0, 0, 0];
-        for(let i=0; i<this.diceNumber; i++){
-            this.actionPoint[Math.floor(Math.random() * 6)]++;
+        // single-player mode
+        // this.actionPoint = [0, 0, 0, 0, 0, 0];
+        // for(let i=0; i<this.diceNumber; i++){
+        //     this.actionPoint[Math.floor(Math.random() * 6)]++;
+        // }
+        // multi-player mode, only ID 0 to send request
+        if(this.ourPlayer == 0){
+            var msg = {
+                type: "rollDiceReq",
+                roomID: roomID
+            };
+            socket.send(JSON.stringify(msg));
         }
     }
 

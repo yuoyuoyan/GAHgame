@@ -21,6 +21,8 @@ class gameRoom{
         // task info
         this.majorTask = [];
         this.royalTask = [];
+        // dice info
+        this.dice = [0, 0, 0, 0, 0, 0];
     }
 }
 
@@ -103,6 +105,14 @@ wss.on('connection', function connection(ws) {
                 };
                 roomList[roomIndex].playerClients[playerIndex].send(JSON.stringify(rplmsg));
                 return;
+            case "rollDiceReq" :
+                console.log("roll dice for room " + rcvmsg.roomID);
+                rollDice(roomList[roomIndex]);
+                rplmsg = {
+                    type: "diceInfo",
+                    dice: roomList[roomIndex].dice
+                };
+                break;
             case "broadcast": // game operation to be broadcast to all players in room
                 console.log("broadcast info");
                 rplmsg = rcvmsg;
@@ -188,4 +198,12 @@ function gameInit(room){
     room.royalTask[2] = Math.floor(Math.random() * 4);
     shuffleDeck(room.guestDeck);
     shuffleDeck(room.serverDeck);
+}
+
+function rollDice(room){
+    room.dice = [0, 0, 0, 0, 0, 0];
+    console.log("dice number " + (room.playerNumber * 2 + 6));
+    for(let i=0; i<(room.playerNumber * 2 + 6); i++){
+        room.dice[Math.floor(Math.random() * 6)]++;
+    }
 }

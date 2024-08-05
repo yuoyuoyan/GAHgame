@@ -1,5 +1,6 @@
 // server connection
-const socket = new WebSocket('ws://localhost:8080');
+// const socket = new WebSocket('ws://localhost:8080');
+const socket = new WebSocket('ws://121.43.102.218:8080');
 socket.onmessage = handleMsg;
 
 const roomIDLabel = document.getElementById("roomID");
@@ -237,6 +238,10 @@ async function handleMsg(event) {
             for(let i=0; i<game.playerNumber; i++) {
                 game.players[i].addServerToHand(6);
             }
+            game.updateAllCanvas();
+            break;
+        case("diceInfo") : // sync random dice roll
+            game.actionPoint = msg.dice;
             game.updateAllCanvas();
             break;
         case("broadcast") : // broadcast all canvas clicking to every players
