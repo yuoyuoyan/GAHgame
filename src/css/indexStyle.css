@@ -130,6 +130,14 @@ body{
     /* border: 3px solid #73AD21; */
 }
 
+#logboard{
+    display: none;
+    position: absolute;
+    top: 1000px;
+    left: 0px;
+    background-color:#b89e86;
+}
+
 #hotelboard{
     display: none;
     position: absolute;

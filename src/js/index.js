@@ -202,6 +202,7 @@ async function handleMsg(event) {
             startButton.style.display = 'none';
             guestCanvas.style.display = 'block';
             actionCanvas.style.display = 'block';
+            logCanvas.style.display = 'block';
             player0Canvas.style.display = 'block';
             player1Canvas.style.display = 'block';
             player2Canvas.style.display = 'block';

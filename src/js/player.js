@@ -131,6 +131,7 @@ class Player{
         this.atTakeWhite = Math.floor(value/2);
         this.atTakeBrown = value - this.atTakeWhite;
         this.game.alertType = 0;
+        this.game.log.push(this.game.playerName[this.game.currPlayer] +  + "选择拿菜，boost前棕白总量" + value);
     }
 
     actionTakeRedBlack(value) {
@@ -140,6 +141,7 @@ class Player{
         this.atTakeBlack = Math.floor(value/2);
         this.atTakeRed = value - this.atTakeBlack;
         this.game.alertType = 1;
+        this.game.log.push(this.game.playerName[this.game.currPlayer] +  + "选择拿菜，boost前红黑总量" + value);
     }
 
     actionPrepareRoom(value) {
@@ -147,6 +149,7 @@ class Player{
         this.atPrepareRoom = true;
         this.atRoomToPrepare = value;
         this.game.alertType = 2;
+        this.game.log.push(this.game.playerName[this.game.currPlayer] +  + "选择开房间，boost前共可开" + value);
     }
 
     actionTakeRoyalMoney(value) {
@@ -156,8 +159,10 @@ class Player{
         this.atRoyal = value;
         if(this.hasHiredServer(14)){
             this.atMoney = value;
+            this.game.log.push(this.game.playerName[this.game.currPlayer] +  + "的员工效果，同时获得皇室点数和钱");
         } else {
             this.atMoney = 0;
+            this.game.log.push(this.game.playerName[this.game.currPlayer] +  + "选择获取皇室点数和钱，boost前共可获得" + value);
         }
         this.game.alertType = 3;
     }
@@ -169,6 +174,7 @@ class Player{
         // default maximum discount
         this.atHireServerdiscount.push(value);
         this.game.alertType = 4;
+        this.game.log.push(this.game.playerName[this.game.currPlayer] +  + "选择雇佣员工，boost前共可减免" + value);
     }
 
     actionTakeMirror(value) {
@@ -178,6 +184,7 @@ class Player{
         this.atMirrorStrength = value;
         this.atMirrorDice = 1;
         this.game.alertType = 5;
+        this.game.log.push(this.game.playerName[this.game.currPlayer] +  + "选择镜像骰子，boost前强度为" + value);
     }
 
     highlightServerToLose(numServer) {
@@ -212,6 +219,7 @@ class Player{
         for(let i=0; i<this.numServerHired; i++){
             if(this.serverHired[i].serverType == 3){
                 hasFinalServer = true;
+                this.game.log.push(this.game.playerName[this.game.currPlayer] + "有终局结算效果的员工，必须优先丢弃");
                 break;
             }
         }
@@ -230,6 +238,7 @@ class Player{
     royalResultExecute() { // execute royal task result after selection, only happens to punishment
         // assert royal result finish if no action needed
         if(this.royalPunishSelection == 2) { // Pay 1 to neglicate the punishment
+            this.game.log.push(this.game.playerName[this.game.currPlayer] + "有终局结算效果的员工，必须优先丢弃");
             this.loseMoney(1);
         } else if(this.royalResult==0) { // punishment
             switch(this.game.mainRound){
@@ -237,8 +246,10 @@ class Player{
                     switch(this.game.royalTask0){
                         case 0:
                         if(this.royalPunishSelection==0) {
+                            this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择失去3块钱");
                             this.loseMoney(3);
                         } else if(this.royalPunishSelection==1) {
+                            this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择失去5游戏点数");
                             this.loseGamePoint(5);
                         }
                         this.royalResultFinish = true;
@@ -248,16 +259,20 @@ class Player{
                         break; // 失去厨房全部食物
                         case 2:
                         if(this.royalPunishSelection==0) {
+                            this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择丢弃2张员工手牌");
                             this.highlightServerToLose(2);
                         } else if(this.royalPunishSelection==1) {
+                            this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择失去5游戏点数");
                             this.loseGamePoint(5);
                             this.royalResultFinish = true;
                         }
                         break; // 丢弃2张员工手牌或失去5游戏点数
                         case 3:
                         if(this.royalPunishSelection==0) {
+                            this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择失去最高的准备好的房间");
                             this.hotel.highlightRoomToLose(true, false, false, false);
                         } else if(this.royalPunishSelection==1) {
+                            this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择失去5游戏点数");
                             this.loseGamePoint(5);
                             this.royalResultFinish = true;
                         }
@@ -271,24 +286,30 @@ class Player{
                         break; // 失去厨房和客桌上的全部食物
                         case 1:
                         if(this.royalPunishSelection==0) {
+                            this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择失去5块钱");
                             this.loseMoney(5);
                         } else if(this.royalPunishSelection==1) {
+                            this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择失去7游戏点数");
                             this.loseGamePoint(7);
                         }
                         this.royalResultFinish = true;
                         break; // 失去5块钱或失去7游戏点数
                         case 2:
                         if(this.royalPunishSelection==0) {
+                            this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择丢弃3张员工手牌");
                             this.highlightServerToLose(3);
                         } else if(this.royalPunishSelection==1) {
+                            this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择失去7游戏点数");
                             this.loseGamePoint(7);
                             this.royalResultFinish = true;
                         }
                         break; // 丢弃3张员工手牌或失去7游戏点数
                         case 3:
                         if(this.royalPunishSelection==0) {
+                            this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择失去最高的准备好的2个房间");
                             this.hotel.highlightRoomToLose(true, false, false, false); this.hotel.highlightRoomToLose(true, false, false, false);
                         } else if(this.royalPunishSelection==1) {
+                            this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择失去7游戏点数");
                             this.loseGamePoint(7);
                             this.royalResultFinish = true;
                         }
@@ -307,8 +328,10 @@ class Player{
                         break; // 每个已雇佣员工失去2游戏点数
                         case 3:
                         if(this.royalPunishSelection==0) {
+                            this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择失去1位已雇佣员工（终局结算优先）");
                             this.highlightHiredServerToLose();
                         } else if(this.royalPunishSelection==1) {
+                            this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择失去10游戏点数");
                             this.loseGamePoint(10);
                             this.royalResultFinish = true;
                         }
@@ -352,6 +375,7 @@ class Player{
         // check major task A1
         // 积累10点皇室点数
         if(this.game.majorTask0==1 && this.royalPoint >= 10){
+            this.game.log.push(this.game.playerName[this.game.currPlayer] + "完成全局任务获得奖励");
             this.gainMajorTaskBonus(0);
         }
     }
@@ -425,6 +449,7 @@ class Player{
         // check major task A0
         // 积累20块钱
         if(this.game.majorTask0==0 && this.money >= 20){
+            this.game.log.push(this.game.playerName[this.game.currPlayer] + "完成全局任务获得奖励");
             this.gainMajorTaskBonus(0);
         }
     }
@@ -478,11 +503,13 @@ class Player{
         }
 
         this.serverHired.push(this.serverOnHand[serverIndex]);
+        this.game.log.push(this.game.playerName[this.game.currPlayer] + "雇佣了员工" + this.serverHired[this.serverHired.length-1].serverName);
         this.numServerHired++;
 
         // check major task A2
         // 雇佣6名员工
         if(this.game.majorTask0==2 && this.numServerHired >= 6){
+            this.game.log.push(this.game.playerName[this.game.currPlayer] + "完成全局任务获得奖励");
             this.gainMajorTaskBonus(0);
         }
 
@@ -491,41 +518,53 @@ class Player{
         if(this.serverOnHand[serverIndex].serverType == 1 || this.serverOnHand[serverIndex].serverType == 0) {
             switch(this.serverOnHand[serverIndex].serverID){
                 case 0: //每回合获得一个饼干
+                this.game.log.push(this.game.playerName[this.game.currPlayer] + "的员工效果，每回合获得一个饼干");
                 this.gainBrown(1);
                 break;
                 case 1: //每回合获得一个蛋糕
+                this.game.log.push(this.game.playerName[this.game.currPlayer] + "的员工效果，每回合获得一个蛋糕");
                 this.gainWhite(1);
                 break;
                 case 2: //每回合获得一个红酒
+                this.game.log.push(this.game.playerName[this.game.currPlayer] + "的员工效果，每回合获得一个红酒");
                 this.gainRed(1);
                 break;
                 case 3: //每回合获得一个咖啡
+                this.game.log.push(this.game.playerName[this.game.currPlayer] + "的员工效果，每回合获得一个咖啡");
                 this.gainBlack(1);
                 break;
                 case 20: //一次性获得所有食物或饮料各一份
+                this.game.log.push(this.game.playerName[this.game.currPlayer] + "的员工效果，一次性获得所有食物或饮料各一份");
                 this.gainBrown(1);
                 this.gainWhite(1);
                 this.gainRed(1);
                 this.gainBlack(1);
                 break;
                 case 34: //一次性将两个准备好的房间入住
+                this.game.log.push(this.game.playerName[this.game.currPlayer] + "的员工效果，一次性将两个准备好的房间入住");
                 this.hotel.highlightRoomToCheckout(true, 2); break;
                 case 35: //一次性获得4份红酒
+                this.game.log.push(this.game.playerName[this.game.currPlayer] + "的员工效果，一次性获得4份红酒");
                 this.gainRed(4);
                 break;
                 case 37: //一次性满足一位客人的所有用餐需求
+                this.game.log.push(this.game.playerName[this.game.currPlayer] + "的员工效果，一次性满足一位客人的所有用餐需求");
                 this.hotel.atSelectUnSatisfiedGuest = true;
                 break;
                 case 38: //一次性获得4份蛋糕
+                this.game.log.push(this.game.playerName[this.game.currPlayer] + "的员工效果，一次性获得4份蛋糕");
                 this.gainWhite(4);
                 break;
                 case 42: //一次性获得4份咖啡
+                this.game.log.push(this.game.playerName[this.game.currPlayer] + "的员工效果，一次性获得4份咖啡");
                 this.gainBlack(4);
                 break;
                 case 43: //一次性获得4份饼干
+                this.game.log.push(this.game.playerName[this.game.currPlayer] + "的员工效果，一次性获得4份饼干");
                 this.gainBrown(4);
                 break;
                 case 44: //一次性获得3皇家点数
+                this.game.log.push(this.game.playerName[this.game.currPlayer] + "的员工效果，一次性获得3皇家点数");
                 this.gainRoyal(3);
                 break;
             }
@@ -549,6 +588,7 @@ class Player{
             return;
         }
 
+        this.game.log.push(this.game.playerName[this.game.currPlayer] + "丢弃了已雇佣员工" + this.serverHired[serverIndex].serverName);
         this.serverHired.splice(serverIndex, 1); // remove this hired server
         this.numServerHired--;
     }
@@ -665,151 +705,214 @@ class Player{
         }
 
         // game point
+        this.game.log.push(this.game.playerName[this.game.currPlayer] + "结算客人，获得游戏点数" + guestBonusGamePointByID[guestID]);
         this.gainGamePoint(guestBonusGamePointByID[guestID]);
         
         // extra bonus
         // point bonus
         switch(guestID) {
             case 4: // 获得1个棕饼干和2块钱
+            this.game.log.push("并且" + "获得2块钱");
             this.gainMoney(2); break;
             case 5: // 获得1个黑咖啡和2个皇室点数
+            this.game.log.push("并且" + "获得2个皇室点数");
             this.gainRoyal(2); break;
             case 6: // 获得1个任意食物资源和2块钱
+            this.game.log.push("并且" + "获得2块钱");
             this.gainMoney(2); break;
             case 12: // 获得1个黑咖啡和3块钱
+            this.game.log.push("并且" + "获得3块钱");
             this.gainMoney(3); break;
             case 14: // 免费邀请1位客人并获得3个皇室点数
+            this.game.log.push("并且" + "免费3个皇室点数");
             this.gainRoyal(3); break;
             case 19: // 抽取2张员工到手牌并获得2个皇室点数
+            this.game.log.push("并且" + "获得2个皇室点数");
             this.gainRoyal(2); break;
             case 20: // 获得3个皇室点数
+            this.game.log.push("并且" + "获得3个皇室点数");
             this.gainRoyal(3); break;
             case 21: // 获得3块钱
+            this.game.log.push("并且" + "获得3块钱");
             this.gainMoney(3); break;
             case 22: // 减1费打出1张员工并获得3个皇室点数
+            this.game.log.push("并且" + "获得3个皇室点数");
             this.gainRoyal(3); break;
             case 26: // 获得1块钱
+            this.game.log.push("并且" + "获得1块钱");
             this.gainMoney(1); break;
             case 29: // 获得3个皇室点数
+            this.game.log.push("并且" + "获得3个皇室点数");
             this.gainRoyal(3); break;
             case 30: // 获得1块钱
+            this.game.log.push("并且" + "获得1块钱");
             this.gainMoney(1); break;
             case 32: // 获得1块钱和1个皇室点数
+            this.game.log.push("并且" + "获得1块钱和1个皇室点数");
             this.gainMoney(1); this.gainRoyal(1); break;
             case 34: // 获得1个红酒盒3块钱
+            this.game.log.push("并且" + "获得3块钱");
             this.gainMoney(3); break;
             case 36: // 获得5块钱
+            this.game.log.push("并且" + "获得5块钱");
             this.gainMoney(5); break;
             case 37: // 获得3块钱并免费邀请1位客人
+            this.game.log.push("并且" + "获得3块钱");
             this.gainMoney(3); break;
             case 38: // 获得3块钱
+            this.game.log.push("并且" + "获得3块钱");
             this.gainMoney(3); break;
             case 40: // 获得3块钱并免费邀请2位客人
+            this.game.log.push("并且" + "获得3块钱");
             this.gainMoney(3); break;
             case 42: // 获得4块钱
+            this.game.log.push("并且" + "获得4块钱");
             this.gainMoney(4); break;
             case 43: // 获得1个红酒和3块钱
+            this.game.log.push("并且" + "获得3块钱");
             this.gainMoney(3); break;
             case 45: // 获得1块钱
+            this.game.log.push("并且" + "获得1块钱");
             this.gainMoney(1); break;
             case 46: // 获得1个皇室点数
+            this.game.log.push("并且" + "获得1个皇室点数");
             this.gainRoyal(1); break;
             case 48: // 获得2个皇室点数
+            this.game.log.push("并且" + "获得2个皇室点数");
             this.gainRoyal(2); break;
             case 51: // 获得4块钱
+            this.game.log.push("并且" + "获得4块钱");
             this.gainMoney(4); break;
             case 52: // 抽取1张员工到手牌并获得2个皇室点数
+            this.game.log.push("并且" + "获得2个皇室点数");
             this.gainRoyal(2); break;
             case 53: // 额外关闭1个房间并获得3个皇室点数
+            this.game.log.push("并且" + "获得3个皇室点数");
             this.gainRoyal(3); break;
             case 54: // 免费邀请1位客人并获得3个皇室点数
+            this.game.log.push("并且" + "获得3个皇室点数");
             this.gainRoyal(3); break;
             case 55: //额外关闭1个房间并获得1个皇室点数
+            this.game.log.push("并且" + "获得1个皇室点数");
             this.gainRoyal(1); break;
         }
         // server related
         switch(guestID){
             case 2: // 原价开1个房间并抽取1张员工到手牌
+            this.game.log.push("并且" + "抽取1张员工到手牌");
             this.addServerToHand(1); break;
             case 7: // 抽取2张员工到手牌
+            this.game.log.push("并且" + "抽取2张员工到手牌");
             this.addServerToHand(2); break;
             case 8: // 获得1个白蛋糕并减3费打出1张员工
+            this.game.log.push("并且" + "减3费打出1张员工");
             this.highlightServerToHire(3); break;
             case 11: // 获得1个白蛋糕并减2费打出1张员工
+            this.game.log.push("并且" + "减2费打出1张员工");
             this.highlightServerToHire(2); break;
             case 16: // 减1费打出1张员工
+            this.game.log.push("并且" + "减1费打出1张员工");
             this.highlightServerToHire(1); break;
             case 18: // 减1费打出1张员工并原价开1个房间
+            this.game.log.push("并且" + "减1费打出1张员工");
             this.highlightServerToHire(1); break;
             case 19: // 抽取2张员工到手牌并获得2个皇室点数
+            this.game.log.push("并且" + "抽取2张员工到手牌");
             this.addServerToHand(2); break;
             case 22: // 减1费打出1张员工并获得3个皇室点数
+            this.game.log.push("并且" + "减1费打出1张员工");
             this.highlightServerToHire(1); break;
             case 25: // 分别减1费打出2张员工
+            this.game.log.push("并且" + "分别减1费打出2张员工");
             this.highlightServerToHire(1);
             this.highlightServerToHire(1);
             break;
             case 27: // 抽取3张员工，减3费打出其中1张，剩余放回牌堆底部
+            this.game.log.push("并且" + "抽取3张员工，减3费打出其中1张，剩余放回牌堆底部");
             this.highlightServerToHire(3, true); break;
             case 28: // 抽取3张员工，免费打出其中1张，剩余放回牌堆底部
+            this.game.log.push("并且" + "抽取3张员工，免费打出其中1张，剩余放回牌堆底部");
             this.highlightServerToHire(10, true); break;
             case 39: // 减3费打出1张员工
+            this.game.log.push("并且" + "减3费打出1张员工");
             this.highlightServerToHire(3); break;
             case 44: // 抽取3张员工到手牌
+            this.game.log.push("并且" + "抽取3张员工到手牌");
             this.addServerToHand(3); break;
             case 47: // 减1费打出1张员工
+            this.game.log.push("并且" + "减1费打出1张员工");
             this.highlightServerToHire(1); break;
             case 49: // 减3费打出1张员工
+            this.game.log.push("并且" + "减3费打出1张员工");
             this.highlightServerToHire(3); break;
             case 52: // 抽取1张员工到手牌并获得2个皇室点数
+            this.game.log.push("并且" + "抽取1张员工到手牌");
             this.addServerToHand(1); break;
             case 56: // 抽取2张员工到手牌
+            this.game.log.push("并且" + "抽取2张员工到手牌");
             this.addServerToHand(2); break;
             case 57: // 免费打出1张员工
+            this.game.log.push("并且" + "免费打出1张员工");
             this.highlightServerToHire(10); break;
         }
         // room related
         switch(guestID) {
             case 1: // 免费开1间1层或2层房间
+            this.game.log.push("并且" + "免费开1间1层或2层房间");
             this.hotel.highlightRoomToPrepare(this.money, 5, 1); break;
             case 2: // 原价开1个房间并抽取1张员工到手牌
+            this.game.log.push("并且" + "原价开1个房间");
             this.hotel.highlightRoomToPrepare(this.money); break;
             case 9: // 分别减1费开2个房间
+            this.game.log.push("并且" + "分别减1费开2个房间");
             this.hotel.highlightRoomToPrepare(this.money, 1);
             this.hotel.highlightRoomToPrepare(this.money, 1);
             break;
             case 10: // 额外关闭1个房间
+            this.game.log.push("并且" + "额外关闭1个房间");
             this.hotel.highlightRoomToCheckout(true, 1); break;
             case 13: // 减1费开1个房间并原价开1个房间
+            this.game.log.push("并且" + "减1费开1个房间并原价开1个房间");
             this.hotel.highlightRoomToPrepare(this.money, 0);
             this.hotel.highlightRoomToPrepare(this.money, 1);
             break;
             case 18: // 减1费打出1张员工并原价开1个房间
+            this.game.log.push("并且" + "免费打出1张员工");
             this.hotel.highlightRoomToPrepare(this.money); break;
             case 23: // 免费开1个房间
+            this.game.log.push("并且" + "免费开1个房间");
             this.hotel.highlightRoomToPrepare(this.money, 5); break;
             case 24: // 额外关闭1个房间
+            this.game.log.push("并且" + "额外关闭1个房间");
             this.hotel.highlightRoomToCheckout(true, 1); break;
             case 35: // 额外关闭1个房间
+            this.game.log.push("并且" + "额外关闭1个房间");
             this.hotel.highlightRoomToCheckout(true, 1); break;
             case 41: // 免费开2个房间
+            this.game.log.push("并且" + "免费开2个房间");
             this.hotel.highlightRoomToPrepare(this.money, 5);
             this.hotel.highlightRoomToPrepare(this.money, 5);
             break;
             case 53: // 额外关闭1个房间并获得3个皇室点数
+            this.game.log.push("并且" + "额外关闭1个房间");
             this.hotel.highlightRoomToCheckout(true, 1); break;
             case 55: // 额外关闭1个房间并获得1个皇室点数
+            this.game.log.push("并且" + "额外关闭1个房间");
             this.hotel.highlightRoomToCheckout(true, 1); break;
         }
         // food related
         switch(guestID) {
             case 3: // 获得1个棕饼干
+            this.game.log.push("并且" + "获得1个棕饼干");
             this.gainBrown(1); break;
             case 4: // 获得1个棕饼干和2块钱
+            this.game.log.push("并且" + "获得1个棕饼干");
             this.gainBrown(1); break;
             case 5: // 获得1个黑咖啡和2个皇室点数
+            this.game.log.push("并且" + "获得1个黑咖啡");
             this.gainBlack(1); break;
             case 6: // 获得1个任意食物资源和2块钱
+            this.game.log.push("并且" + "获得1个任意食物资源");
             alertCanvas.style.display = 'block';
             this.atSelectFood = 1;
             this.atTakeBrown = 1; // default to brown
@@ -819,14 +922,19 @@ class Player{
             this.game.alertType = 6;
             break;
             case 8: // 获得1个白蛋糕并减3费打出1张员工
+            this.game.log.push("并且" + "获得1个白蛋糕");
             this.gainWhite(1); break;
             case 11: // 获得1个白蛋糕并减2费打出1张员工
+            this.game.log.push("并且" + "获得1个白蛋糕");
             this.gainWhite(1); break;
             case 12: // 获得1个黑咖啡和3块钱
+            this.game.log.push("并且" + "获得1个黑咖啡");
             this.gainBlack(1); break;
             case 34: // 获得1个红酒盒3块钱
+            this.game.log.push("并且" + "获得1个红酒");
             this.gainRed(1); break;
             case 43: // 获得1个红酒和3块钱
+            this.game.log.push("并且" + "获得1个红酒");
             this.gainRed(1); break;
         }
         // free invite
@@ -837,11 +945,14 @@ class Player{
             case 31:
             case 33:
             case 37:
-            case 54: this.addFreeInvite(1); break;
-            case 40: this.addFreeInvite(2); break;
+            case 54: this.addFreeInvite(1); 
+            this.game.log.push("并且" + "免费邀请一个客人"); break;
+            case 40: this.addFreeInvite(2); 
+            this.game.log.push("并且" + "免费邀请两个客人"); break;
         }
         // special bonus
         if(guestID==50) { // 立即额外进行一个回合，不需要拿取骰子
+            this.game.log.push("并且" + "可以额外进行一个特殊回合");
             this.specialRoundFlag = true;
         }
         this.game.updateAllCanvas();
@@ -1479,8 +1590,10 @@ class Player{
                 this.atInvite = true;
                 this.game.guestHighLightFlag = true;
                 if(this.firstGuestTurn){
+                    this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择免费邀请客人");
                     this.game.checkGuestInvite(10); // make sure all guest available at the first guest
                 } else {
+                    this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择邀请客人");
                     this.game.checkGuestInvite(this.money);
                 }
             }
@@ -1493,6 +1606,7 @@ class Player{
                 // disable all
                 this.disableAllOp();
                 this.atAction = true;
+                this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择取骰");
             }
             this.game.actionHighLightFlag = true;
             for(let i=0; i<6; i++){
@@ -1512,6 +1626,7 @@ class Player{
                 }
                 this.atServe = true;
                 this.serveFoodNum = 3;
+                this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择上菜");
             }
         }
 
@@ -1523,6 +1638,7 @@ class Player{
                 this.disableAllOp();
                 this.atCheckout = true;
                 this.hotel.atSelectSatisfiedGuest = true;
+                this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择结算客人");
             }
         }
 
@@ -1531,6 +1647,7 @@ class Player{
             console.log("End button pressed");
             if(this.opEnd){
                 this.endFlag = true;
+                this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择结束回合");
                 this.game.nextMiniRound();
             }
         }

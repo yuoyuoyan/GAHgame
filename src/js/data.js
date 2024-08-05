@@ -15,6 +15,8 @@ const serverCanvas = document.getElementById("serverboard");
 const serverContext = serverCanvas.getContext("2d");
 const hotelCanvas = document.getElementById("hotelboard");
 const hotelContext = hotelCanvas.getContext("2d");
+const logCanvas = document.getElementById("logboard");
+const logContext = logCanvas.getContext("2d");
 const alertCanvas = document.getElementById("alertboard");
 const alertContext = alertCanvas.getContext("2d");
 

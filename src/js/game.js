@@ -24,6 +24,8 @@ class Game{
         this.actionHighLight = [0, 0, 0, 0, 0, 0];
         this.guestHighLightFlag = false;
         this.guestHighLight = [0, 0, 0, 0, 0];
+        // log detail
+        this.log = ["游戏开始，免费邀请一个客人并原价开三个房间"];
         // alert type depends on game phase
         this.alertType = 0;
 
@@ -131,10 +133,13 @@ class Game{
             if(this.currPlayer == this.playerNumber-1){ // all players complete preparation
                 this.currPlayer = 0;
                 this.rollDice();
+                this.log.push("所有玩家已完成准备，开启正式游戏");
             } else {
+                this.log.push(this.playerName[this.currPlayer] + "已完成准备，下一位");
                 this.currPlayer++;
             }
         } else if(this.miniRound == (2*this.playerNumber-1) || this.royalRound) { // end of main round, check royal round first
+            this.log.push("大回合" + this.mainRound + "已结束");
             if(!this.royalRound){ // start of royal round, reset curr player first
                 this.clearPlayerRound();
                 this.currPlayer = 0;
@@ -145,10 +150,18 @@ class Game{
             this.royalRound = true;
             // disable all operation other than ending
             if(this.mainRound==2 || this.mainRound==4 || this.mainRound==6) { // check if any players need pause
+                var taskDescription;
+                switch(this.mainRound){
+                    case 2: taskDescription = royalTaskDescription[0][this.royalTask0]; break;
+                    case 4: taskDescription = royalTaskDescription[1][this.royalTask1]; break;
+                    case 6: taskDescription = royalTaskDescription[2][this.royalTask2]; break;
+                }
+                this.log.push("进入皇室结算回合，本轮任务" + taskDescription);
                 var pauseFlag = false;
                 for(let i=this.currPlayer; i<this.playerNumber; i++){
                     pauseFlag = this.royalResult();
                     if(pauseFlag) {
+                        this.log.push("等待玩家" + this.playerName[this.currPlayer] + "进行皇室选择");
                         return; // pause and assert alert canvas
                     }
                     this.currPlayer++;
@@ -157,8 +170,10 @@ class Game{
 
             if(this.mainRound == 6) { // end of entire game
                 this.currPlayer = 0;
+                this.log.push("计算终局分数");
                 this.gameEnd();
                 this.updateAllCanvas();
+                this.log.push("游戏结束!" + this.players[this.winner].playerName + "获胜!");
                 window.alert("游戏结束!" + this.players[this.winner].playerName + "获胜!");
                 return;
             } else { // go to next main round
@@ -171,6 +186,7 @@ class Game{
                 this.players[0].miniTurn = tmp;
                 this.mainRound++;
                 this.miniRound = 0;
+                this.log.push("进入大回合" + this.mainRound);
                 this.currPlayer = this.findNextPlayer();
                 for(let i=0; i<this.playerNumber; i++){
                     this.players[i].diceTaken = [-1, -1];
@@ -178,21 +194,26 @@ class Game{
                 this.rollDice();
                 // take a food for every per-turn server
                 if(this.players[this.currPlayer].hasHiredServer(0)){
+                    this.log.push(this.playerName[this.currPlayer] + "获得每回合一个免费的棕色饼干");
                     this.players[this.currPlayer].gainBrown(1);
                 }
                 if(this.players[this.currPlayer].hasHiredServer(1)){
+                    this.log.push(this.playerName[this.currPlayer] + "获得每回合一个免费的白色蛋糕");
                     this.players[this.currPlayer].gainWhite(1);
                 }
                 if(this.players[this.currPlayer].hasHiredServer(2)){
+                    this.log.push(this.playerName[this.currPlayer] + "获得每回合一个免费的红酒");
                     this.players[this.currPlayer].gainRed(1);
                 }
                 if(this.players[this.currPlayer].hasHiredServer(3)){
+                    this.log.push(this.playerName[this.currPlayer] + "获得每回合一个免费的黑咖啡");
                     this.players[this.currPlayer].gainBlack(1);
                 }
             }
         } else { // normal mini round
             if(this.players[this.currPlayer].specialRoundFlag){ // special round from guest
                 this.clearPlayerRound();
+                this.log.push(this.playerName[this.currPlayer] + "获得特殊回合，行动不消耗骰子数");
                 this.players[this.currPlayer].specialRoundFlag = false;
                 this.players[this.currPlayer].specialRound = true;
                 return;
@@ -201,17 +222,22 @@ class Game{
             this.clearPlayerRound();
             this.miniRound++;
             this.currPlayer = this.findNextPlayer();
+            this.log.push("下一小回合" + this.miniRound + "，玩家为" + this.playerName[this.currPlayer]);
             // take a food for every per-turn server
             if(this.players[this.currPlayer].hasHiredServer(0)){
+                this.log.push(this.playerName[this.currPlayer] + "获得每回合一个免费的棕色饼干");
                 this.players[this.currPlayer].gainBrown(1);
             }
             if(this.players[this.currPlayer].hasHiredServer(1)){
+                this.log.push(this.playerName[this.currPlayer] + "获得每回合一个免费的白色蛋糕");
                 this.players[this.currPlayer].gainWhite(1);
             }
             if(this.players[this.currPlayer].hasHiredServer(2)){
+                this.log.push(this.playerName[this.currPlayer] + "获得每回合一个免费的红酒");
                 this.players[this.currPlayer].gainRed(1);
             }
             if(this.players[this.currPlayer].hasHiredServer(3)){
+                this.log.push(this.playerName[this.currPlayer] + "获得每回合一个免费的黑咖啡");
                 this.players[this.currPlayer].gainBlack(1);
             }
         }
@@ -235,6 +261,7 @@ class Game{
         }
         if(this.players[i].royalPoint < 1) { // punishment
             this.players[i].royalResult = 0;
+            this.log.push(this.playerName[this.currPlayer] + "皇室点数为" + this.players[i].royalPoint + "，进行惩罚");
             // with server 25, always need to check
             if(this.players[i].hasHiredServer(25)){ // 可支付1块钱替代皇家任务惩罚
                 this.assertAlert(i);
@@ -244,51 +271,67 @@ class Game{
                 case 2: 
                     switch(this.royalTask0){
                         case 0: this.assertAlert(i);
+                        this.log.push(this.playerName[this.currPlayer] + "失去3块钱或5游戏点数");
                         return true; // 获得3块钱/失去3块钱或5游戏点数
                         case 1: this.players[i].clearKitchen(); 
+                        this.log.push(this.playerName[this.currPlayer] + "失去厨房全部食物");
                         return false; // 获得2份任意食物/失去厨房全部食物
                         case 2: this.assertAlert(i);
+                        this.log.push(this.playerName[this.currPlayer] + "丢弃2张员工手牌或失去5游戏点数");
                         return true; // 抽3员工打1减3费返还剩余/丢弃2张员工手牌或失去5游戏点数
                         case 3: this.assertAlert(i);
+                        this.log.push(this.playerName[this.currPlayer] + "失去最高的准备好的房间或失去5游戏点数");
                         return true; // 免费准备1个房间/失去最高的准备好的房间或失去5游戏点数
                     }
                     break;
                 case 4:
                     switch(this.royalTask1){
                         case 0: this.players[i].clearGuestTable(); this.players[i].clearKitchen(); 
+                        this.log.push(this.playerName[this.currPlayer] + "失去厨房和客桌上的全部食物");
                         return false; // 获得4种食物各1份/失去厨房和客桌上的全部食物
                         case 1: this.assertAlert(i);
+                        this.log.push(this.playerName[this.currPlayer] + "失去5块钱或失去7游戏点数");
                         return true; // 获得5块钱/失去5块钱或失去7游戏点数
                         case 2: this.assertAlert(i);
+                        this.log.push(this.playerName[this.currPlayer] + "丢弃3张员工手牌或失去7游戏点数");
                         return true; // 抽3员工打1免费返还剩余/丢弃3张员工手牌或失去7游戏点数
                         case 3: this.assertAlert(i);
+                        this.log.push(this.playerName[this.currPlayer] + "失去最高的已入住的2个房间或失去7游戏点数");
                         return true; // 2层以内免费准备2个房间/失去最高的已入住的2个房间或失去7游戏点数
                     }
                     break;
                 case 6:
                     switch(this.royalTask2){
                         case 0: this.players[i].loseGamePoint(8);
+                        this.log.push(this.playerName[this.currPlayer] + "失去8游戏点数");
                         return false; // 获得8游戏点数/失去8游戏点数
                         case 1: this.players[i].hotel.highlightRoomToLose(true, false, false); this.players[i].hotel.highlightRoomToLose(true, false, false);
+                        this.log.push(this.playerName[this.currPlayer] + "失去最高层和次高层各1个已入住房间");
                         return true; // 免费准备1个房间并入住/失去最高层和次高层各1个已入住房间
                         case 2: this.players[i].loseGamePoint(2*this.players[i].numServerHired);
+                        this.log.push(this.playerName[this.currPlayer] + "每个已雇佣员工失去2游戏点数");
                         return false; // 每个已雇佣员工获得2游戏点数/每个已雇佣员工失去2游戏点数
                         case 3: this.assertAlert(i);
+                        this.log.push(this.playerName[this.currPlayer] + "失去1位已雇佣员工（终局结算优先）或失去10游戏点数");
                         return true; // 免费雇佣1位手牌上的员工/失去1位已雇佣员工（终局结算优先）或失去10游戏点数
                     }
                     break;
             }
         } else if(this.players[i].royalPoint > 2) { // reward
             this.players[i].royalResult = 1;
+            this.log.push(this.playerName[this.currPlayer] + "皇室点数为" + this.players[i].royalPoint + "，进行奖励");
             if(this.players[i].hasHiredServer(41)){ //在获得皇室任务奖励时可以获得5游戏点数
                 this.players[i].gainGamePoint(5);
+                this.log.push(this.playerName[this.currPlayer] + "的员工效果，获得额外5个游戏点数");
             }
             switch(this.mainRound){
                 case 2: 
                     switch(this.royalTask0){
                         case 0: // 获得3块钱/失去3块钱或5游戏点数 
+                        this.log.push(this.playerName[this.currPlayer] + "获得3块钱");
                         this.players[i].gainMoney(3); return false; 
                         case 1: // 获得2份任意食物/失去厨房全部食物
+                        this.log.push(this.playerName[this.currPlayer] + "获得2份任意食物");
                         alertCanvas.style.display = 'block';
                         this.players[i].atSelectFood = 2;
                         this.players[i].atTakeBrown = 2; // default to brown
@@ -299,38 +342,48 @@ class Game{
                         this.alertType = 6;
                         return true;
                         case 2: // 抽3员工打1减3费返还剩余/丢弃2张员工手牌或失去5游戏点数
+                        this.log.push(this.playerName[this.currPlayer] + "抽3员工打1减3费返还剩余");
                         this.players[i].highlightServerToHire(3, true); 
                         this.players[i].royalResultFinish = false; 
                         this.players[i].royalResultPending = true; 
                         return true; 
                         case 3: // 免费准备1个房间/失去最高的准备好的房间或失去5游戏点数
+                        this.log.push(this.playerName[this.currPlayer] + "免费准备1个房间");
                         this.players[i].hotel.highlightRoomToPrepare(this.players[i].money, 5); this.players[i].royalResultFinish = false; return true; 
                     }
                     break;
                 case 4:
                     switch(this.royalTask1){
                         case 0: this.players[i].gainBrown(1); this.players[i].gainWhite(1); this.players[i].gainRed(1); this.players[i].gainBlack(1);
+                        this.log.push(this.playerName[this.currPlayer] + "获得4种食物各1份");
                         return false; // 获得4种食物各1份/失去厨房和客桌上的全部食物
                         case 1: this.players[i].gainMoney(5);
+                        this.log.push(this.playerName[this.currPlayer] + "获得5块钱");
                         return false; // 获得5块钱/失去5块钱或失去7游戏点数
                         case 2: 
                         this.players[i].highlightServerToHire(3, true); 
                         this.players[i].royalResultFinish = false;
                         this.players[i].royalResultPending = true; 
+                        this.log.push(this.playerName[this.currPlayer] + "抽3员工打1免费返还剩余");
                         return true; // 抽3员工打1免费返还剩余/丢弃3张员工手牌或失去7游戏点数
                         case 3: this.players[i].hotel.highlightRoomToPrepare(this.players[i].money, 5, 1); this.players[i].royalResultFinish = false;
+                        this.log.push(this.playerName[this.currPlayer] + "2层以内免费准备2个房间");
                         return true; // 2层以内免费准备2个房间/失去最高的准备好的2个房间或失去7游戏点数
                     }
                     break;
                 case 6:
                     switch(this.royalTask2){
                         case 0: this.players[i].gainGamePoint(8);
+                        this.log.push(this.playerName[this.currPlayer] + "获得8游戏点数");
                         return false; // 获得8游戏点数/失去8游戏点数
                         case 1: this.players[i].hotel.highlightRoomToPrepare(this.players[i].money, 5); this.players[i].royalResultPending = true;  this.players[i].royalResultFinish = false;
+                        this.log.push(this.playerName[this.currPlayer] + "免费准备1个房间并入住");
                         return true; // 免费准备1个房间并入住/失去最高层和次高层各1个已入住房间
                         case 2: this.players[i].gainGamePoint(2*this.players[i].numServerHired);
+                        this.log.push(this.playerName[this.currPlayer] + "每个已雇佣员工获得2游戏点数");
                         return false; // 每个已雇佣员工获得2游戏点数/每个已雇佣员工失去2游戏点数
                         case 3: this.players[i].highlightServerToHire(10); this.players[i].royalResultPending = true; this.players[i].royalResultFinish = false;
+                        this.log.push(this.playerName[this.currPlayer] + "免费雇佣1位手牌上的员工");
                         return true; // 免费雇佣1位手牌上的员工/失去1位已雇佣员工（终局结算优先）或失去10游戏点数
                     }
                     break;
@@ -364,27 +417,35 @@ class Game{
         // check server bonus if any
         var serverBonus = 0;
         if(this.players[this.currPlayer].hasHiredServer(11) && (value==2 || value==3)) {//使用色子3或4时获得2游戏点数
+            this.log.push(this.playerName[this.currPlayer] + "的员工效果，获得2个游戏点数");
             this.players[this.currPlayer].gainGamePoint(2);
         }
         if(this.players[this.currPlayer].hasHiredServer(12) && (value==0 || value==1)) {//使用色子1或2时加1强度
+            this.log.push(this.playerName[this.currPlayer] + "的员工效果，强度加一");
             serverBonus = 1;
         }
         if(this.players[this.currPlayer].hasHiredServer(13) && (value==0 || value==1)) {//使用色子1或2时可以准备一个房间
+            this.log.push(this.playerName[this.currPlayer] + "的员工效果，可以原价准备一个房间");
             this.players[this.currPlayer].hotel.highlightRoomToPrepare(this.players[this.currPlayer].money, 0);
         }
         if(this.players[this.currPlayer].hasHiredServer(15) && value==3) {//使用色子4时可以获得4游戏点数
+            this.log.push(this.playerName[this.currPlayer] + "的员工效果，获得4个游戏点数");
             this.players[this.currPlayer].gainGamePoint(4);
         }
         if(this.players[this.currPlayer].hasHiredServer(17) && value==4) {//使用色子5时加2强度
+            this.log.push(this.playerName[this.currPlayer] + "的员工效果，强度加二");
             serverBonus = 2;
         }
         if(this.players[this.currPlayer].hasHiredServer(18) && value==2) {//使用色子3时获得5游戏点数
+            this.log.push(this.playerName[this.currPlayer] + "的员工效果，获得5个游戏点数");
             this.players[this.currPlayer].gainGamePoint(5);
         }
         if(this.players[this.currPlayer].hasHiredServer(19) && value==4) {//使用色子5时获得2皇家点数
+            this.log.push(this.playerName[this.currPlayer] + "的员工效果，获得2个皇室点数");
             this.players[this.currPlayer].gainRoyal(2);
         }
         if(this.players[this.currPlayer].hasHiredServer(21) && value==2) {//使用色子3时可以雇佣一位员工
+            this.log.push(this.playerName[this.currPlayer] + "的员工效果，可以原价雇佣一位员工");
             this.players[this.currPlayer].highlightServerToHire(0);
         }
         
@@ -406,6 +467,7 @@ class Game{
             break;
             case 5: // mirror an action
             if(!this.players[this.currPlayer].hasHiredServer(16)) {//使用色子6时无需支付费用并且强度加1
+                this.log.push(this.playerName[this.currPlayer] + "的员工效果，免费使用骰子6并强度加一");
                 this.players[this.currPlayer].money--; // dice 6 fee exception
             } else {
                 serverBonus = 1;
@@ -423,6 +485,7 @@ class Game{
         this.guestInQueue.splice(guestSelected, 1); // remove this guest from queue
         this.guestInQueue.unshift(this.guestDeck.at(-1));
         this.guestDeck.pop();
+        this.log.push(this.playerName[this.currPlayer] + "邀请了客人" + guestNameByID[this.guestInQueue[0]]);
         console.log("add guest " + guestNameByID[this.guestInQueue[0]] + " to queue");
     }
 
@@ -449,29 +512,35 @@ class Game{
         }
         if(this.players[this.currPlayer].hasHiredServer(4)) { //满足红色客人时获得2块钱
             if(this.players[this.currPlayer].hotel.guestOnTable[guestTableID].guestColor==0){
+                this.log.push(this.playerName[this.currPlayer] + "的员工效果，满足红色客人时获得2块钱");
                 this.players[this.currPlayer].gainMoney(2);
             }
         }
         if(this.players[this.currPlayer].hasHiredServer(5)) { //满足蓝色客人时获得1皇家点数
             if(this.players[this.currPlayer].hotel.guestOnTable[guestTableID].guestColor==2){
+                this.log.push(this.playerName[this.currPlayer] + "的员工效果，满足蓝色客人时获得1皇家点数");
                 this.players[this.currPlayer].gainRoyal(1);
             }
         }
         if(this.players[this.currPlayer].hasHiredServer(6)) { //满足黄色客人时获得1块钱
             if(this.players[this.currPlayer].hotel.guestOnTable[guestTableID].guestColor==1){
+                this.log.push(this.playerName[this.currPlayer] + "的员工效果，满足黄色客人时获得1块钱");
                 this.players[this.currPlayer].gainMoney(1);
             }
         }
         if(this.players[this.currPlayer].hasHiredServer(7)) { //满足绿色客人时获得2游戏点数
             if(this.players[this.currPlayer].hotel.guestOnTable[guestTableID].guestColor===4){
+                this.log.push(this.playerName[this.currPlayer] + "的员工效果，满足绿色客人时获得2游戏点数");
                 this.players[this.currPlayer].gainGamePoint(2);
             }
         }
         if(this.players[this.currPlayer].hasHiredServer(22)) { //满足客人并入住时可以获得1块钱
+            this.log.push(this.playerName[this.currPlayer] + "的员工效果，满足客人并入住时可以获得1块钱");
             this.players[this.currPlayer].gainMoney(1);
         }
         if(this.players[this.currPlayer].hasHiredServer(32)) { //满足食物或饮料需求量为4的客人时获得4游戏点数
             if(this.players[this.currPlayer].hotel.guestOnTable[guestTableID].guestRequirementNum==4){
+                this.log.push(this.playerName[this.currPlayer] + "的员工效果，满足食物或饮料需求量为4的客人时获得4游戏点数");
                 this.players[this.currPlayer].gainGamePoint(4);
             }
         }
@@ -481,6 +550,7 @@ class Game{
     updateAllCanvas(){
         this.updateGuestCanvas(guestContext);
         this.updateActionCanvas(actionContext);
+        this.updateLogCanvas(logContext);
         for(let i=0; i<this.playerNumber; i++){
             this.players[i].checkOpStatus();
             this.players[i].updatePlayerCanvas(this.players[i].context);
@@ -722,6 +792,38 @@ class Game{
             }
         }
     }
+
+    textCanvas(context, string, offsetX, offsetY, font) {
+        if (font === undefined || font === null){
+            context.font="20px verdana";
+        } else {
+            context.font=font;
+        }
+        context.shadowColor="white";
+        context.shadowBlur=2;
+        context.lineWidth=2;
+        context.strokeStyle = "white";
+        context.strokeText(string, offsetX, offsetY);
+        context.shadowBlur=0;
+        context.fillStyle="black";
+        context.fillText(string, offsetX, offsetY);
+    }
+
+    updateLogCanvas(context) {
+        // clear canvas first
+        context.clearRect(0, 0, 960, 400);
+        var logXoffset = 20;
+        var logYoffset = 20;
+        // only print the last 9 logs
+        var countPrint = 9;
+        for(let i=this.log.length-1; i>=0; i--){
+            this.textCanvas(context, this.log[i], logXoffset, logYoffset + countPrint*40);
+            countPrint--;
+            if(countPrint==0){
+                break;
+            }
+        }
+    }
     // ========================================canvas==============================================
 
     
@@ -880,6 +982,7 @@ class Game{
                             (this.players[this.currPlayer].hasHiredServer(9) && this.players[this.currPlayer].hotel.roomColor[floor][col]==0) ||  //免费准备红色房间
                             (this.players[this.currPlayer].hasHiredServer(10) && this.players[this.currPlayer].hotel.roomColor[floor][col]==1))     //免费准备黄色房间
                         ){ // exceptions to pay preparation fee
+                            this.log.push(this.playerName[this.currPlayer] + "的员工效果，免费准备该房间");
                             if(this.players[this.currPlayer].hotel.roomToPrepareDiscount.length > 0){
                                 this.players[this.currPlayer].loseMoney( Math.max(floor-this.players[this.currPlayer].hotel.roomToPrepareDiscount.at(-1), 0) );
                             } else {
