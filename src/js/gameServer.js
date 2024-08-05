@@ -205,7 +205,7 @@ function rollDice(room){
     // console.log("dice number " + (room.playerNumber * 2 + 6));
     // Add more dices for fun
     console.log("dice number " + (room.playerNumber * 2 + 10));
-    for(let i=0; i<(room.playerNumber * 2 + 6); i++){
+    for(let i=0; i<(room.playerNumber * 2 + 10); i++){
         room.dice[Math.floor(Math.random() * 6)]++;
     }
 }
