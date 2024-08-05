@@ -1164,46 +1164,46 @@ class Player{
             this.textCanvas(context, "确定", 228, 200);
             break;
             case 7: // pick royal task result
-            var img0, img1, text0, text1, img0X, img0Y, img1X, img1Y;
+            var text0, text1, img0X, img0Y, img1X, img1Y;
             if(this.game.mainRound==2 && this.royalResult==0) {
                 switch(this.game.royalTask0){
-                    case 0: img0 = moneyImg; img1 = gamePointTokenImg; text0 = "失去3块钱"; text1 = "失去5游戏点数"; 
+                    case 0: text0 = "失去3块钱"; text1 = "失去5游戏点数"; 
                             img0X = moneyImgX; img0Y = moneyImgY; img1X = gamePointTokenImgX; img1Y = gamePointTokenImgY; break;
-                    case 1: img0 = brownImg; img1 = null; text0 = "失去厨房全部食物"; text1 = null;
-                            img0X = brownImgX; img0Y = brownImgY; img1X = 0; img1Y = 0; break;
-                    case 2: img0 = serverTokenImg; img1 = gamePointTokenImg; text0 = "丢弃2张员工手牌"; text1 = "失去5游戏点数";
+                    case 1: text0 = "失去厨房全部食物"; text1 = null;
+                            img0X = brownImgX; img0Y = brownImgY; img1X = -1; img1Y = -1; break;
+                    case 2: text0 = "丢弃2张员工手牌"; text1 = "失去5游戏点数";
                             img0X = serverTokenImgX; img0Y = serverTokenImgY; img1X = gamePointTokenImgX; img1Y = gamePointTokenImgY; break;
-                    case 3: img0 = roomPreparedTokenImg; img1 = gamePointTokenImg; text0 = "失去最高的准备好的房间"; text1 = "失去5游戏点数";
+                    case 3: text0 = "失去最高的准备好的房间"; text1 = "失去5游戏点数";
                             img0X = roomPreparedTokenImgX; img0Y = roomPreparedTokenImgY; img1X = gamePointTokenImgX; img1Y = gamePointTokenImgY; break;
                 }
             } else if(this.game.mainRound==4 && this.royalResult==0) {
                 switch(this.game.royalTask1){
-                    case 0: img0 = brownImg; img1 = null; text0 = "失去厨房和客桌上的全部食物"; text1 = null;
-                            img0X = brownImgX; img0Y = brownImgY; img1X = 0; img1Y = 0; break;
-                    case 1: img0 = moneyImg; img1 = gamePointTokenImg; text0 = "失去5块钱"; text1 = "失去7游戏点数";
+                    case 0: text0 = "失去厨房和客桌上的全部食物"; text1 = null;
+                            img0X = brownImgX; img0Y = brownImgY; img1X = -1; img1Y = -1; break;
+                    case 1: text0 = "失去5块钱"; text1 = "失去7游戏点数";
                             img0X = moneyImgX; img0Y = moneyImgY; img1X = gamePointTokenImgX; img1Y = gamePointTokenImgY; break;
-                    case 2: img0 = serverTokenImg; img1 = gamePointTokenImg; text0 = "丢弃3张员工手牌"; text1 = "失去7游戏点数";
+                    case 2: text0 = "丢弃3张员工手牌"; text1 = "失去7游戏点数";
                             img0X = serverTokenImgX; img0Y = serverTokenImgY; img1X = gamePointTokenImgX; img1Y = gamePointTokenImgY; break;
-                    case 3: img0 = roomClosedTokenImg; img1 = gamePointTokenImg; text0 = "失去最高和次高的已入住的2个房间"; text1 = "失去7游戏点数";
+                    case 3: text0 = "失去最高和次高的已入住的2个房间"; text1 = "失去7游戏点数";
                             img0X = roomClosedTokenImgX; img0Y = roomClosedTokenImgY; img1X = gamePointTokenImgX; img1Y = gamePointTokenImgY; break;
                 }
             } else if(this.game.mainRound==6 && this.royalResult==0) {
                 switch(this.game.royalTask2){
-                    case 0: img0 = gamePointTokenImg; img1 = null; text0 = "失去8游戏点数"; text1 = null;
-                            img0X = gamePointTokenImgX; img0Y = gamePointTokenImgY; img1X = 0; img1Y = 0; break;
-                    case 1: img0 = roomClosedTokenImg; img1 = null; text0 = "失去最高层和次高层各1个已入住房间"; text1 = null;
-                            img0X = roomClosedTokenImgX; img0Y = roomClosedTokenImgY; img1X = 0; img1Y = 0; break;
-                    case 2: img0 = serverTokenImg; img1 = null; text0 = "每个已雇佣员工失去2游戏点数"; text1 = null;
-                            img0X = serverTokenImgX; img0Y = serverTokenImgY; img1X = 0; img1Y = 0; break;
-                    case 3: img0 = serverTokenImg; img1 = gamePointTokenImg; text0 = "失去1位已雇佣员工（终局结算优先）"; text1 = "失去10游戏点数";
+                    case 0: text0 = "失去8游戏点数"; text1 = null;
+                            img1X = -1; img1Y = -1; break;
+                    case 1: text0 = "失去最高层和次高层各1个已入住房间"; text1 = null;
+                            img0X = roomClosedTokenImgX; img0Y = roomClosedTokenImgY; img1X = -1; img1Y = -1; break;
+                    case 2: text0 = "每个已雇佣员工失去2游戏点数"; text1 = null;
+                            img0X = serverTokenImgX; img0Y = serverTokenImgY; img1X = -1; img1Y = -1; break;
+                    case 3: text0 = "失去1位已雇佣员工（终局结算优先）"; text1 = "失去10游戏点数";
                             img0X = serverTokenImgX; img0Y = serverTokenImgY; img1X = gamePointTokenImgX; img1Y = gamePointTokenImgY; break;
                 }
             }
-            if(img0!=null){
+            if(img0X>=0 && img0Y>=0){
                 context.drawImage(tokenImg, img0X, img0Y, 30, 30, 50, 30, 50, 40);
                 this.textCanvas(context, text0, 150, 60);
             }
-            if(img1!=null){
+            if(img1X>=0 && img1Y>=0){
                 context.drawImage(tokenImg, img1X, img1Y, 30, 30, 50, 100, 40, 50);
                 this.textCanvas(context, text1, 150, 130);
             }

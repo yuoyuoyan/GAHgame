@@ -202,7 +202,9 @@ function gameInit(room){
 
 function rollDice(room){
     room.dice = [0, 0, 0, 0, 0, 0];
-    console.log("dice number " + (room.playerNumber * 2 + 6));
+    // console.log("dice number " + (room.playerNumber * 2 + 6));
+    // Add more dices for fun
+    console.log("dice number " + (room.playerNumber * 2 + 10));
     for(let i=0; i<(room.playerNumber * 2 + 6); i++){
         room.dice[Math.floor(Math.random() * 6)]++;
     }
