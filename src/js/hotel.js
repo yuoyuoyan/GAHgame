@@ -139,6 +139,7 @@ class Hotel{
         if(floor<0 || floor>3 || col<0 || col>4){
             return;
         }
+        this.game.log.push(this.game.playerName[this.game.currPlayer] + "在" + floor + "楼" + col + "列准备房间");
         this.roomStatus[floor][col] = 0;
         this.roomPreparedNum++;
         switch(this.roomColor[floor][col]){
@@ -157,6 +158,7 @@ class Hotel{
         // check major task A3
         // 准备/入住12个房间
         if(this.game.majorTask0==3 && (this.roomPreparedNum + this.roomClosedNum) >= 12){
+            this.game.log.push(this.game.playerName[this.game.currPlayer] + "完成全局任务获得奖励");
             this.game.players[this.game.currPlayer].gainMajorTaskBonus(0);
         }
     }
@@ -170,10 +172,12 @@ class Hotel{
             return;
         }
 
+        this.game.log.push(this.game.playerName[this.game.currPlayer] + "在" + floor + "楼" + col + "列入住房间");
         this.roomStatus[floor][col] = 1; // close room
         this.roomAreaRoom[this.roomArea[floor][col]]--; // area room counter
         if(this.roomAreaRoom[this.roomArea[floor][col]]==0){ // trigger the area bonus
             this.areaBonus(floor, col);
+            this.game.log.push(this.game.playerName[this.game.currPlayer] + "获得区域奖励");
         }
         this.roomClosedNum++;
         this.roomPreparedNum--;
@@ -200,6 +204,7 @@ class Hotel{
         // check major task B0
         // 完整入住2个楼层
         if(this.game.majorTask1==0 && this.roomRowClosedNum >= 2){
+            this.game.log.push(this.game.playerName[this.game.currPlayer] + "获得区域奖励");
             this.game.players[this.game.currPlayer].gainMajorTaskBonus(1);
         }
         // count the closed cols
@@ -218,6 +223,7 @@ class Hotel{
         // check major task B1
         // 完整入住2个列
         if(this.game.majorTask1==1 && this.roomColumnClosedNum >= 2){
+            this.game.log.push(this.game.playerName[this.game.currPlayer] + "完成全局任务获得奖励");
             this.game.players[this.game.currPlayer].gainMajorTaskBonus(1);
         }
         // count the closed areas
@@ -231,6 +237,7 @@ class Hotel{
         // 完整入住6个区域
         if(this.game.majorTask1==2 && this.roomAreaClosedNum >= 6){
             this.game.players[this.game.currPlayer].gainMajorTaskBonus(1);
+            this.game.log.push(this.game.playerName[this.game.currPlayer] + "完成全局任务获得奖励");
         }
         // check major task B3
         // 完整入住所有的某颜色房间
@@ -239,6 +246,7 @@ class Hotel{
             (this.roomYellowClosedNum == roomColorNumByID[this.hotelID][1]) ||
             (this.roomBlueClosedNum   == roomColorNumByID[this.hotelID][2]) )){
             this.game.players[this.game.currPlayer].gainMajorTaskBonus(1);
+            this.game.log.push(this.game.playerName[this.game.currPlayer] + "完成全局任务获得奖励");
         }
         // check major task C0
         // 入住3个红和3个黄和3个蓝房间
@@ -247,6 +255,7 @@ class Hotel{
             (this.roomYellowClosedNum >= 3) &&
             (this.roomBlueClosedNum   >= 3) )){
             this.game.players[this.game.currPlayer].gainMajorTaskBonus(2);
+            this.game.log.push(this.game.playerName[this.game.currPlayer] + "完成全局任务获得奖励");
         }
         // check major task C1
         // 入住4个红和3个黄房间
@@ -254,6 +263,7 @@ class Hotel{
            ((this.roomRedClosedNum    >= 4) &&
             (this.roomYellowClosedNum >= 3) )){
             this.game.players[this.game.currPlayer].gainMajorTaskBonus(2);
+            this.game.log.push(this.game.playerName[this.game.currPlayer] + "完成全局任务获得奖励");
         }
         // check major task C2
         // 入住4个黄和3个蓝房间
@@ -261,6 +271,7 @@ class Hotel{
            ((this.roomYellowClosedNum >= 4) &&
             (this.roomBlueClosedNum   >= 3) )){
             this.game.players[this.game.currPlayer].gainMajorTaskBonus(2);
+            this.game.log.push(this.game.playerName[this.game.currPlayer] + "完成全局任务获得奖励");
         }
         // check major task C3
         // 入住4个蓝和3个红房间
@@ -268,6 +279,7 @@ class Hotel{
            ((this.roomBlueClosedNum   >= 4) &&
             (this.roomRedClosedNum    >= 3) )){
             this.game.players[this.game.currPlayer].gainMajorTaskBonus(2);
+            this.game.log.push(this.game.playerName[this.game.currPlayer] + "完成全局任务获得奖励");
         }
     }
 
@@ -291,6 +303,7 @@ class Hotel{
             }
         }
         this.roomStatus[floor][col] = -1;
+        this.game.log.push(this.game.playerName[this.game.currPlayer] + "在" + floor + "楼" + col + "列失去房间");
         
         // update max level info
         this.maxPreparedRoomLevel = -1;
@@ -363,6 +376,7 @@ class Hotel{
         this.guestOnTable[availableTable] = new Guest(guestID, availableTable);
         this.numGuestOnTable++;
         console.log("Add guest " + this.guestOnTable[availableTable].guestName + " to table " + availableTable);
+        this.game.log.push(this.guestOnTable[availableTable].guestName + "入座" + this.game.playerName[this.game.currPlayer] + "的酒店");
     }
 
     removeGuestFromTable(guestTableID){
@@ -374,6 +388,7 @@ class Hotel{
             console.log("this guest on table is not valid");
             return;
         }
+        this.game.log.push(this.guestOnTable[guestTableID].guestName + "入住房间");
         this.guestOnTable[guestTableID]=null;
         this.numGuestOnTable--;
     }
@@ -382,6 +397,7 @@ class Hotel{
         for(let i=0; i<this.guestOnTable[guestTableID].guestFoodServed.length; i++){
             this.guestOnTable[guestTableID].guestFoodServed[i] = 1;
         }
+        this.game.log.push(this.guestOnTable[guestTableID].guestName + "被满足");
         this.guestOnTable[guestTableID].guestFoodServedNum = this.guestOnTable[guestTableID].guestFoodServed.length;
         this.guestOnTable[guestTableID].guestSatisfied = true;
     }
