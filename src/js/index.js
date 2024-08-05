@@ -236,9 +236,9 @@ async function handleMsg(event) {
                 game.guestDeck.pop();
             }
             // draw 6 servers
-            for(let i=0; i<game.playerNumber; i++) {
-                game.players[i].addServerToHand(6);
-            }
+            // for(let i=0; i<game.playerNumber; i++) {
+            //     game.players[i].addServerToHand(6);
+            // }
             game.updateAllCanvas();
             break;
         case("diceInfo") : // sync random dice roll
