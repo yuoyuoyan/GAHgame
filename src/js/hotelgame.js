@@ -1,6 +1,6 @@
 // var playerNames = JSON.parse(decodeURIComponent(document.cookie));
-const skipPrepare = 0;
-const debugState = 0;
+const skipPrepare = 1;
+const debugState = 1;
 
 // init game info and draw background
 // window.onload = gameOn;
@@ -43,32 +43,35 @@ function gameOn() {
             game.players[game.currPlayer].checkOpStatus();
         }
         game.rollDice();
-        game.currPlayer = 0;
+        // game.currPlayer = 0;
         if(debugState) {
             // test major task
             // game.majorTask0 = 2;
             // game.majorTask1 = 0;
             // game.majorTask2 = 0;
             // test royal task
-            game.mainRound = 6;
-            game.miniRound = 2*game.playerNumber-1;
-            game.currPlayer = 0;
-            game.royalTask0 = 0;
-            game.royalTask1 = 0;
-            game.royalTask2 = 3;
-            game.players[game.currPlayer].royalPoint = 5;
-            game.players[game.currPlayer].gamePoint = 20;
+            game.mainRound = 4;
+            // game.miniRound = 2*game.playerNumber-1;
+            // game.currPlayer = 0;
+            // game.royalTask0 = 0;
+            game.royalTask1 = 3;
+            // game.royalTask2 = 3;
+            game.players[game.currPlayer].royalPoint = 8;
+            // game.players[game.currPlayer].gamePoint = 20;
             // game.players[game.currPlayer].royalResult = 0;
             // game.players[game.currPlayer].updateAlertCanvas(alertContext);
             // test room closure and bonus
+            // game.players[game.currPlayer].hotel.roomPrepare(0,0);
+            // game.players[game.currPlayer].hotel.roomPrepare(0,1);
+            // game.players[game.currPlayer].hotel.roomPrepare(0,2);
             game.players[game.currPlayer].hotel.roomPrepare(0,3);
             game.players[game.currPlayer].hotel.roomPrepare(0,4);
             game.players[game.currPlayer].hotel.roomPrepare(1,0);
             game.players[game.currPlayer].hotel.roomPrepare(1,1);
-            // game.players[game.currPlayer].hotel.roomPrepare(1,2);
-            // game.players[game.currPlayer].hotel.roomPrepare(1,3);
-            // game.players[game.currPlayer].hotel.roomPrepare(1,4);
-            game.players[game.currPlayer].hotel.roomPrepare(2,0);
+            game.players[game.currPlayer].hotel.roomPrepare(1,2);
+            game.players[game.currPlayer].hotel.roomPrepare(1,3);
+            game.players[game.currPlayer].hotel.roomPrepare(1,4);
+            // game.players[game.currPlayer].hotel.roomPrepare(2,0);
             // game.players[game.currPlayer].hotel.roomPrepare(2,1);
             // game.players[game.currPlayer].hotel.roomPrepare(2,2);
             // game.players[game.currPlayer].hotel.roomPrepare(2,3);
@@ -79,13 +82,13 @@ function gameOn() {
             game.players[game.currPlayer].hotel.roomClose(0,0);
             game.players[game.currPlayer].hotel.roomClose(0,1);
             game.players[game.currPlayer].hotel.roomClose(0,2);
-            // game.players[game.currPlayer].hotel.roomClose(0,3);
-            // game.players[game.currPlayer].hotel.roomClose(0,4);
-            // game.players[game.currPlayer].hotel.roomClose(1,0);
-            // game.players[game.currPlayer].hotel.roomClose(1,1);
-            // game.players[game.currPlayer].hotel.roomClose(1,2);
-            // game.players[game.currPlayer].hotel.roomClose(1,3);
-            // game.players[game.currPlayer].hotel.roomClose(1,4);
+            game.players[game.currPlayer].hotel.roomClose(0,3);
+            game.players[game.currPlayer].hotel.roomClose(0,4);
+            game.players[game.currPlayer].hotel.roomClose(1,0);
+            game.players[game.currPlayer].hotel.roomClose(1,1);
+            game.players[game.currPlayer].hotel.roomClose(1,2);
+            game.players[game.currPlayer].hotel.roomClose(1,3);
+            game.players[game.currPlayer].hotel.roomClose(1,4);
             // game.players[game.currPlayer].hotel.roomClose(2,0);
             // game.players[game.currPlayer].hotel.roomClose(2,1);
             // game.players[game.currPlayer].hotel.roomClose(2,2);
@@ -98,7 +101,7 @@ function gameOn() {
             // for(let i=0; i<6; i++){
             //     game.players[game.currPlayer].hireServer(0);
             // }
-            // game.players[game.currPlayer].addServerToHandDebug(47);
+            game.players[game.currPlayer].addServerToHandDebug(13);
             // game.players[game.currPlayer].hireServer(game.players[game.currPlayer].numServerOnHand-1);
             // test guest bonus
             // game.players[game.currPlayer].hotel.addGuestToTable(57);

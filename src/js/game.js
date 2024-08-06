@@ -297,7 +297,7 @@ class Game{
                         return true; // 抽3员工打1免费返还剩余/丢弃3张员工手牌或失去7游戏点数
                         case 3: this.assertAlert(i);
                         this.log.push(this.playerName[this.currPlayer] + "失去最高的已入住的2个房间或失去7游戏点数");
-                        return true; // 2层以内免费准备2个房间/失去最高的已入住的2个房间或失去7游戏点数
+                        return true; // 2层以内免费准备1个房间并入住/失去最高的已入住的2个房间或失去7游戏点数
                     }
                     break;
                 case 6:
@@ -366,9 +366,9 @@ class Game{
                         this.players[i].royalResultPending = true; 
                         this.log.push(this.playerName[this.currPlayer] + "抽3员工打1免费返还剩余");
                         return true; // 抽3员工打1免费返还剩余/丢弃3张员工手牌或失去7游戏点数
-                        case 3: this.players[i].hotel.highlightRoomToPrepare(this.players[i].money, 5, 1); this.players[i].royalResultFinish = false;
-                        this.log.push(this.playerName[this.currPlayer] + "2层以内免费准备2个房间");
-                        return true; // 2层以内免费准备2个房间/失去最高的准备好的2个房间或失去7游戏点数
+                        case 3: this.players[i].hotel.highlightRoomToPrepare(this.players[i].money, 5, 1); this.players[i].royalResultPending = true; this.players[i].royalResultFinish = true;
+                        this.log.push(this.playerName[this.currPlayer] + "2层以内免费准备1个房间并入住");
+                        return true; // 2层以内免费准备1个房间并入住/失去最高的准备好的2个房间或失去7游戏点数
                     }
                     break;
                 case 6:
@@ -376,7 +376,7 @@ class Game{
                         case 0: this.players[i].gainGamePoint(8);
                         this.log.push(this.playerName[this.currPlayer] + "获得8游戏点数");
                         return false; // 获得8游戏点数/失去8游戏点数
-                        case 1: this.players[i].hotel.highlightRoomToPrepare(this.players[i].money, 5); this.players[i].royalResultPending = true;  this.players[i].royalResultFinish = false;
+                        case 1: this.players[i].hotel.highlightRoomToPrepare(this.players[i].money, 5); this.players[i].royalResultPending = true;  this.players[i].royalResultFinish = true;
                         this.log.push(this.playerName[this.currPlayer] + "免费准备1个房间并入住");
                         return true; // 免费准备1个房间并入住/失去最高层和次高层各1个已入住房间
                         case 2: this.players[i].gainGamePoint(2*this.players[i].numServerHired);
@@ -407,14 +407,7 @@ class Game{
         }
     }
 
-    takeDice(value) {
-        // take the dice to show on mini round board
-        if(this.miniRound < this.playerNumber) {
-            this.players[this.currPlayer].diceTaken[0] = value+1;
-        } else {
-            this.players[this.currPlayer].diceTaken[1] = value+1;
-        }
-        // check server bonus if any
+    diceServerBonus(value) {
         var serverBonus = 0;
         if(this.players[this.currPlayer].hasHiredServer(11) && (value==2 || value==3)) {//使用色子3或4时获得2游戏点数
             this.log.push(this.playerName[this.currPlayer] + "的员工效果，获得2个游戏点数");
@@ -448,6 +441,22 @@ class Game{
             this.log.push(this.playerName[this.currPlayer] + "的员工效果，可以原价雇佣一位员工");
             this.players[this.currPlayer].highlightServerToHire(0);
         }
+        if(this.players[this.currPlayer].hasHiredServer(16)) {//使用色子6时无需支付费用并且强度加1
+            this.log.push(this.playerName[this.currPlayer] + "的员工效果，免费使用骰子6并强度加一");
+            serverBonus = 1;
+        }
+        return serverBonus;
+    }
+
+    takeDice(value) {
+        // take the dice to show on mini round board
+        if(this.miniRound < this.playerNumber) {
+            this.players[this.currPlayer].diceTaken[0] = value+1;
+        } else {
+            this.players[this.currPlayer].diceTaken[1] = value+1;
+        }
+        // check server bonus if any
+        var serverBonus = this.diceServerBonus(value);
         
         switch(value){
             case 0: // take brown and white
@@ -469,8 +478,6 @@ class Game{
             if(!this.players[this.currPlayer].hasHiredServer(16)) {//使用色子6时无需支付费用并且强度加1
                 this.log.push(this.playerName[this.currPlayer] + "的员工效果，免费使用骰子6并强度加一");
                 this.players[this.currPlayer].money--; // dice 6 fee exception
-            } else {
-                serverBonus = 1;
             }
             this.players[this.currPlayer].actionTakeMirror(this.actionPoint[5] + serverBonus);
             break;
@@ -1430,12 +1437,14 @@ class Game{
             } else if(event.offsetX>=200 && event.offsetX<=300 && event.offsetY>=170 && event.offsetY<=210){ // confirm
                 alertCanvas.style.display = 'none';
                 this.players[this.currPlayer].atTakeMirror = false;
+                // check server bonus if any
+                var serverBonus = this.diceServerBonus(this.players[this.currPlayer].atMirrorDice-1);
                 switch(this.players[this.currPlayer].atMirrorDice){
-                    case 1: this.players[this.currPlayer].actionTakeBrownWhite(this.players[this.currPlayer].atMirrorStrength); break;
-                    case 2: this.players[this.currPlayer].actionTakeRedBlack(this.players[this.currPlayer].atMirrorStrength); break;
-                    case 3: this.players[this.currPlayer].actionPrepareRoom(this.players[this.currPlayer].atMirrorStrength); break;
-                    case 4: this.players[this.currPlayer].actionTakeRoyalMoney(this.players[this.currPlayer].atMirrorStrength); break;
-                    case 5: this.players[this.currPlayer].actionHireServer(this.players[this.currPlayer].atMirrorStrength); break;
+                    case 1: this.players[this.currPlayer].actionTakeBrownWhite(this.players[this.currPlayer].atMirrorStrength + serverBonus); break;
+                    case 2: this.players[this.currPlayer].actionTakeRedBlack(this.players[this.currPlayer].atMirrorStrength + serverBonus); break;
+                    case 3: this.players[this.currPlayer].actionPrepareRoom(this.players[this.currPlayer].atMirrorStrength + serverBonus); break;
+                    case 4: this.players[this.currPlayer].actionTakeRoyalMoney(this.players[this.currPlayer].atMirrorStrength + serverBonus); break;
+                    case 5: this.players[this.currPlayer].actionHireServer(this.players[this.currPlayer].atMirrorStrength + serverBonus); break;
                 }
                 this.players[this.currPlayer].atAction = false;
                 this.players[this.currPlayer].atActionBoost = false;

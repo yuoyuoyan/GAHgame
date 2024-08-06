@@ -221,7 +221,6 @@ async function handleMsg(event) {
             hotelCanvas.style.display = 'block';
             game = new Game(playerNames.length, playerNames, 1);
             game.ourPlayer = ourPlayerIndex;
-            gameOn();
             // send an init info request
             var msg = {
                 type: "gameInitInfoReq",
@@ -250,6 +249,8 @@ async function handleMsg(event) {
                 game.players[i].addServerToHand(6);
             }
             game.updateAllCanvas();
+            // Add debug state if needed
+            gameOn();
             break;
         case("diceInfo") : // sync random dice roll
             game.actionPoint = msg.dice;
