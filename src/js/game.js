@@ -69,9 +69,9 @@ class Game{
             this.players[3].miniTurn = [4, 5];
             break;
         }
-        for(let i=0; i<this.playerNumber; i++) { // draw 6 servers
-            this.players[i].addServerToHand(6);
-        }
+        // for(let i=0; i<this.playerNumber; i++) { // draw 6 servers
+        //     this.players[i].addServerToHand(6);
+        // }
         
         // place the first player to start
         this.currPlayer = 0;

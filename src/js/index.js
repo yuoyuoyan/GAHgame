@@ -1,6 +1,6 @@
 // server connection
-// const socket = new WebSocket('ws://localhost:8083');
-const socket = new WebSocket('ws://121.43.102.218:8083');
+const socket = new WebSocket('ws://localhost:8083');
+// const socket = new WebSocket('ws://121.43.102.218:8083');
 socket.onmessage = handleMsg;
 
 const roomIDLabel = document.getElementById("roomID");
@@ -166,6 +166,16 @@ async function handleMsg(event) {
         case("roomInfo") :
             playerNames = msg.playerName;
             playerNumber = msg.playerNumber;
+            // game already started and someone disconnect, game force end
+            if(gameState && playernumber != game.playerNumber) {
+                for(let i=0; i<game.playerNumber; i++){
+                    if(!playerNames.includes(game.playerName[i])){
+                        alert(game.playerName[i] + "断线，游戏终止");
+                        gameState = false;
+                        return;
+                    }
+                }
+            }
             // become owner if we are the index 0
             if(playerNames.includes(ourPlayerName)){
                 ourPlayerIndex = playerNames.indexOf(ourPlayerName);
@@ -236,9 +246,9 @@ async function handleMsg(event) {
                 game.guestDeck.pop();
             }
             // draw 6 servers
-            // for(let i=0; i<game.playerNumber; i++) {
-            //     game.players[i].addServerToHand(6);
-            // }
+            for(let i=0; i<game.playerNumber; i++) {
+                game.players[i].addServerToHand(6);
+            }
             game.updateAllCanvas();
             break;
         case("diceInfo") : // sync random dice roll
