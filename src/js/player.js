@@ -1227,7 +1227,7 @@ class Player{
         context.clearRect(0, 0, 640, 560);
 
         // Server on hands
-        this.textCanvas(context, "员工手牌", 25, 25);
+        this.textCanvas(context, "员工手牌 (" + this.numServerOnHand + ")", 25, 25);
 
         // draw the remaining of prev card if any
         var   serverXoffset = -105;
@@ -1283,7 +1283,7 @@ class Player{
         }
 
         // Server hired
-        this.textCanvas(context, "已雇佣员工", 25, 300);
+        this.textCanvas(context, "已雇佣员工 (" + this.numServerHired + ")", 25, 300);
 
         // draw the remaining of prev card if any
         serverXoffset = -105;
@@ -1454,56 +1454,36 @@ class Player{
         const foodHeigh = 30;
         // context.drawImage(brownImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
         context.drawImage(tokenImg, brownImgX, brownImgY, 30, 30, foodXoffset, foodYoffset, foodWidth, foodHeigh);
-        if(this.hasBrownBuf()) { // highlight if buffer has valid food
-            context.strokeStyle = "green";
-            context.lineWidth = 3;
-            context.strokeRect(foodXoffset, foodYoffset, foodWidth, foodHeigh);
-        }
         foodXoffset += 35;
         foodYoffset = 30;
-        this.textCanvas(context, this.brown + this.brownBuf, foodXoffset, foodYoffset);
+        this.textCanvas(context, this.brown, foodXoffset, foodYoffset);
 
         // white
         foodXoffset += 20;
         foodYoffset = 5;
         // context.drawImage(whiteImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
         context.drawImage(tokenImg, whiteImgX, whiteImgY, 30, 30, foodXoffset, foodYoffset, foodWidth, foodHeigh);
-        if(this.hasWhiteBuf()) { // highlight if buffer has valid food
-            context.strokeStyle = "green";
-            context.lineWidth = 3;
-            context.strokeRect(foodXoffset, foodYoffset, foodWidth, foodHeigh);
-        }
         foodXoffset += 35;
         foodYoffset = 30;
-        this.textCanvas(context, this.white + this.whiteBuf, foodXoffset, foodYoffset);
+        this.textCanvas(context, this.white, foodXoffset, foodYoffset);
 
         // red
         foodXoffset += 20;
         foodYoffset = 5;
         // context.drawImage(redImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
         context.drawImage(tokenImg, redImgX, redImgY, 30, 30, foodXoffset, foodYoffset, foodWidth, foodHeigh);
-        if(this.hasRedBuf()) { // highlight if buffer has valid food
-            context.strokeStyle = "green";
-            context.lineWidth = 3;
-            context.strokeRect(foodXoffset, foodYoffset, foodWidth, foodHeigh);
-        }
         foodXoffset += 35;
         foodYoffset = 30;
-        this.textCanvas(context, this.red + this.redBuf, foodXoffset, foodYoffset);
+        this.textCanvas(context, this.red, foodXoffset, foodYoffset);
 
         // black
         foodXoffset += 20;
         foodYoffset = 5;
         // context.drawImage(blackImg, foodXoffset, foodYoffset, foodWidth, foodHeigh);
         context.drawImage(tokenImg, blackImgX, blackImgY, 30, 30, foodXoffset, foodYoffset, foodWidth, foodHeigh);
-        if(this.hasBlackBuf()) { // highlight if buffer has valid food
-            context.strokeStyle = "green";
-            context.lineWidth = 3;
-            context.strokeRect(foodXoffset, foodYoffset, foodWidth, foodHeigh);
-        }
         foodXoffset += 35;
         foodYoffset = 30;
-        this.textCanvas(context, this.black + this.blackBuf, foodXoffset, foodYoffset);
+        this.textCanvas(context, this.black, foodXoffset, foodYoffset);
 
         // operation if it's this player's turn, including invite, action, serve, and checkout
         var   opXoffset = foodXoffset+30;

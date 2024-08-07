@@ -769,7 +769,7 @@ class Game{
         // draw the action dice number
         var   numberXoffset = 75;
         var   numberYoffset = 25;
-        context.font="20px verdana";
+        context.font="30px verdana";
         for(let i=0; i<6; i++){
             context.shadowColor="white";
             context.shadowBlur=5;

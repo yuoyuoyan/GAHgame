@@ -414,6 +414,22 @@ class Hotel{
     }
 
     // ========================================canvas==============================================
+    textCanvas(context, string, offsetX, offsetY, font) {
+        if (font === undefined || font === null){
+            context.font="20px verdana";
+        } else {
+            context.font=font;
+        }
+        context.shadowColor="white";
+        context.shadowBlur=2;
+        context.lineWidth=2;
+        context.strokeStyle = "white";
+        context.strokeText(string, offsetX, offsetY);
+        context.shadowBlur=0;
+        context.fillStyle="black";
+        context.fillText(string, offsetX, offsetY);
+    }
+
     updateHotelCanvas(context) {
         // clear canvas
         context.clearRect(0, 0, 640, 840);
@@ -539,6 +555,42 @@ class Hotel{
             }
             foodXoffset += 182;
             foodYoffset = guestYoffset + 8;
+        }
+        // Draw food buffer
+        var foodBufXoffset = 580;
+        var foodBufYoffset = 620;
+        const foodBufWidth  = 30;
+        const foodBufHeight = 30;
+        context.drawImage(tokenImg, brownImgX, brownImgY, 30, 30, foodBufXoffset, foodBufYoffset, foodBufWidth, foodBufHeight);
+        this.textCanvas(context, this.game.players[this.game.currPlayer].brownBuf.toString(), foodBufXoffset+10, foodBufYoffset+45);
+        if(this.game.players[this.game.currPlayer].hasBrownBuf()) { // highlight if buffer has valid food
+            context.strokeStyle = "green";
+            context.lineWidth = 3;
+            context.strokeRect(foodBufXoffset, foodBufYoffset, foodBufWidth, foodBufHeight);
+        }
+        foodBufYoffset += 50;
+        context.drawImage(tokenImg, whiteImgX, whiteImgY, 30, 30, foodBufXoffset, foodBufYoffset, foodBufWidth, foodBufHeight);
+        this.textCanvas(context, this.game.players[this.game.currPlayer].whiteBuf.toString(), foodBufXoffset+10, foodBufYoffset+45);
+        if(this.game.players[this.game.currPlayer].hasWhiteBuf()) { // highlight if buffer has valid food
+            context.strokeStyle = "green";
+            context.lineWidth = 3;
+            context.strokeRect(foodBufXoffset, foodBufYoffset, foodBufWidth, foodBufHeight);
+        }
+        foodBufYoffset += 50;
+        context.drawImage(tokenImg, redImgX, redImgY, 30, 30, foodBufXoffset, foodBufYoffset, foodBufWidth, foodBufHeight);
+        this.textCanvas(context, this.game.players[this.game.currPlayer].redBuf.toString(), foodBufXoffset+10, foodBufYoffset+45);
+        if(this.game.players[this.game.currPlayer].hasRedBuf()) { // highlight if buffer has valid food
+            context.strokeStyle = "green";
+            context.lineWidth = 3;
+            context.strokeRect(foodBufXoffset, foodBufYoffset, foodBufWidth, foodBufHeight);
+        }
+        foodBufYoffset += 50;
+        context.drawImage(tokenImg, blackImgX, blackImgY, 30, 30, foodBufXoffset, foodBufYoffset, foodBufWidth, foodBufHeight);
+        this.textCanvas(context, this.game.players[this.game.currPlayer].blackBuf.toString(), foodBufXoffset+10, foodBufYoffset+45);
+        if(this.game.players[this.game.currPlayer].hasBlackBuf()) { // highlight if buffer has valid food
+            context.strokeStyle = "green";
+            context.lineWidth = 3;
+            context.strokeRect(foodBufXoffset, foodBufYoffset, foodBufWidth, foodBufHeight);
         }
     }
     // ========================================canvas==============================================
