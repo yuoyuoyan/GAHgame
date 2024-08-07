@@ -1189,7 +1189,7 @@ class Game{
             if(guestSelected >= 0){
                 this.players[this.currPlayer].hotel.addGuestToTable(this.guestInQueue[guestSelected]);
                 if(!this.players[this.currPlayer].hasHiredServer(24) && 
-                   !this.players[this.currPlayer].hotel.firstThreeRoom && 
+                   !this.players[this.currPlayer].firstGuestTurn && 
                    this.players[this.currPlayer].freeInviteNum == 0){ // exceptions for invitation fee
                     this.players[this.currPlayer].money -= (guestSelected<3)?(3-guestSelected):0;
                 }
