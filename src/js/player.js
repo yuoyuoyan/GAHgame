@@ -602,7 +602,7 @@ class Player{
         return false;
     }
 
-    calculateFinalGamePoint() { // return the bonus point at the end, not added directly for normal round prediction
+    calculateFinalGamePoint(guestPunishment = false) { // return the bonus point at the end, not added directly for normal round prediction
         var bonusPoint = 0;
         // server effect
         // the most special, handle first
@@ -692,8 +692,10 @@ class Player{
         // food points
         bonusPoint += this.food + this.foodBuf;
         // this.gainGamePoint(this.food + this.foodBuf);
-        // substract the remaining guests on table
-        bonusPoint -= this.hotel.numGuestOnTable * 5;
+        // substract the remaining guests on table, only calculate at the game end
+        if(guestPunishment) {
+            bonusPoint -= this.hotel.numGuestOnTable * 5;
+        }
 
         return bonusPoint;
     }

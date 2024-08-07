@@ -673,7 +673,7 @@ class Game{
         var highestPoint = -1;
         this.gameOver = true;
         for(let i=0; i<this.playerNumber; i++){
-            this.players[i].gainGamePoint( this.players[i].calculateFinalGamePoint() );
+            this.players[i].gainGamePoint( this.players[i].calculateFinalGamePoint(true) );
             if(this.players[i].gamePoint >= highestPoint) {
                 highestPoint = this.players[i].gamePoint;
                 this.winner = i;
