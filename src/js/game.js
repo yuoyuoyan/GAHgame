@@ -77,11 +77,279 @@ class Game{
         this.currPlayer = 0;
         this.ourPlayer = 0;
         // console.log("current player: " + this.playerName[this.currPlayer]);
+
+        // backup buf in a mini turn, able to undo this turn
+        this.turnBkup = {
+            // game info
+            majorTaskComp0: [],
+            majorTaskComp1: [],
+            majorTaskComp2: [],
+            actionPoint:    [],
+            guestDeck:      [],
+            serverDeck:     [],
+            guestInQueue:   [],
+            // player info
+            diceTaken:                 [],
+            specialRound:              false,
+            gamePoint:                 0,
+            royalPoint:                0,
+            food:                      0,
+            brown:                     0,
+            white:                     0,
+            red:                       0,
+            black:                     0,
+            foodBuf:                   0,
+            brownBuf:                  0,
+            whiteBuf:                  0,
+            redBuf:                    0,
+            blackBuf:                  0,
+            money:                     0,
+            numServerOnHand:           0,
+            numServerHired:            0,
+            serverOnHand:              [],
+            serverOnHandCanvasIdx:     0,
+            serverHired:               [],
+            serverHiredCanvasIdx:      0,
+            // hotel info
+            roomStatus0:              [],
+            roomStatus1:              [],
+            roomStatus2:              [],
+            roomStatus3:              [],
+            roomAreaRoom:             [],
+            roomClosedNum:            0,
+            roomPreparedNum:          0,
+            roomColumnClosedNum:      0,
+            roomRowClosedNum:         0,
+            roomAreaClosedNum:        0,
+            roomRedClosedNum:         0,
+            roomYellowClosedNum:      0,
+            roomBlueClosedNum:        0,
+            roomRedPreparedNum:       0,
+            roomYellowPreparedNum:    0,
+            roomBluePreparedNum:      0,
+            numGuestOnTable:          0,
+            guestOnTable:             [],
+            maxClosedRoomLevel:       0,
+            maxPreparedRoomLevel:     0,
+            // guest table
+            /*
+            this.guestSatisfied = false;
+            this.guestFoodServed = [];
+            this.guestFoodServedNum = 0;
+            */
+            guestSatisfied0: false,
+            guestSatisfied1: false,
+            guestSatisfied2: false,
+            guestFoodServed0: [],
+            guestFoodServed1: [],
+            guestFoodServed2: [],
+            guestFoodServedNum0: 0,
+            guestFoodServedNum1: 0,
+            guestFoodServedNum2: 0
+        };
+
         // draw canvas
         this.updateAllCanvas();
     }
 
-    
+    bkupMiniTurn() {
+        // var miniTurnInfo = {
+            // game info
+            this.turnBkup.majorTaskComp0= this.majorTaskComp[0].slice();
+            this.turnBkup.majorTaskComp1= this.majorTaskComp[1].slice();
+            this.turnBkup.majorTaskComp2= this.majorTaskComp[2].slice();
+            this.turnBkup.actionPoint   = this.actionPoint.slice();
+            this.turnBkup.guestDeck     = this.guestDeck.slice();
+            this.turnBkup.serverDeck    = this.serverDeck.slice();
+            this.turnBkup.guestInQueue  = this.guestInQueue.slice();
+            // player info
+            this.turnBkup.diceTaken              = this.players[this.currPlayer].diceTaken.slice();
+            this.turnBkup.specialRound           = this.players[this.currPlayer].specialRound;
+            this.turnBkup.gamePoint              = this.players[this.currPlayer].gamePoint;
+            this.turnBkup.royalPoint             = this.players[this.currPlayer].royalPoint;
+            this.turnBkup.food                   = this.players[this.currPlayer].food;
+            this.turnBkup.brown                  = this.players[this.currPlayer].brown;
+            this.turnBkup.white                  = this.players[this.currPlayer].white;
+            this.turnBkup.red                    = this.players[this.currPlayer].red;
+            this.turnBkup.black                  = this.players[this.currPlayer].black;
+            this.turnBkup.foodBuf                = this.players[this.currPlayer].foodBuf;
+            this.turnBkup.brownBuf               = this.players[this.currPlayer].brownBuf;
+            this.turnBkup.whiteBuf               = this.players[this.currPlayer].whiteBuf;
+            this.turnBkup.redBuf                 = this.players[this.currPlayer].redBuf;
+            this.turnBkup.blackBuf               = this.players[this.currPlayer].blackBuf;
+            this.turnBkup.money                  = this.players[this.currPlayer].money;
+            this.turnBkup.numServerOnHand        = this.players[this.currPlayer].numServerOnHand;
+            this.turnBkup.numServerHired         = this.players[this.currPlayer].numServerHired;
+            this.turnBkup.serverOnHand           = this.players[this.currPlayer].serverOnHand.slice();
+            this.turnBkup.serverOnHandCanvasIdx  = this.players[this.currPlayer].serverOnHandCanvasIdx;
+            this.turnBkup.serverHired            = this.players[this.currPlayer].serverHired.slice();
+            this.turnBkup.serverHiredCanvasIdx   = this.players[this.currPlayer].serverHiredCanvasIdx;
+            // hotel info
+            this.turnBkup.roomStatus0            = this.players[this.currPlayer].hotel.roomStatus[0].slice();
+            this.turnBkup.roomStatus1            = this.players[this.currPlayer].hotel.roomStatus[1].slice();
+            this.turnBkup.roomStatus2            = this.players[this.currPlayer].hotel.roomStatus[2].slice();
+            this.turnBkup.roomStatus3            = this.players[this.currPlayer].hotel.roomStatus[3].slice();
+            this.turnBkup.roomAreaRoom           = this.players[this.currPlayer].hotel.roomAreaRoom.slice();
+            this.turnBkup.roomClosedNum          = this.players[this.currPlayer].hotel.roomClosedNum;
+            this.turnBkup.roomPreparedNum        = this.players[this.currPlayer].hotel.roomPreparedNum;
+            this.turnBkup.roomColumnClosedNum    = this.players[this.currPlayer].hotel.roomColumnClosedNum;
+            this.turnBkup.roomRowClosedNum       = this.players[this.currPlayer].hotel.roomRowClosedNum;
+            this.turnBkup.roomAreaClosedNum      = this.players[this.currPlayer].hotel.roomAreaClosedNum;
+            this.turnBkup.roomRedClosedNum       = this.players[this.currPlayer].hotel.roomRedClosedNum;
+            this.turnBkup.roomYellowClosedNum    = this.players[this.currPlayer].hotel.roomYellowClosedNum;
+            this.turnBkup.roomBlueClosedNum      = this.players[this.currPlayer].hotel.roomBlueClosedNum;
+            this.turnBkup.roomRedPreparedNum     = this.players[this.currPlayer].hotel.roomRedPreparedNum;
+            this.turnBkup.roomYellowPreparedNum  = this.players[this.currPlayer].hotel.roomYellowPreparedNum;
+            this.turnBkup.roomBluePreparedNum    = this.players[this.currPlayer].hotel.roomBluePreparedNum;
+            this.turnBkup.numGuestOnTable        = this.players[this.currPlayer].hotel.numGuestOnTable;
+            this.turnBkup.guestOnTable           = this.players[this.currPlayer].hotel.guestOnTable.slice();
+            this.turnBkup.maxClosedRoomLevel     = this.players[this.currPlayer].hotel.maxClosedRoomLevel;
+            this.turnBkup.maxPreparedRoomLevel   = this.players[this.currPlayer].hotel.maxPreparedRoomLevel;
+            // guest info
+            if(this.players[this.currPlayer].hotel.guestOnTable[0] != null){
+                this.turnBkup.guestSatisfied0 = this.players[this.currPlayer].hotel.guestOnTable[0].guestSatisfied;
+                this.turnBkup.guestFoodServed0 = this.players[this.currPlayer].hotel.guestOnTable[0].guestFoodServed.slice();
+                this.turnBkup.guestFoodServedNum0 = this.players[this.currPlayer].hotel.guestOnTable[0].guestFoodServedNum;
+            }
+            if(this.players[this.currPlayer].hotel.guestOnTable[1] != null){
+                this.turnBkup.guestSatisfied1 = this.players[this.currPlayer].hotel.guestOnTable[1].guestSatisfied;
+                this.turnBkup.guestFoodServed1 = this.players[this.currPlayer].hotel.guestOnTable[1].guestFoodServed.slice();
+                this.turnBkup.guestFoodServedNum1 = this.players[this.currPlayer].hotel.guestOnTable[1].guestFoodServedNum;
+            }
+            if(this.players[this.currPlayer].hotel.guestOnTable[2] != null){
+                this.turnBkup.guestSatisfied2 = this.players[this.currPlayer].hotel.guestOnTable[2].guestSatisfied;
+                this.turnBkup.guestFoodServed2 = this.players[this.currPlayer].hotel.guestOnTable[2].guestFoodServed.slice();
+                this.turnBkup.guestFoodServedNum2 = this.players[this.currPlayer].hotel.guestOnTable[2].guestFoodServedNum;
+            }
+        // };
+        // this.turnBkup = miniTurnInfo;
+    }
+
+    restoreMiniTurn() {
+        this.log.push(this.playerName[this.currPlayer] + "选择重置本回合");
+        // game info
+        this.majorTaskComp[0] = this.turnBkup.majorTaskComp0.slice();
+        this.majorTaskComp[1] = this.turnBkup.majorTaskComp1.slice();
+        this.majorTaskComp[2] = this.turnBkup.majorTaskComp2.slice();
+        this.actionPoint = this.turnBkup.actionPoint.slice();
+        this.guestDeck = this.turnBkup.guestDeck.slice();
+        this.serverDeck = this.turnBkup.serverDeck.slice();
+        this.guestInQueue = this.turnBkup.guestInQueue.slice();
+        // player info
+        this.players[this.currPlayer].royalResult = -1;
+        this.players[this.currPlayer].royalResultPending = false;
+        this.players[this.currPlayer].royalResultFinish = false;
+        this.players[this.currPlayer].diceTaken = this.turnBkup.diceTaken.slice();
+        this.players[this.currPlayer].atInvite = false;
+        this.players[this.currPlayer].atAction = false;
+        this.players[this.currPlayer].atServe = false;
+        this.players[this.currPlayer].atCheckout = false;
+        this.players[this.currPlayer].atTakeBrownWhite = false;
+        this.players[this.currPlayer].atTakeRedBlack = false;
+        this.players[this.currPlayer].atPrepareRoom = false;
+        this.players[this.currPlayer].atRoyalMoney = false;
+        this.players[this.currPlayer].atHireServer = false;
+        this.players[this.currPlayer].atTakeMirror = false;
+        this.players[this.currPlayer].atSelectFood = 0;
+        this.players[this.currPlayer].atTakeBrown = 0;
+        this.players[this.currPlayer].atTakeWhite = 0;
+        this.players[this.currPlayer].atTakeRed = 0;
+        this.players[this.currPlayer].atTakeBlack = 0;
+        this.players[this.currPlayer].atRoomToPrepare = 0;
+        this.players[this.currPlayer].atRoyal = 0;
+        this.players[this.currPlayer].atMoney = 0;
+        this.players[this.currPlayer].atHireServerdiscount = [];
+        this.players[this.currPlayer].atMirrorDice = 1;
+        this.players[this.currPlayer].atMirrorStrength = 0;
+        this.players[this.currPlayer].atActionBoost = false;
+        this.players[this.currPlayer].freeInviteNum = 0;
+        this.players[this.currPlayer].inviteFlag = false;
+        this.players[this.currPlayer].actionFlag = false;
+        this.players[this.currPlayer].hireNum = 0;
+        this.players[this.currPlayer].hireLimitLastThree = false;
+        this.players[this.currPlayer].royalPunishSelection = 0;
+        this.players[this.currPlayer].loseServerNum = 0;
+        this.players[this.currPlayer].loseHiredNum = 0;
+        this.players[this.currPlayer].serveFoodNum = 0;
+        this.players[this.currPlayer].specialRound = this.turnBkup.specialRound;
+        this.players[this.currPlayer].specialRoundFlag = false;
+        this.players[this.currPlayer].gamePoint = this.turnBkup.gamePoint;
+        this.players[this.currPlayer].royalPoint = this.turnBkup.royalPoint;
+        this.players[this.currPlayer].food = this.turnBkup.food;
+        this.players[this.currPlayer].brown = this.turnBkup.brown;
+        this.players[this.currPlayer].white = this.turnBkup.white;
+        this.players[this.currPlayer].red = this.turnBkup.red;
+        this.players[this.currPlayer].black = this.turnBkup.black;
+        this.players[this.currPlayer].foodBuf = this.turnBkup.foodBuf;
+        this.players[this.currPlayer].brownBuf = this.turnBkup.brownBuf;
+        this.players[this.currPlayer].whiteBuf = this.turnBkup.whiteBuf;
+        this.players[this.currPlayer].redBuf = this.turnBkup.redBuf;
+        this.players[this.currPlayer].blackBuf = this.turnBkup.blackBuf;
+        this.players[this.currPlayer].money = this.turnBkup.money;
+        this.players[this.currPlayer].numServerOnHand = this.turnBkup.numServerOnHand;
+        this.players[this.currPlayer].numServerHired = this.turnBkup.numServerHired;
+        this.players[this.currPlayer].serverOnHand = this.turnBkup.serverOnHand.slice();
+        this.players[this.currPlayer].serverOnHandCanvasIdx = this.turnBkup.serverOnHandCanvasIdx;
+        this.players[this.currPlayer].serverHired = this.turnBkup.serverHired.slice();
+        this.players[this.currPlayer].serverHiredCanvasIdx = this.turnBkup.serverHiredCanvasIdx;
+        this.players[this.currPlayer].serverOnHandHighLightFlag = false;
+        this.players[this.currPlayer].serverOnHandHighLight = [];
+        this.players[this.currPlayer].serverHiredHighLightFlag = false;
+        this.players[this.currPlayer].serverHiredHighLight = [];
+        // hotel info
+        this.players[this.currPlayer].hotel.roomStatus[0] = this.turnBkup.roomStatus0.slice();
+        this.players[this.currPlayer].hotel.roomStatus[1] = this.turnBkup.roomStatus1.slice();
+        this.players[this.currPlayer].hotel.roomStatus[2] = this.turnBkup.roomStatus2.slice();
+        this.players[this.currPlayer].hotel.roomStatus[3] = this.turnBkup.roomStatus3.slice();
+        this.players[this.currPlayer].hotel.roomAreaRoom = this.turnBkup.roomAreaRoom.slice();
+        this.players[this.currPlayer].hotel.roomClosedNum = this.turnBkup.roomClosedNum;
+        this.players[this.currPlayer].hotel.roomPreparedNum = this.turnBkup.roomPreparedNum;
+        this.players[this.currPlayer].hotel.roomColumnClosedNum = this.turnBkup.roomColumnClosedNum;
+        this.players[this.currPlayer].hotel.roomRowClosedNum = this.turnBkup.roomRowClosedNum;
+        this.players[this.currPlayer].hotel.roomAreaClosedNum = this.turnBkup.roomAreaClosedNum;
+        this.players[this.currPlayer].hotel.roomRedClosedNum = this.turnBkup.roomRedClosedNum;
+        this.players[this.currPlayer].hotel.roomYellowClosedNum = this.turnBkup.roomYellowClosedNum;
+        this.players[this.currPlayer].hotel.roomBlueClosedNum = this.turnBkup.roomBlueClosedNum;
+        this.players[this.currPlayer].hotel.roomRedPreparedNum = this.turnBkup.roomRedPreparedNum;
+        this.players[this.currPlayer].hotel.roomYellowPreparedNum = this.turnBkup.roomYellowPreparedNum;
+        this.players[this.currPlayer].hotel.roomBluePreparedNum = this.turnBkup.roomBluePreparedNum;
+        this.players[this.currPlayer].hotel.roomHighLightFlag = this.players[this.currPlayer].firstGuestTurn;
+        this.players[this.currPlayer].hotel.numGuestOnTable = this.turnBkup.numGuestOnTable;
+        this.players[this.currPlayer].hotel.guestOnTable = this.turnBkup.guestOnTable.slice();
+        this.players[this.currPlayer].hotel.firstThreeRoom = this.players[this.currPlayer].firstGuestTurn;
+        this.players[this.currPlayer].hotel.roomToPrepare = 0;
+        this.players[this.currPlayer].hotel.roomToPrepareDiscount = [];
+        this.players[this.currPlayer].hotel.roomToLose = 0;
+        this.players[this.currPlayer].hotel.roomToLoseType = [];
+        this.players[this.currPlayer].hotel.roomToClose = 0;
+        this.players[this.currPlayer].hotel.roomToCloseColor = 0;
+        this.players[this.currPlayer].hotel.roomCloseBonus = false;
+        this.players[this.currPlayer].hotel.maxClosedRoomLevel = this.turnBkup.maxClosedRoomLevel;
+        this.players[this.currPlayer].hotel.maxPreparedRoomLevel = this.turnBkup.maxPreparedRoomLevel;
+        this.players[this.currPlayer].hotel.atSelectSatisfiedGuest = false;
+        this.players[this.currPlayer].hotel.atSelectUnSatisfiedGuest = false;
+        if(this.players[this.currPlayer].firstGuestTurn) {
+            this.players[this.currPlayer].hotel.highlightRoomToPrepare(this.players[this.currPlayer].money);
+            this.players[this.currPlayer].hotel.highlightRoomToPrepare(this.players[this.currPlayer].money);
+            this.players[this.currPlayer].hotel.highlightRoomToPrepare(this.players[this.currPlayer].money);
+        }
+        // guest info
+        if(this.players[this.currPlayer].hotel.guestOnTable[0] != null){
+            this.players[this.currPlayer].hotel.guestOnTable[0].guestSatisfied = this.turnBkup.guestSatisfied0;
+            this.players[this.currPlayer].hotel.guestOnTable[0].guestFoodServed = this.turnBkup.guestFoodServed0.slice();
+            this.players[this.currPlayer].hotel.guestOnTable[0].guestFoodServedNum = this.turnBkup.guestFoodServedNum0;
+        }
+        if(this.players[this.currPlayer].hotel.guestOnTable[1] != null){
+            this.players[this.currPlayer].hotel.guestOnTable[1].guestSatisfied = this.turnBkup.guestSatisfied1;
+            this.players[this.currPlayer].hotel.guestOnTable[1].guestFoodServed = this.turnBkup.guestFoodServed1.slice();
+            this.players[this.currPlayer].hotel.guestOnTable[1].guestFoodServedNum = this.turnBkup.guestFoodServedNum1;
+        }
+        if(this.players[this.currPlayer].hotel.guestOnTable[2] != null){
+            this.players[this.currPlayer].hotel.guestOnTable[2].guestSatisfied = this.turnBkup.guestSatisfied2;
+            this.players[this.currPlayer].hotel.guestOnTable[2].guestFoodServed = this.turnBkup.guestFoodServed2.slice();
+            this.players[this.currPlayer].hotel.guestOnTable[2].guestFoodServedNum = this.turnBkup.guestFoodServedNum2;
+        }
+    }
 
     shuffleDeck(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -134,9 +402,11 @@ class Game{
                 this.currPlayer = 0;
                 this.rollDice();
                 this.log.push("所有玩家已完成准备，开启正式游戏");
+                this.bkupMiniTurn();
             } else {
                 this.log.push(this.playerName[this.currPlayer] + "已完成准备，下一位");
                 this.currPlayer++;
+                this.bkupMiniTurn();
             }
         } else if(this.miniRound == (2*this.playerNumber-1) || this.royalRound) { // end of main round, check royal round first
             this.log.push("大回合" + this.mainRound + "已结束");
@@ -162,6 +432,7 @@ class Game{
                     pauseFlag = this.royalResult();
                     if(pauseFlag) {
                         this.log.push("等待玩家" + this.playerName[this.currPlayer] + "进行皇室选择");
+                        this.bkupMiniTurn();
                         return; // pause and assert alert canvas
                     }
                     this.currPlayer++;
@@ -209,6 +480,7 @@ class Game{
                     this.log.push(this.playerName[this.currPlayer] + "获得每回合一个免费的黑咖啡");
                     this.players[this.currPlayer].gainBlack(1);
                 }
+                this.bkupMiniTurn();
             }
         } else { // normal mini round
             if(this.players[this.currPlayer].specialRoundFlag){ // special round from guest
@@ -216,6 +488,7 @@ class Game{
                 this.log.push(this.playerName[this.currPlayer] + "获得特殊回合，行动不消耗骰子数");
                 this.players[this.currPlayer].specialRoundFlag = false;
                 this.players[this.currPlayer].specialRound = true;
+                this.bkupMiniTurn();
                 return;
             }
             // next mini round
@@ -240,6 +513,7 @@ class Game{
                 this.log.push(this.playerName[this.currPlayer] + "获得每回合一个免费的黑咖啡");
                 this.players[this.currPlayer].gainBlack(1);
             }
+            this.bkupMiniTurn();
         }
     }
 
@@ -829,11 +1103,22 @@ class Game{
                 break;
             }
         }
+        // the miniturn restart button
+        this.textCanvas(context, "重置本回合：", logXoffset+820, logYoffset);
+        context.drawImage(restartImg, logXoffset+890, logYoffset, 50, 50);
     }
     // ========================================canvas==============================================
 
     
     // ========================================click handle==============================================
+    handleRestart(event) {
+        if(event.offsetX >= 910 && event.offsetX <= 960 && event.offsetY >= 20 && event.offsetY <= 70){
+            console.log("restart clicked");
+            this.restoreMiniTurn();
+        }
+        this.updateAllCanvas();
+    }
+
     handlePlayer0Click(event) {
         // check if this players turn first
         if(this.currPlayer!=0){

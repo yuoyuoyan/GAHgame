@@ -16,6 +16,7 @@ player0Canvas.addEventListener("click", handlePlayer0ClickWrap);
 player1Canvas.addEventListener("click", handlePlayer1ClickWrap);
 player2Canvas.addEventListener("click", handlePlayer2ClickWrap);
 player3Canvas.addEventListener("click", handlePlayer3ClickWrap);
+logCanvas.addEventListener("click",     handleRestartWrap);
 
 // test plan
 // 1. First guest invitation and room preparation, done
@@ -251,6 +252,18 @@ function handlePlayer3ClickWrap(event) {
         var msg = {
             type: "broadcast",
             canvasType: "player3",
+            roomID: roomID,
+            offsetX: event.offsetX,
+            offsetY: event.offsetY
+        };
+        socket.send(JSON.stringify(msg));
+    }
+}
+function handleRestartWrap(event) {
+    if(game.currPlayer == game.ourPlayer) {
+        var msg = {
+            type: "broadcast",
+            canvasType: "restart",
             roomID: roomID,
             offsetX: event.offsetX,
             offsetY: event.offsetY

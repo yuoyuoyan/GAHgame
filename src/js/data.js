@@ -25,6 +25,7 @@ const serverAllImg = document.getElementById("serverImg");
 const guestBoardImg = document.getElementById("guestBoardImg");
 const tokenImg = document.getElementById("tokenImg");
 const hotelImg = document.getElementById("hotelImg");
+const restartImg = document.getElementById("restartImg");
 const majorTaskA0ImgX =   0;const majorTaskA0ImgY =   0;
 const majorTaskA1ImgX = 160;const majorTaskA1ImgY =   0;
 const majorTaskA2ImgX = 320;const majorTaskA2ImgY =   0;

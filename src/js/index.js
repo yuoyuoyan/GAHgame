@@ -1,6 +1,6 @@
 // server connection
-// const socket = new WebSocket('ws://localhost:8083');
-const socket = new WebSocket('ws://121.43.102.218:8083');
+const socket = new WebSocket('ws://localhost:8083');
+// const socket = new WebSocket('ws://121.43.102.218:8083');
 socket.onmessage = handleMsg;
 
 const roomIDLabel = document.getElementById("roomID");
@@ -251,10 +251,12 @@ async function handleMsg(event) {
             game.updateAllCanvas();
             // Add debug state if needed
             gameOn();
+            game.bkupMiniTurn();
             break;
         case("diceInfo") : // sync random dice roll
             game.actionPoint = msg.dice;
             game.updateAllCanvas();
+            game.bkupMiniTurn();
             break;
         case("broadcast") : // broadcast all canvas clicking to every players
             // only act when it's our controlled player
@@ -289,6 +291,9 @@ async function handleMsg(event) {
                     break;
                 case("player3") :
                     game.handlePlayer3Click(event);
+                    break;
+                case("restart") :
+                    game.handleRestart(event);
                     break;
             }
             break;
