@@ -1,6 +1,6 @@
 // var playerNames = JSON.parse(decodeURIComponent(document.cookie));
-const skipPrepare = 1;
-const debugState = 1;
+const skipPrepare = 0;
+const debugState = 0;
 
 // init game info and draw background
 // window.onload = gameOn;
@@ -50,13 +50,13 @@ function gameOn() {
             // game.majorTask1 = 0;
             // game.majorTask2 = 0;
             // test royal task
-            game.mainRound = 4;
+            game.mainRound = 6;
             // game.miniRound = 2*game.playerNumber-1;
-            // game.currPlayer = 0;
+            game.currPlayer = 0;
             // game.royalTask0 = 0;
-            game.royalTask1 = 3;
-            // game.royalTask2 = 3;
-            game.players[game.currPlayer].royalPoint = 8;
+            // game.royalTask1 = 3;
+            game.royalTask2 = 1;
+            game.players[game.currPlayer].royalPoint = 10;
             // game.players[game.currPlayer].gamePoint = 20;
             // game.players[game.currPlayer].royalResult = 0;
             // game.players[game.currPlayer].updateAlertCanvas(alertContext);
@@ -88,7 +88,7 @@ function gameOn() {
             game.players[game.currPlayer].hotel.roomClose(1,1);
             game.players[game.currPlayer].hotel.roomClose(1,2);
             game.players[game.currPlayer].hotel.roomClose(1,3);
-            game.players[game.currPlayer].hotel.roomClose(1,4);
+            // game.players[game.currPlayer].hotel.roomClose(1,4);
             // game.players[game.currPlayer].hotel.roomClose(2,0);
             // game.players[game.currPlayer].hotel.roomClose(2,1);
             // game.players[game.currPlayer].hotel.roomClose(2,2);

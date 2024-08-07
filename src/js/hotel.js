@@ -74,7 +74,7 @@ class Hotel{
         }
     }
 
-    highlightRoomToPrepare(money, discount=0, maxLevel=3, updateOnly=false) {
+    highlightRoomToPrepare(money, discount=0, maxLevel=3, updateOnly=false, alsoPrepared=false) {
         if(!updateOnly){ // click handle need to update highlight without increase number
             this.roomToPrepare++;
             this.roomHighLightFlag = true;
@@ -90,6 +90,8 @@ class Hotel{
                      (floor==0 && col==0 && this.roomStatus[floor][col]==-1)) // room at left bottom corner must be the first to prepare
                     ) {
                         this.roomHighLight[floor][col] = (money >= (floor-discount) && floor <= maxLevel) ? 1 : 0;
+                } else if(alsoPrepared) { // royal task B3 and C1 reward need to highlight prepared room too
+                    this.roomHighLight[floor][col] = (this.roomStatus[floor][col]==0) ? 1 : 0;
                 } else {
                     this.roomHighLight[floor][col] = 0;
                 }

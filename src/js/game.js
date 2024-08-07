@@ -366,7 +366,7 @@ class Game{
                         this.players[i].royalResultPending = true; 
                         this.log.push(this.playerName[this.currPlayer] + "抽3员工打1免费返还剩余");
                         return true; // 抽3员工打1免费返还剩余/丢弃3张员工手牌或失去7游戏点数
-                        case 3: this.players[i].hotel.highlightRoomToPrepare(this.players[i].money, 5, 1); this.players[i].royalResultPending = true; this.players[i].royalResultFinish = true;
+                        case 3: this.players[i].hotel.highlightRoomToPrepare(this.players[i].money, 5, 1, false, true); this.players[i].royalResultPending = true; this.players[i].royalResultFinish = true;
                         this.log.push(this.playerName[this.currPlayer] + "2层以内免费准备1个房间并入住");
                         return true; // 2层以内免费准备1个房间并入住/失去最高的准备好的2个房间或失去7游戏点数
                     }
@@ -376,7 +376,7 @@ class Game{
                         case 0: this.players[i].gainGamePoint(8);
                         this.log.push(this.playerName[this.currPlayer] + "获得8游戏点数");
                         return false; // 获得8游戏点数/失去8游戏点数
-                        case 1: this.players[i].hotel.highlightRoomToPrepare(this.players[i].money, 5); this.players[i].royalResultPending = true;  this.players[i].royalResultFinish = true;
+                        case 1: this.players[i].hotel.highlightRoomToPrepare(this.players[i].money, 5, 3, false, true); this.players[i].royalResultPending = true;  this.players[i].royalResultFinish = true;
                         this.log.push(this.playerName[this.currPlayer] + "免费准备1个房间并入住");
                         return true; // 免费准备1个房间并入住/失去最高层和次高层各1个已入住房间
                         case 2: this.players[i].gainGamePoint(2*this.players[i].numServerHired);
@@ -978,7 +978,7 @@ class Game{
                     } else if(this.players[this.currPlayer].hotel.roomToPrepare>0 && this.players[this.currPlayer].hotel.roomHighLight[floor][col]){
                         console.log("prepare room at floor " + floor + " col " + col);
                         // prepare selected room, check money
-                        if(this.players[this.currPlayer].royalResultPending) { // only case is the royal task 1 reward, directly close it
+                        if(this.players[this.currPlayer].royalResultPending) { // only case is the royal task 1&2 reward, directly close it
                             this.players[this.currPlayer].hotel.roomClose(floor, col);
                             this.players[this.currPlayer].royalResultPending = false;
                         } else {
