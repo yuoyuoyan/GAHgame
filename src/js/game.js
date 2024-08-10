@@ -1290,8 +1290,13 @@ class Game{
                     } else if(this.players[this.currPlayer].hotel.roomToPrepare>0 && this.players[this.currPlayer].hotel.roomHighLight[floor][col]){
                         console.log("prepare room at floor " + floor + " col " + col);
                         // prepare selected room, check money
-                        if(this.players[this.currPlayer].royalResultPending) { // only case is the royal task 1&2 reward, directly close it
-                            this.players[this.currPlayer].hotel.roomClose(floor, col);
+                        if(this.players[this.currPlayer].royalResultPending) { // corner case is the royal task reward, directly close it if possible
+                            if(this.players[this.currPlayer].hotel.roomStatus[floor][col]==-1) { // royal task B&C directly close room, A only prepare room
+                                this.players[this.currPlayer].hotel.roomPrepare(floor, col);
+                            }
+                            if(this.mainRound > 2) { // royal task B&C
+                                this.players[this.currPlayer].hotel.roomClose(floor, col);
+                            }
                             this.players[this.currPlayer].royalResultPending = false;
                         } else {
                             this.players[this.currPlayer].hotel.roomPrepare(floor, col);

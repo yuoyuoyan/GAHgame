@@ -491,10 +491,14 @@ class Player{
         }
     }
 
-    addServerToHandDebug(serverID) { // debug only, force a server card on hand
+    addServerToHandDebug(serverID) { // debug only, force a server card on hand, and remove from deck if any
         this.numServerOnHand++;
         this.serverOnHand.push(new Server(serverID));
         this.serverOnHandHighLight.push(1);
+        const index = this.game.serverDeck.indexOf(serverID);
+        if(index !== -1) {
+            this.game.serverDeck.slice(index, 1);
+        }
     }
 
     hireServer(serverIndex) {

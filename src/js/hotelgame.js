@@ -51,12 +51,12 @@ function gameOn() {
             // game.majorTask1 = 0;
             // game.majorTask2 = 0;
             // test royal task
-            game.mainRound = 6;
+            game.mainRound = 4;
             // game.miniRound = 2*game.playerNumber-1;
             game.currPlayer = 0;
             // game.royalTask0 = 0;
-            // game.royalTask1 = 3;
-            game.royalTask2 = 1;
+            game.royalTask1 = 3;
+            // game.royalTask2 = 1;
             game.players[game.currPlayer].royalPoint = 10;
             // game.players[game.currPlayer].gamePoint = 20;
             // game.players[game.currPlayer].royalResult = 0;
@@ -75,8 +75,8 @@ function gameOn() {
             // game.players[game.currPlayer].hotel.roomPrepare(2,0);
             // game.players[game.currPlayer].hotel.roomPrepare(2,1);
             // game.players[game.currPlayer].hotel.roomPrepare(2,2);
-            // game.players[game.currPlayer].hotel.roomPrepare(2,3);
-            // game.players[game.currPlayer].hotel.roomPrepare(2,4);
+            game.players[game.currPlayer].hotel.roomPrepare(2,3);
+            game.players[game.currPlayer].hotel.roomPrepare(2,4);
             // game.players[game.currPlayer].hotel.roomPrepare(3,0);
             // game.players[game.currPlayer].hotel.roomPrepare(3,1);
             // game.players[game.currPlayer].hotel.roomPrepare(3,4);
@@ -102,11 +102,13 @@ function gameOn() {
             // for(let i=0; i<6; i++){
             //     game.players[game.currPlayer].hireServer(0);
             // }
-            game.players[game.currPlayer].addServerToHandDebug(13);
+            // game.players[game.currPlayer].addServerToHandDebug(13);
             // game.players[game.currPlayer].hireServer(game.players[game.currPlayer].numServerOnHand-1);
             // test guest bonus
-            // game.players[game.currPlayer].hotel.addGuestToTable(57);
-            // game.players[game.currPlayer].hotel.satisfyGuest(1);
+            game.players[game.currPlayer].hotel.addGuestToTable(50);
+            game.players[game.currPlayer].hotel.satisfyGuest(1);
+            game.players[game.currPlayer].hotel.addGuestToTable(0);
+            game.players[game.currPlayer].hotel.satisfyGuest(2);
             // test alert canvas
             // game.players[game.currPlayer].atSelectFood = 2;
             // game.alertType = 7;

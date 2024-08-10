@@ -91,7 +91,7 @@ class Hotel{
                     ) {
                         this.roomHighLight[floor][col] = (money >= (floor-discount) && floor <= maxLevel) ? 1 : 0;
                 } else if(alsoPrepared) { // royal task B3 and C1 reward need to highlight prepared room too
-                    this.roomHighLight[floor][col] = (this.roomStatus[floor][col]==0) ? 1 : 0;
+                    this.roomHighLight[floor][col] = (this.roomStatus[floor][col]==0 && floor <= maxLevel) ? 1 : 0;
                 } else {
                     this.roomHighLight[floor][col] = 0;
                 }
@@ -170,7 +170,7 @@ class Hotel{
             return;
         }
 
-        if(this.roomStatus[floor][col] != 0 && !this.game.players[this.game.currPlayer].royalResultPending){
+        if(this.roomStatus[floor][col] != 0){
             return;
         }
 
