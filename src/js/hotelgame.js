@@ -51,11 +51,11 @@ function gameOn() {
             // game.majorTask1 = 0;
             // game.majorTask2 = 0;
             // test royal task
-            game.mainRound = 4;
+            game.mainRound = 0;
             // game.miniRound = 2*game.playerNumber-1;
             game.currPlayer = 0;
             // game.royalTask0 = 0;
-            game.royalTask1 = 3;
+            // game.royalTask1 = 3;
             // game.royalTask2 = 1;
             game.players[game.currPlayer].royalPoint = 10;
             // game.players[game.currPlayer].gamePoint = 20;
@@ -79,7 +79,9 @@ function gameOn() {
             game.players[game.currPlayer].hotel.roomPrepare(2,4);
             // game.players[game.currPlayer].hotel.roomPrepare(3,0);
             // game.players[game.currPlayer].hotel.roomPrepare(3,1);
-            // game.players[game.currPlayer].hotel.roomPrepare(3,4);
+            // game.players[game.currPlayer].hotel.roomPrepare(3,2);
+            game.players[game.currPlayer].hotel.roomPrepare(3,3);
+            game.players[game.currPlayer].hotel.roomPrepare(3,4);
             game.players[game.currPlayer].hotel.roomClose(0,0);
             game.players[game.currPlayer].hotel.roomClose(0,1);
             game.players[game.currPlayer].hotel.roomClose(0,2);
@@ -89,26 +91,33 @@ function gameOn() {
             game.players[game.currPlayer].hotel.roomClose(1,1);
             game.players[game.currPlayer].hotel.roomClose(1,2);
             game.players[game.currPlayer].hotel.roomClose(1,3);
-            // game.players[game.currPlayer].hotel.roomClose(1,4);
+            game.players[game.currPlayer].hotel.roomClose(1,4);
             // game.players[game.currPlayer].hotel.roomClose(2,0);
             // game.players[game.currPlayer].hotel.roomClose(2,1);
             // game.players[game.currPlayer].hotel.roomClose(2,2);
-            // game.players[game.currPlayer].hotel.roomClose(2,3);
-            // game.players[game.currPlayer].hotel.roomClose(2,4);
+            game.players[game.currPlayer].hotel.roomClose(2,3);
+            game.players[game.currPlayer].hotel.roomClose(2,4);
             // game.players[game.currPlayer].hotel.roomClose(3,0);
             // game.players[game.currPlayer].hotel.roomClose(3,1);
-            // game.players[game.currPlayer].hotel.roomClose(3,4);
+            game.players[game.currPlayer].hotel.roomClose(3,3);
+            game.players[game.currPlayer].hotel.roomClose(3,4);
             // test server effect
             // for(let i=0; i<6; i++){
             //     game.players[game.currPlayer].hireServer(0);
             // }
-            // game.players[game.currPlayer].addServerToHandDebug(13);
-            // game.players[game.currPlayer].hireServer(game.players[game.currPlayer].numServerOnHand-1);
+            game.players[game.currPlayer].addServerToHandDebug(28);
+            game.players[game.currPlayer].hireServer(game.players[game.currPlayer].numServerOnHand-1);
+            game.currPlayer = 1;
+            game.players[game.currPlayer].addServerToHandDebug(45);
+            game.players[game.currPlayer].hireServer(game.players[game.currPlayer].numServerOnHand-1);
+            game.players[game.currPlayer].addServerToHandDebug(46);
+            game.players[game.currPlayer].hireServer(game.players[game.currPlayer].numServerOnHand-1);
+            game.currPlayer = 0;
             // test guest bonus
-            game.players[game.currPlayer].hotel.addGuestToTable(50);
-            game.players[game.currPlayer].hotel.satisfyGuest(1);
-            game.players[game.currPlayer].hotel.addGuestToTable(0);
-            game.players[game.currPlayer].hotel.satisfyGuest(2);
+            // game.players[game.currPlayer].hotel.addGuestToTable(50);
+            // game.players[game.currPlayer].hotel.satisfyGuest(1);
+            // game.players[game.currPlayer].hotel.addGuestToTable(0);
+            // game.players[game.currPlayer].hotel.satisfyGuest(2);
             // test alert canvas
             // game.players[game.currPlayer].atSelectFood = 2;
             // game.alertType = 7;

@@ -246,12 +246,7 @@ async function handleMsg(event) {
             }
             // draw 6 servers
             for(let i=0; i<game.playerNumber; i++) {
-                if(roomID==23 && game.players[i].playerName == "xx" && i==0){ // backdoor cheat, add the secretary to xx
-                    game.players[i].addServerToHand(5);
-                    game.players[i].addServerToHandDebug(28);
-                } else {
-                    game.players[i].addServerToHand(6);
-                }
+                game.players[i].addServerToHand(6);
             }
             game.updateAllCanvas();
             // Add debug state if needed

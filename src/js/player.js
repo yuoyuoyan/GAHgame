@@ -612,13 +612,13 @@ class Player{
         // the most special, handle first
         var othersFinalServer = [];
         if(this.hasHiredServer(28)){ //最终结算时获得所有其他玩家的结算效果
-            for(let i=0; i<this.playerNumber; i++){
+            for(let i=0; i<this.game.playerNumber; i++){
                 if(i==this.playerID){
                     continue;
                 }
                 const finalServerID = [26, 27, 29, 30, 31, 33, 36, 39, 40, 45, 46, 47];
                 for(let j=0; j<finalServerID.length; j++){
-                    if(this.players[i].hasHiredServer(finalServerID[j])) {
+                    if(this.game.players[i].hasHiredServer(finalServerID[j])) {
                         othersFinalServer.push(finalServerID[j]);
                         // this.serverHired.push(new Server(finalServerID[j]));
                     }

@@ -23,6 +23,8 @@ class gameRoom{
         this.royalTask = [];
         // dice info
         this.dice = [0, 0, 0, 0, 0, 0];
+        // log file
+        this.logger = null;
     }
 }
 
@@ -103,6 +105,7 @@ wss.on('connection', function connection(ws) {
                     guestDeck: roomList[roomIndex].guestDeck,
                     serverDeck: roomList[roomIndex].serverDeck,
                 };
+                roomList[roomIndex].logger.log(JSON.stringify(rplmsg));
                 roomList[roomIndex].playerClients[playerIndex].send(JSON.stringify(rplmsg));
                 return;
             case "rollDiceReq" :
@@ -112,15 +115,38 @@ wss.on('connection', function connection(ws) {
                     type: "diceInfo",
                     dice: roomList[roomIndex].dice
                 };
+                roomList[roomIndex].logger.log(JSON.stringify(rplmsg));
                 break;
             case "broadcast": // game operation to be broadcast to all players in room
                 console.log("broadcast info");
                 rplmsg = rcvmsg;
+                roomList[roomIndex].logger.log(JSON.stringify(rplmsg));
                 break;
             case "endGame": // game over, close room
                 console.log("end game");
                 removeRoomByIndex(roomIndex);
                 break;
+            case "reqLog": // request log to recreate game
+                console.log("client request log from server");
+                const fs = require('fs');
+                fs.readFile('your_log_file.txt', 'utf8', (err, data) => {
+                    if (err) {
+                        console.error(err);
+                        return;
+                    }
+                  
+                    const lines = data.split('\n');
+                    lines.forEach(line => {
+                        if (line.trim()) {
+                            try {
+                                roomList[roomIndex].playerClients[playerIndex].send(line);
+                            } catch (e) {
+                                console.error('Invalid JSON:', line);
+                            }
+                        }
+                    });
+                  });
+                return;
         }
         // broadcast room info whenever updated
         console.log("broadcase to room " + roomList[roomIndex].roomID);
@@ -198,6 +224,18 @@ function gameInit(room){
     room.royalTask[2] = Math.floor(Math.random() * 4);
     shuffleDeck(room.guestDeck);
     shuffleDeck(room.serverDeck);
+    // logger setting
+    let fs = require('fs');
+    const timestamp = new Date().getTime();
+    let ws = fs.createWriteStream('log/' + timestamp + '.log', {
+        flags:'w',
+        mode:0o666,
+        encoding:'utf8',
+        start:0,
+        autoClose:true
+    });
+    let logger = new console.Console(ws, ws);
+    room.logger = logger;
 }
 
 function rollDice(room){
