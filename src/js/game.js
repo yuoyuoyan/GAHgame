@@ -662,7 +662,7 @@ class Game{
                         this.log.push(this.playerName[this.currPlayer] + "获得5块钱");
                         return false; // 获得5块钱/失去5块钱或失去7游戏点数
                         case 2: 
-                        this.players[i].highlightServerToHire(3, true); 
+                        this.players[i].highlightServerToHire(10, true); 
                         this.players[i].royalResultFinish = false;
                         this.players[i].royalResultPending = true; 
                         this.log.push(this.playerName[this.currPlayer] + "抽3员工打1免费返还剩余");
@@ -1250,7 +1250,7 @@ class Game{
                         console.log("no more dice here");
                         break;
                     }
-                    if(i!=5 || this.players[this.currPlayer].money > 0){
+                    if(i!=5 || this.players[this.currPlayer].money > 0 || this.players[this.currPlayer].hasHiredServer(16)){
                         this.takeDice(i);
                     } else {
                         continue;
