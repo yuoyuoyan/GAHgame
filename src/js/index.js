@@ -1,7 +1,32 @@
+// Check browser type first, only found issues in Safari now, store it for future
+// Opera 8.0+
+var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+
+// Firefox 1.0+
+var isFirefox = typeof InstallTrigger !== 'undefined';
+
+// Safari 3.0+ "[object HTMLElementConstructor]" 
+var isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof safari !== 'undefined' && window['safari'].pushNotification));
+
+// Internet Explorer 6-11
+var isIE = /*@cc_on!@*/false || !!document.documentMode;
+
+// Edge 20+
+var isEdge = !isIE && !!window.StyleMedia;
+
+// Chrome 1 - 79
+var isChrome = !!window.chrome;
+
+// Edge (based on chromium) detection
+var isEdgeChromium = isChrome && (navigator.userAgent.indexOf("Edg") != -1);
+
+// Blink engine detection
+var isBlink = (isChrome || isOpera) && !!window.CSS;
+
 // server connection
-// const socket = new WebSocket('ws://localhost:8083');
-const socket = new WebSocket('ws://121.43.102.218:8083');
-socket.onmessage = handleMsg;
+const socket = new WebSocket('ws://localhost:8083');
+// const socket = new WebSocket('ws://121.43.102.218:8083');
+socket.onmessage = isSafari ? handleMsgApple : handleMsgNotApple;
 
 const roomIDLabel = document.getElementById("roomID");
 const roomIDText = document.getElementById("roomIDText");
@@ -154,10 +179,23 @@ startButton.addEventListener("mouseout", () => {
 }); // change cursor style by move out
 
 // handle all messages from server
-async function handleMsg(event) {
-    // Handle received message
+function handleMsgApple(event){
+    var msg = event.data;
+    msg = JSON.parse(msg);
+    handleMsg(msg);
+}
+
+async function handleMsgNotApple(event) {
     var msg = await event.data;
     msg = JSON.parse(msg);
+    handleMsg(msg);
+}
+
+function handleMsg(msg) {
+    // Handle received message
+    // var msg = await event.data;
+    // var msg = event.data;
+    // msg = JSON.parse(msg);
     console.log('Client side: received message ' + msg);
     switch(msg.type){
         case("roomFull") : // room full, change to another room
