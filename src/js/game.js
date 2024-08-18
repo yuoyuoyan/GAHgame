@@ -742,7 +742,7 @@ class Game{
             this.log.push(this.playerName[this.currPlayer] + "的员工效果，可以原价雇佣一位员工");
             this.players[this.currPlayer].highlightServerToHire(0);
         }
-        if(this.players[this.currPlayer].hasHiredServer(16)) {//使用色子6时无需支付费用并且强度加1
+        if(this.players[this.currPlayer].hasHiredServer(16) && value==5) {//使用色子6时无需支付费用并且强度加1
             this.log.push(this.playerName[this.currPlayer] + "的员工效果，免费使用骰子6并强度加一");
             serverBonus = 1;
         }
