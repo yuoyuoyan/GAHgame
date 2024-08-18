@@ -883,7 +883,7 @@ class Player{
             this.hotel.highlightRoomToPrepare(this.money, 1);
             break;
             case 18: // 减1费打出1张员工并原价开1个房间
-            this.game.log.push("并且" + "免费打出1张员工");
+            this.game.log.push("并且" + "原价开一个房间");
             this.hotel.highlightRoomToPrepare(this.money); break;
             case 23: // 免费开1个房间
             this.game.log.push("并且" + "免费开1个房间");
