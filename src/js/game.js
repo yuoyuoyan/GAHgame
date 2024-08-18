@@ -597,8 +597,8 @@ class Game{
                         this.log.push(this.playerName[this.currPlayer] + "丢弃3张员工手牌或失去7游戏点数");
                         return true; // 抽3员工打1免费返还剩余/丢弃3张员工手牌或失去7游戏点数
                         case 3: this.assertAlert(i);
-                        this.log.push(this.playerName[this.currPlayer] + "失去最高的已入住的2个房间或失去7游戏点数");
-                        return true; // 2层以内免费准备1个房间并入住/失去最高的已入住的2个房间或失去7游戏点数
+                        this.log.push(this.playerName[this.currPlayer] + "失去最高的准备好的房间或失去7游戏点数");
+                        return true; // 2层以内免费准备1个房间并入住/失去最高的准备好的房间或失去7游戏点数
                     }
                     break;
                 case 6:
@@ -669,7 +669,7 @@ class Game{
                         return true; // 抽3员工打1免费返还剩余/丢弃3张员工手牌或失去7游戏点数
                         case 3: this.players[i].hotel.highlightRoomToPrepare(this.players[i].money, 5, 1, false, true); this.players[i].royalResultPending = true; this.players[i].royalResultFinish = true;
                         this.log.push(this.playerName[this.currPlayer] + "2层以内免费准备1个房间并入住");
-                        return true; // 2层以内免费准备1个房间并入住/失去最高的准备好的2个房间或失去7游戏点数
+                        return true; // 2层以内免费准备1个房间并入住/失去最高的准备好的房间或失去7游戏点数
                     }
                     break;
                 case 6:

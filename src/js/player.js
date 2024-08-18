@@ -306,8 +306,8 @@ class Player{
                         break; // 丢弃3张员工手牌或失去7游戏点数
                         case 3:
                         if(this.royalPunishSelection==0) {
-                            this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择失去最高的准备好的2个房间");
-                            this.hotel.highlightRoomToLose(true, false, false, false); this.hotel.highlightRoomToLose(true, false, false, false);
+                            this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择失去最高的准备好的房间");
+                            this.hotel.highlightRoomToLose(true, false, false, false);
                         } else if(this.royalPunishSelection==1) {
                             this.game.log.push(this.game.playerName[this.game.currPlayer] + "选择失去7游戏点数");
                             this.loseGamePoint(7);
