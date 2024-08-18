@@ -89,7 +89,13 @@ class Hotel{
                      (col<4 && this.roomStatus[floor][col+1]>=0) || // room right is prepared
                      (floor==0 && col==0 && this.roomStatus[floor][col]==-1)) // room at left bottom corner must be the first to prepare
                     ) {
+                    if((this.game.players[this.game.currPlayer].hasHiredServer(8)  && this.roomColor[floor][col]==2) ||    //免费准备蓝色房间
+                       (this.game.players[this.game.currPlayer].hasHiredServer(9)  && this.roomColor[floor][col]==0) ||    //免费准备红色房间
+                       (this.game.players[this.game.currPlayer].hasHiredServer(10) && this.roomColor[floor][col]==1) ) {   //免费准备黄色房间
+                        this.roomHighLight[floor][col] = (floor <= maxLevel) ? 1 : 0;
+                    } else {
                         this.roomHighLight[floor][col] = (money >= (floor-discount) && floor <= maxLevel) ? 1 : 0;
+                    }
                 } else if(alsoPrepared) { // royal task B3 and C1 reward need to highlight prepared room too
                     this.roomHighLight[floor][col] = (this.roomStatus[floor][col]==0 && floor <= maxLevel) ? 1 : 0;
                 } else {
