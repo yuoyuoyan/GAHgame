@@ -1312,6 +1312,10 @@ class Game{
                             }
                             if(this.mainRound > 2) { // royal task B&C
                                 this.players[this.currPlayer].hotel.roomClose(floor, col);
+                                if(this.players[this.currPlayer].hasHiredServer(22)) { //满足客人并入住时可以获得1块钱
+                                    this.log.push(this.playerName[this.currPlayer] + "的员工效果，满足客人并入住时可以获得1块钱");
+                                    this.players[this.currPlayer].gainMoney(1);
+                                }
                             }
                             this.players[this.currPlayer].royalResultPending = false;
                         } else {
