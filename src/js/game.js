@@ -435,6 +435,30 @@ class Game{
                 this.currPlayer++;
                 this.bkupMiniTurn();
             }
+        } else if(this.players[this.currPlayer].specialRoundFlag){ // special round from guest
+            this.clearPlayerRound();
+            this.log.push(this.playerName[this.currPlayer] + "获得特殊回合，行动不消耗骰子数");
+            this.players[this.currPlayer].specialRoundFlag = false;
+            this.players[this.currPlayer].specialRound = true;
+            // take a food for every per-turn server
+            if(this.players[this.currPlayer].hasHiredServer(0)){
+                this.log.push(this.playerName[this.currPlayer] + "获得每回合一个免费的棕色饼干");
+                this.players[this.currPlayer].gainBrown(1);
+            }
+            if(this.players[this.currPlayer].hasHiredServer(1)){
+                this.log.push(this.playerName[this.currPlayer] + "获得每回合一个免费的白色蛋糕");
+                this.players[this.currPlayer].gainWhite(1);
+            }
+            if(this.players[this.currPlayer].hasHiredServer(2)){
+                this.log.push(this.playerName[this.currPlayer] + "获得每回合一个免费的红酒");
+                this.players[this.currPlayer].gainRed(1);
+            }
+            if(this.players[this.currPlayer].hasHiredServer(3)){
+                this.log.push(this.playerName[this.currPlayer] + "获得每回合一个免费的黑咖啡");
+                this.players[this.currPlayer].gainBlack(1);
+            }
+            this.bkupMiniTurn();
+            return;
         } else if(this.miniRound == (2*this.playerNumber-1) || this.royalRound) { // end of main round, check royal round first
             this.log.push("大回合" + this.mainRound + "已结束");
             if(!this.royalRound){ // start of royal round, reset curr player first
@@ -510,14 +534,6 @@ class Game{
                 this.bkupMiniTurn();
             }
         } else { // normal mini round
-            if(this.players[this.currPlayer].specialRoundFlag){ // special round from guest
-                this.clearPlayerRound();
-                this.log.push(this.playerName[this.currPlayer] + "获得特殊回合，行动不消耗骰子数");
-                this.players[this.currPlayer].specialRoundFlag = false;
-                this.players[this.currPlayer].specialRound = true;
-                this.bkupMiniTurn();
-                return;
-            }
             // next mini round
             this.clearPlayerRound();
             this.miniRound++;
