@@ -369,6 +369,7 @@ class Player{
     gainRoyal(value) {
         if(this.royalPoint + value > 13){ // royal overflow to game point
             this.gamePoint += (this.royalPoint + value - 13);
+            this.royalPoint = 13;
         } else {
             this.royalPoint += value;
         }
