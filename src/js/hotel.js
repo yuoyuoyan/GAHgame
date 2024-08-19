@@ -1,7 +1,8 @@
 // Hotel class definition
 class Hotel{
-    constructor(game, hotelID) {
+    constructor(game, player, hotelID) {
         this.game = game;
+        this.player = player;
         // console.log("hotel ID is " + hotelID);
         this.hotelID = hotelID;
         this.roomColor = roomColorByID[hotelID];
@@ -70,7 +71,7 @@ class Hotel{
         }
         // corner case when no room matches requirement
         if(this.roomToLoseType.length==0){ 
-            this.game.players[this.game.currPlayer].royalResultFinish = true;
+            this.player.royalResultFinish = true;
         }
     }
 
@@ -157,9 +158,9 @@ class Hotel{
         }
         // bonus game point at the upright corner
         if(floor==2 && col>=3){
-            this.game.players[this.game.currPlayer].gainGamePoint(1);
+            this.player.gainGamePoint(1);
         } else if(floor==3 && col>=2){
-            this.game.players[this.game.currPlayer].gainGamePoint(2);
+            this.player.gainGamePoint(2);
         }
         // update max level
         this.maxPreparedRoomLevel = Math.max(this.maxPreparedRoomLevel, floor);
@@ -167,7 +168,7 @@ class Hotel{
         // 准备/入住12个房间
         if(this.game.majorTask0==3 && (this.roomPreparedNum + this.roomClosedNum) >= 12){
             this.game.log.push(this.game.playerName[this.game.currPlayer] + "完成全局任务获得奖励");
-            this.game.players[this.game.currPlayer].gainMajorTaskBonus(0);
+            this.player.gainMajorTaskBonus(0);
         }
     }
 
@@ -213,7 +214,7 @@ class Hotel{
         // 完整入住2个楼层
         if(this.game.majorTask1==0 && this.roomRowClosedNum >= 2){
             this.game.log.push(this.game.playerName[this.game.currPlayer] + "获得区域奖励");
-            this.game.players[this.game.currPlayer].gainMajorTaskBonus(1);
+            this.player.gainMajorTaskBonus(1);
         }
         // count the closed cols
         this.roomColumnClosedNum = 0;
@@ -232,7 +233,7 @@ class Hotel{
         // 完整入住2个列
         if(this.game.majorTask1==1 && this.roomColumnClosedNum >= 2){
             this.game.log.push(this.game.playerName[this.game.currPlayer] + "完成全局任务获得奖励");
-            this.game.players[this.game.currPlayer].gainMajorTaskBonus(1);
+            this.player.gainMajorTaskBonus(1);
         }
         // count the closed areas
         this.roomAreaClosedNum = 0;
@@ -244,7 +245,7 @@ class Hotel{
         // check major task B2
         // 完整入住6个区域
         if(this.game.majorTask1==2 && this.roomAreaClosedNum >= 6){
-            this.game.players[this.game.currPlayer].gainMajorTaskBonus(1);
+            this.player.gainMajorTaskBonus(1);
             this.game.log.push(this.game.playerName[this.game.currPlayer] + "完成全局任务获得奖励");
         }
         // check major task B3
@@ -253,7 +254,7 @@ class Hotel{
            ((this.roomRedClosedNum    == roomColorNumByID[this.hotelID][0]) ||
             (this.roomYellowClosedNum == roomColorNumByID[this.hotelID][1]) ||
             (this.roomBlueClosedNum   == roomColorNumByID[this.hotelID][2]) )){
-            this.game.players[this.game.currPlayer].gainMajorTaskBonus(1);
+            this.player.gainMajorTaskBonus(1);
             this.game.log.push(this.game.playerName[this.game.currPlayer] + "完成全局任务获得奖励");
         }
         // check major task C0
@@ -262,7 +263,7 @@ class Hotel{
            ((this.roomRedClosedNum    >= 3) &&
             (this.roomYellowClosedNum >= 3) &&
             (this.roomBlueClosedNum   >= 3) )){
-            this.game.players[this.game.currPlayer].gainMajorTaskBonus(2);
+            this.player.gainMajorTaskBonus(2);
             this.game.log.push(this.game.playerName[this.game.currPlayer] + "完成全局任务获得奖励");
         }
         // check major task C1
@@ -270,7 +271,7 @@ class Hotel{
         if(this.game.majorTask2==1 && 
            ((this.roomRedClosedNum    >= 4) &&
             (this.roomYellowClosedNum >= 3) )){
-            this.game.players[this.game.currPlayer].gainMajorTaskBonus(2);
+            this.player.gainMajorTaskBonus(2);
             this.game.log.push(this.game.playerName[this.game.currPlayer] + "完成全局任务获得奖励");
         }
         // check major task C2
@@ -278,7 +279,7 @@ class Hotel{
         if(this.game.majorTask2==2 && 
            ((this.roomYellowClosedNum >= 4) &&
             (this.roomBlueClosedNum   >= 3) )){
-            this.game.players[this.game.currPlayer].gainMajorTaskBonus(2);
+            this.player.gainMajorTaskBonus(2);
             this.game.log.push(this.game.playerName[this.game.currPlayer] + "完成全局任务获得奖励");
         }
         // check major task C3
@@ -286,7 +287,7 @@ class Hotel{
         if(this.game.majorTask2==3 && 
            ((this.roomBlueClosedNum   >= 4) &&
             (this.roomRedClosedNum    >= 3) )){
-            this.game.players[this.game.currPlayer].gainMajorTaskBonus(2);
+            this.player.gainMajorTaskBonus(2);
             this.game.log.push(this.game.playerName[this.game.currPlayer] + "完成全局任务获得奖励");
         }
     }
@@ -338,30 +339,30 @@ class Hotel{
         switch(roomNum) {
             case 1: 
                 switch(color) {
-                    case 0: this.game.players[this.game.currPlayer].gainMoney(1); break;
-                    case 1: this.game.players[this.game.currPlayer].gainRoyal(1); break;
-                    case 2: this.game.players[this.game.currPlayer].gainGamePoint(2); break;
+                    case 0: this.player.gainMoney(1); break;
+                    case 1: this.player.gainRoyal(1); break;
+                    case 2: this.player.gainGamePoint(2); break;
                 }
                 break;
             case 2:
                 switch(color) {
-                    case 0: this.game.players[this.game.currPlayer].gainMoney(3); break;
-                    case 1: this.game.players[this.game.currPlayer].gainRoyal(3); break;
-                    case 2: this.game.players[this.game.currPlayer].gainGamePoint(5); break;
+                    case 0: this.player.gainMoney(3); break;
+                    case 1: this.player.gainRoyal(3); break;
+                    case 2: this.player.gainGamePoint(5); break;
                 }
                 break;
             case 3:
                 switch(color) {
-                    case 0: this.game.players[this.game.currPlayer].gainMoney(6); break;
-                    case 1: this.game.players[this.game.currPlayer].gainRoyal(6); break;
-                    case 2: this.game.players[this.game.currPlayer].gainGamePoint(9); break;
+                    case 0: this.player.gainMoney(6); break;
+                    case 1: this.player.gainRoyal(6); break;
+                    case 2: this.player.gainGamePoint(9); break;
                 }
                 break;
             case 4:
                 switch(color) {
-                    case 0: this.game.players[this.game.currPlayer].gainMoney(10); break;
-                    case 1: this.game.players[this.game.currPlayer].gainRoyal(10); break;
-                    case 2: this.game.players[this.game.currPlayer].gainGamePoint(15); break;
+                    case 0: this.player.gainMoney(10); break;
+                    case 1: this.player.gainRoyal(10); break;
+                    case 2: this.player.gainGamePoint(15); break;
                 }
                 break;
         }
@@ -568,32 +569,32 @@ class Hotel{
         const foodBufWidth  = 30;
         const foodBufHeight = 30;
         context.drawImage(tokenImg, brownImgX, brownImgY, 30, 30, foodBufXoffset, foodBufYoffset, foodBufWidth, foodBufHeight);
-        this.textCanvas(context, this.game.players[this.game.currPlayer].brownBuf.toString(), foodBufXoffset+10, foodBufYoffset+45);
-        if(this.game.players[this.game.currPlayer].hasBrownBuf()) { // highlight if buffer has valid food
+        this.textCanvas(context, this.player.brownBuf.toString(), foodBufXoffset+10, foodBufYoffset+45);
+        if(this.player.hasBrownBuf()) { // highlight if buffer has valid food
             context.strokeStyle = "green";
             context.lineWidth = 3;
             context.strokeRect(foodBufXoffset, foodBufYoffset, foodBufWidth, foodBufHeight);
         }
         foodBufYoffset += 50;
         context.drawImage(tokenImg, whiteImgX, whiteImgY, 30, 30, foodBufXoffset, foodBufYoffset, foodBufWidth, foodBufHeight);
-        this.textCanvas(context, this.game.players[this.game.currPlayer].whiteBuf.toString(), foodBufXoffset+10, foodBufYoffset+45);
-        if(this.game.players[this.game.currPlayer].hasWhiteBuf()) { // highlight if buffer has valid food
+        this.textCanvas(context, this.player.whiteBuf.toString(), foodBufXoffset+10, foodBufYoffset+45);
+        if(this.player.hasWhiteBuf()) { // highlight if buffer has valid food
             context.strokeStyle = "green";
             context.lineWidth = 3;
             context.strokeRect(foodBufXoffset, foodBufYoffset, foodBufWidth, foodBufHeight);
         }
         foodBufYoffset += 50;
         context.drawImage(tokenImg, redImgX, redImgY, 30, 30, foodBufXoffset, foodBufYoffset, foodBufWidth, foodBufHeight);
-        this.textCanvas(context, this.game.players[this.game.currPlayer].redBuf.toString(), foodBufXoffset+10, foodBufYoffset+45);
-        if(this.game.players[this.game.currPlayer].hasRedBuf()) { // highlight if buffer has valid food
+        this.textCanvas(context, this.player.redBuf.toString(), foodBufXoffset+10, foodBufYoffset+45);
+        if(this.player.hasRedBuf()) { // highlight if buffer has valid food
             context.strokeStyle = "green";
             context.lineWidth = 3;
             context.strokeRect(foodBufXoffset, foodBufYoffset, foodBufWidth, foodBufHeight);
         }
         foodBufYoffset += 50;
         context.drawImage(tokenImg, blackImgX, blackImgY, 30, 30, foodBufXoffset, foodBufYoffset, foodBufWidth, foodBufHeight);
-        this.textCanvas(context, this.game.players[this.game.currPlayer].blackBuf.toString(), foodBufXoffset+10, foodBufYoffset+45);
-        if(this.game.players[this.game.currPlayer].hasBlackBuf()) { // highlight if buffer has valid food
+        this.textCanvas(context, this.player.blackBuf.toString(), foodBufXoffset+10, foodBufYoffset+45);
+        if(this.player.hasBlackBuf()) { // highlight if buffer has valid food
             context.strokeStyle = "green";
             context.lineWidth = 3;
             context.strokeRect(foodBufXoffset, foodBufYoffset, foodBufWidth, foodBufHeight);

@@ -1,13 +1,12 @@
 // Main game class definition
 class Game{
-    constructor(playerNumber, playerName, standardHotel) {
+    constructor(playerNumber, playerName) {
         // init top info
         console.log("new game!!")
         this.playerNumber = playerNumber;
         this.playerName = playerName;
         this.gameOver = false;
         this.winner = -1;
-        this.standardHotel = standardHotel;
         this.diceNumber = playerNumber * 2 + 6;
         this.majorTask0 = Math.floor(Math.random() * 4);
         this.majorTask1 = Math.floor(Math.random() * 4);
@@ -32,43 +31,38 @@ class Game{
         // init guest deck and server deck
         this.guestDeck = Array.from({length: 58}, (_, i) => i);
         this.serverDeck = Array.from({length: 48}, (_, i) => i);
-        // this.shuffleDeck(this.guestDeck);
-        // this.shuffleDeck(this.serverDeck);
 
         // take first 5 guests in queue
         this.guestInQueue = [];
-        // for(let i=0; i<5; i++){
-        //     this.guestInQueue.push(this.guestDeck.at(-1));
-        //     this.guestDeck.pop();
-        // }
 
-        // init player info
+        // init player info, leaving the init task to top
         this.players = [];
+        this.hotelID = [];
 
-        for(let i=0; i<this.playerNumber; i++) { // construct players
-            if(this.standardHotel){
-                this.players.push(new Player(this, i, this.playerName[i], 0));
-            } else {
-                this.players.push(new Player(this, i, this.playerName[i], Math.floor(Math.random() * 4) + 1 ));
-            }
-        }
-        switch(this.playerNumber){ // assign mini rounds
-            case 2: 
-            this.players[0].miniTurn = [1, 4];
-            this.players[1].miniTurn = [2, 3];
-            break;
-            case 3: 
-            this.players[0].miniTurn = [1, 6];
-            this.players[1].miniTurn = [2, 5];
-            this.players[2].miniTurn = [3, 4];
-            break;
-            case 4: 
-            this.players[0].miniTurn = [1, 8];
-            this.players[1].miniTurn = [2, 7];
-            this.players[2].miniTurn = [3, 6];
-            this.players[3].miniTurn = [4, 5];
-            break;
-        }
+        // for(let i=0; i<this.playerNumber; i++) { // construct players
+        //     if(this.standardHotel){
+        //         this.players.push(new Player(this, i, this.playerName[i], 0));
+        //     } else {
+        //         this.players.push(new Player(this, i, this.playerName[i], Math.floor(Math.random() * 4) + 1 ));
+        //     }
+        // }
+        // switch(this.playerNumber){ // assign mini rounds
+        //     case 2: 
+        //     this.players[0].miniTurn = [1, 4];
+        //     this.players[1].miniTurn = [2, 3];
+        //     break;
+        //     case 3: 
+        //     this.players[0].miniTurn = [1, 6];
+        //     this.players[1].miniTurn = [2, 5];
+        //     this.players[2].miniTurn = [3, 4];
+        //     break;
+        //     case 4: 
+        //     this.players[0].miniTurn = [1, 8];
+        //     this.players[1].miniTurn = [2, 7];
+        //     this.players[2].miniTurn = [3, 6];
+        //     this.players[3].miniTurn = [4, 5];
+        //     break;
+        // }
         // for(let i=0; i<this.playerNumber; i++) { // draw 6 servers
         //     this.players[i].addServerToHand(6);
         // }
@@ -132,11 +126,6 @@ class Game{
             maxClosedRoomLevel:       0,
             maxPreparedRoomLevel:     0,
             // guest table
-            /*
-            this.guestSatisfied = false;
-            this.guestFoodServed = [];
-            this.guestFoodServedNum = 0;
-            */
             guestSatisfied0: false,
             guestSatisfied1: false,
             guestSatisfied2: false,
@@ -148,6 +137,31 @@ class Game{
             guestFoodServedNum2: 0
         };
 
+        // draw canvas
+        // this.updateAllCanvas();
+    }
+
+    constructPlayer(){
+        for(let i=0; i<this.playerNumber; i++) { // construct players
+            this.players.push(new Player(this, i, this.playerName[i], this.hotelID[i]));
+        }
+        switch(this.playerNumber){ // assign mini rounds
+            case 2: 
+            this.players[0].miniTurn = [1, 4];
+            this.players[1].miniTurn = [2, 3];
+            break;
+            case 3: 
+            this.players[0].miniTurn = [1, 6];
+            this.players[1].miniTurn = [2, 5];
+            this.players[2].miniTurn = [3, 4];
+            break;
+            case 4: 
+            this.players[0].miniTurn = [1, 8];
+            this.players[1].miniTurn = [2, 7];
+            this.players[2].miniTurn = [3, 6];
+            this.players[3].miniTurn = [4, 5];
+            break;
+        }
         // draw canvas
         this.updateAllCanvas();
     }

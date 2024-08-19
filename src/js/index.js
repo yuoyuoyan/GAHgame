@@ -24,8 +24,8 @@ var isEdgeChromium = isChrome && (navigator.userAgent.indexOf("Edg") != -1);
 var isBlink = (isChrome || isOpera) && !!window.CSS;
 
 // server connection
-// const socket = new WebSocket('ws://localhost:8083');
-const socket = new WebSocket('ws://121.43.102.218:8083');
+const socket = new WebSocket('ws://localhost:8083');
+// const socket = new WebSocket('ws://121.43.102.218:8083');
 socket.onmessage = isSafari ? handleMsgApple : handleMsgNotApple;
 
 const roomIDLabel = document.getElementById("roomID");
@@ -35,6 +35,10 @@ const playerNameLabel = document.getElementById("playerName");
 const playerNameText = document.getElementById("playerNameText");
 const playerButton = document.getElementById("playerButton");
 const canvas = document.getElementById("nameboard");
+const standartHotelDiv = document.getElementById("standartHotelDiv");
+const standartHotelSwtich = document.getElementById("standartHotelSwtich");
+const useRecordDiv = document.getElementById("useRecordDiv");
+const useRecordSwtich = document.getElementById("useRecordSwtich");
 const startButton = document.getElementById("startButton");
 const context = canvas.getContext("2d");
 
@@ -49,6 +53,8 @@ var ourPlayerName = "";
 var ourPlayerIndex = -1;
 var playerNames = [];
 var playerNumber = 0;
+var useStandardHotel = true;
+var useRecord = false;
 
 var game;
 
@@ -154,8 +160,19 @@ function startGame() {
     var msg = {
         type: "startGame",
         roomID: roomID,
+        useStandardHotel: useStandardHotel,
+        useRecord: useRecord
     };
     socket.send(JSON.stringify(msg));
+}
+
+// toggle standard hotel switch
+function toggleStandardSwitch() {
+    useStandardHotel = !useStandardHotel;
+}
+
+function toggleUseRecord() {
+    useRecord = !useRecord;
 }
 
 // button misc
@@ -219,10 +236,18 @@ function handleMsg(msg) {
                 ourPlayerIndex = playerNames.indexOf(ourPlayerName);
             }
             roomOwner = ourPlayerIndex==0;
-            // can start game if you are the owner
+            // can start game and change config if you are the owner
             if(roomOwner & playerNumber>=2) {
                 startButton.style.backgroundColor = "#8f7a66";
                 startButton.addEventListener("click", startGame);
+            } else {
+                startButton.style.cursor = "default";
+            }
+            if(roomOwner){ // only owner can change config
+                standartHotelDiv.style.display = 'block';
+                useRecordDiv.style.display = 'block';
+                standartHotelSwtich.addEventListener('change', toggleStandardSwitch);
+                useRecordSwtich.addEventListener('change', toggleUseRecord);
             }
             // switch to player state if in room state, and show up all blocks
             if(roomState){
@@ -247,6 +272,8 @@ function handleMsg(msg) {
             playerNameText.style.display = 'none';
             playerButton.style.display = 'none';
             canvas.style.display = 'none';
+            standartHotelDiv.style.display = 'none';
+            useRecordDiv.style.display = 'none';
             startButton.style.display = 'none';
             guestCanvas.style.display = 'block';
             actionCanvas.style.display = 'block';
@@ -257,7 +284,7 @@ function handleMsg(msg) {
             player3Canvas.style.display = 'block';
             serverCanvas.style.display = 'block';
             hotelCanvas.style.display = 'block';
-            game = new Game(playerNames.length, playerNames, 1);
+            game = new Game(playerNames.length, playerNames);
             game.ourPlayer = ourPlayerIndex;
             // send an init info request
             var msg = {
@@ -266,10 +293,12 @@ function handleMsg(msg) {
                 playerID: ourPlayerIndex
             };
             socket.send(JSON.stringify(msg));
-            // document.cookie = JSON.stringify(playerNames);
-            // window.location.href = "hotelgame.html";
             break;
         case("gameInitInfo") :
+            // init players and hotel
+            game.hotelID = msg.hotelID;
+            game.constructPlayer();
+            // tasks and decks
             game.majorTask0 = msg.majorTask[0];
             game.majorTask1 = msg.majorTask[1];
             game.majorTask2 = msg.majorTask[2];

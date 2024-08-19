@@ -81,7 +81,7 @@ class Player{
         this.serverOnHandHighLight = [];
         this.serverHiredHighLightFlag = false;
         this.serverHiredHighLight = [];
-        this.hotel = new Hotel(this.game, hotelID); // prepare hotel
+        this.hotel = new Hotel(this.game, this, hotelID); // prepare hotel
         // prepare the first three rooms
         this.hotel.highlightRoomToPrepare(this.money);
         this.hotel.highlightRoomToPrepare(this.money);
