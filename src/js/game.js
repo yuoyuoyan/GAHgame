@@ -373,11 +373,11 @@ class Game{
     }
 
     checkGuestInvite(money) {
-        this.guestHighLight[4] = true;
-        this.guestHighLight[3] = true;
-        this.guestHighLight[2] = money >= 1;
-        this.guestHighLight[1] = money >= 2;
-        this.guestHighLight[0] = money >= 3;
+        this.guestHighLight[4] = (this.guestInQueue[4]!=-1) && true;
+        this.guestHighLight[3] = (this.guestInQueue[3]!=-1) && true;
+        this.guestHighLight[2] = (this.guestInQueue[2]!=-1) && money >= 1;
+        this.guestHighLight[1] = (this.guestInQueue[1]!=-1) && money >= 2;
+        this.guestHighLight[0] = (this.guestInQueue[0]!=-1) && money >= 3;
     }
 
     findNextPlayer() {
@@ -821,9 +821,14 @@ class Game{
     takeOneGuestFromQueue(guestSelected) {
         console.log("remove guest " + guestNameByID[this.guestInQueue[guestSelected]] + " from queue");
         this.guestInQueue.splice(guestSelected, 1); // remove this guest from queue
-        this.guestInQueue.unshift(this.guestDeck.at(-1));
-        this.guestDeck.pop();
-        console.log("add guest " + guestNameByID[this.guestInQueue[0]] + " to queue");
+        if(this.guestDeck.length == 0){ // guest deck empty
+            this.guestInQueue.unshift(-1); // fill an empty one
+            console.log("no more guest in deck");
+        } else {
+            this.guestInQueue.unshift(this.guestDeck.at(-1));
+            this.guestDeck.pop();
+            console.log("add guest " + guestNameByID[this.guestInQueue[0]] + " to queue");
+        }
     }
 
     rollDice() {
@@ -1077,7 +1082,9 @@ class Game{
         const guestHeight  = 240;
         for(let i=0; i<this.guestInQueue.length; i++){
             // context.drawImage(guestImg[this.guestInQueue[i]], guestXoffset, guestYoffset, guestWidth, guestHeight);
-            context.drawImage(guestAllImg, guestWidth*(this.guestInQueue[i]%10), guestHeight*(Math.floor(this.guestInQueue[i]/10)), guestWidth, guestHeight, guestXoffset, guestYoffset, guestWidth, guestHeight);
+            if(this.guestInQueue[i]!=-1) { // could be empty
+                context.drawImage(guestAllImg, guestWidth*(this.guestInQueue[i]%10), guestHeight*(Math.floor(this.guestInQueue[i]/10)), guestWidth, guestHeight, guestXoffset, guestYoffset, guestWidth, guestHeight);
+            }
             guestXoffset += 182;
         }
         // hightlight marked guests
