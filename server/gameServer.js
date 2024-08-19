@@ -1,5 +1,6 @@
 const { throws } = require('assert');
 const WebSocket = require('ws');
+const fs = require('fs');
 
 const wss = new WebSocket.Server({ port: 8083 });
 
@@ -100,23 +101,26 @@ wss.on('connection', function connection(ws) {
                 } else {
                     console.log('not using record or room record does not exist');
                     // clear and create the file
-                    fs.open(roomList[roomIndex].fileName, 'w');
+                    fs.open(roomList[roomIndex].fileName, 'w+', (err, fd) => {
+                        if(err) {
+                            console.error(err);
+                            return;
+                        }
+                    });
                 }
                 break;
             case "gameInitInfoReq" :
                 if(roomList[roomIndex].useRecord){ // use record
                     // read stream line by line
                     var lineReader = require('readline').createInterface({
-                        input: require('fs').createReadStream(roomList[roomIndex].fileName)});
+                        input: fs.createReadStream(roomList[roomIndex].fileName)});
                     // broadcast every line
                     lineReader.on('line', function (line) {
-                        console.log("Record broadcasting");
-                        for(let i=0; i<roomList[roomIndex].roomPlayerNumber; i++){
-                            roomList[roomIndex].roomCients[i].send(line);
-                        }
+                        // console.log("Record broadcasting");
+                        roomList[roomIndex].roomCients[rcvmsg.playerID].send(line);
                     });
                     lineReader.on('close', function () {
-                        console.log("All record broadcast complete");
+                        console.log("All record broadcast to player " + rcvmsg.playerID + " complete");
                     })
                 } else { // normal game init
                     console.log("send game initialization info to players");
@@ -129,7 +133,14 @@ wss.on('connection', function connection(ws) {
                         guestDeck: roomList[roomIndex].guestDeck,
                         serverDeck: roomList[roomIndex].serverDeck,
                     };
-                    require('fs').appendFile(roomList[roomIndex].fileName, JSON.stringify(rplmsg));
+                    if(playerIndex==0) { // only need to record once
+                        fs.appendFile(roomList[roomIndex].fileName, JSON.stringify(rplmsg)+'\n', function (err){
+                            if(err){
+                                console.log("error " + err);
+                                return;
+                            }
+                        });
+                    }
                     roomList[roomIndex].playerClients[playerIndex].send(JSON.stringify(rplmsg));
                 }
                 return;
@@ -140,12 +151,24 @@ wss.on('connection', function connection(ws) {
                     type: "diceInfo",
                     dice: roomList[roomIndex].dice
                 };
-                require('fs').appendFile(roomList[roomIndex].fileName, JSON.stringify(rplmsg));
+                fs.appendFile(roomList[roomIndex].fileName, JSON.stringify(rplmsg)+'\n', function (err){
+                    if(err){
+                        console.log("error " + err);
+                        return;
+                    } else {
+                        console.log("append " + JSON.stringify(rplmsg) + "to file");
+                    }
+                });
                 break;
             case "broadcast": // game operation to be broadcast to all players in room
                 console.log("broadcast info");
                 rplmsg = rcvmsg;
-                require('fs').appendFile(roomList[roomIndex].fileName, JSON.stringify(rplmsg));
+                fs.appendFile(roomList[roomIndex].fileName, JSON.stringify(rplmsg)+'\n', function (err){
+                    if(err){
+                        console.log("error " + err);
+                        return;
+                    }
+                });
                 break;
             case "endGame": // game over, close room
                 console.log("end game");
