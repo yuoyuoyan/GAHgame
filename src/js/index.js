@@ -243,7 +243,9 @@ function handleMsg(msg) {
             } else {
                 startButton.style.cursor = "default";
             }
-            if(roomOwner){
+            if(roomOwner){ // only owner can change config
+                standartHotelDiv.style.display = 'block';
+                useRecordDiv.style.display = 'block';
                 standartHotelSwtich.addEventListener('change', toggleStandardSwitch);
                 useRecordSwtich.addEventListener('change', toggleUseRecord);
             }
@@ -259,10 +261,6 @@ function handleMsg(msg) {
                 playerButton.style.display = 'block';
                 playerButton.style.backgroundColor = "#8f7a66";
                 canvas.style.display = 'block';
-                if(roomOwner){ // only owner can change config
-                    standartHotelDiv.style.display = 'block';
-                    useRecordDiv.style.display = 'block';
-                }
                 startButton.style.display = 'block';
             }
             updatePlayerCanvas();
@@ -274,8 +272,8 @@ function handleMsg(msg) {
             playerNameText.style.display = 'none';
             playerButton.style.display = 'none';
             canvas.style.display = 'none';
-            standartHotelSwtich.style.display = 'none';
-            useRecordSwtich.style.display = 'none';
+            standartHotelDiv.style.display = 'none';
+            useRecordDiv.style.display = 'none';
             startButton.style.display = 'none';
             guestCanvas.style.display = 'block';
             actionCanvas.style.display = 'block';
@@ -295,8 +293,6 @@ function handleMsg(msg) {
                 playerID: ourPlayerIndex
             };
             socket.send(JSON.stringify(msg));
-            // document.cookie = JSON.stringify(playerNames);
-            // window.location.href = "hotelgame.html";
             break;
         case("gameInitInfo") :
             // init players and hotel

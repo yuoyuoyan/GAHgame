@@ -138,12 +138,12 @@ class Game{
         };
 
         // draw canvas
-        this.updateAllCanvas();
+        // this.updateAllCanvas();
     }
 
     constructPlayer(){
         for(let i=0; i<this.playerNumber; i++) { // construct players
-            this.players.push(new Player(this, this.players[i], i, this.playerName[i], this.hotelID[i]));
+            this.players.push(new Player(this, i, this.playerName[i], this.hotelID[i]));
         }
         switch(this.playerNumber){ // assign mini rounds
             case 2: 
@@ -162,6 +162,8 @@ class Game{
             this.players[3].miniTurn = [4, 5];
             break;
         }
+        // draw canvas
+        this.updateAllCanvas();
     }
 
     bkupMiniTurn() {

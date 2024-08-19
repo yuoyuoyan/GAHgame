@@ -1,9 +1,8 @@
 // Player class definition
 class Player{
-    constructor(game, player, playerID, playerName, hotelID) {
+    constructor(game, playerID, playerName, hotelID) {
         // init player basic info
         this.game = game;
-        this.player = player;
         this.playerID = playerID;
         this.playerName = playerName;
         console.log("create new player " + this.playerID + " " + this.playerName);
@@ -82,7 +81,7 @@ class Player{
         this.serverOnHandHighLight = [];
         this.serverHiredHighLightFlag = false;
         this.serverHiredHighLight = [];
-        this.hotel = new Hotel(this.game, this.player, hotelID); // prepare hotel
+        this.hotel = new Hotel(this.game, this, hotelID); // prepare hotel
         // prepare the first three rooms
         this.hotel.highlightRoomToPrepare(this.money);
         this.hotel.highlightRoomToPrepare(this.money);
