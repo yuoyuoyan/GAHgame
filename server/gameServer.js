@@ -121,6 +121,10 @@ wss.on('connection', function connection(ws) {
                     });
                     lineReader.on('close', function () {
                         console.log("All record broadcast to player " + rcvmsg.playerID + " complete");
+                        rplmsg = {
+                            type: "recordComplete"
+                        };
+                        roomList[roomIndex].roomCients[rcvmsg.playerID].send(JSON.stringify(rplmsg));
                     })
                 } else { // normal game init
                     console.log("send game initialization info to players");

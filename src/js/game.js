@@ -72,6 +72,9 @@ class Game{
         this.ourPlayer = 0;
         // console.log("current player: " + this.playerName[this.currPlayer]);
 
+        // record fetching state, no dice rolling request
+        this.atRecordFetching = false;
+
         // backup buf in a mini turn, able to undo this turn
         this.turnBkup = {
             // game info
@@ -839,7 +842,7 @@ class Game{
         //     this.actionPoint[Math.floor(Math.random() * 6)]++;
         // }
         // multi-player mode, only ID 0 to send request
-        if(this.ourPlayer == 0){
+        if(this.ourPlayer == 0 && !this.atRecordFetching){
             var msg = {
                 type: "rollDiceReq",
                 roomID: roomID

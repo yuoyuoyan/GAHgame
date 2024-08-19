@@ -293,6 +293,8 @@ function handleMsg(msg) {
                 playerID: ourPlayerIndex
             };
             socket.send(JSON.stringify(msg));
+            // set the record fetching state if so
+            game.atRecordFetching = useRecord;
             break;
         case("gameInitInfo") :
             // init players and hotel
@@ -319,6 +321,9 @@ function handleMsg(msg) {
             // Add debug state if needed
             gameOn();
             game.bkupMiniTurn();
+            break;
+        case("recordComplete") : // record fetching complete, can roll dice
+            game.atRecordFetching = false;    
             break;
         case("diceInfo") : // sync random dice roll
             game.actionPoint = msg.dice;
